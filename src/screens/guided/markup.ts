@@ -57,7 +57,7 @@ export function detailSheet(exercise: Exercise): string {
           ? `<h3>Reference</h3><ul class="links">${exercise.links
               .map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a></li>`)
               .join('')}</ul>`
-          : '<p class="muted">No reference links for this one.</p>'
+          : ''
       }
       <button class="btn" id="close-sheet">Close</button>
     </dialog>`;

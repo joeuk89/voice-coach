@@ -35,14 +35,9 @@ export const exercises: Exercise[] = [
     duration: { short: 90, full: 180 },
     animation: 'straw',
     links: [
-      { label: 'Ingo Titze straw phonation demo (NCVS archive)', url: 'https://archive.ncvs.org/videos.html' },
       {
         label: 'Titze: introduction to straw phonation (PDF)',
         url: 'https://www.vocology.utah.edu/_resources/documents/intro_a_video_straw_phonation_titze.pdf',
-      },
-      {
-        label: 'The Science Behind the Straw Exercise (YouTube search)',
-        url: 'https://www.youtube.com/results?search_query=the+science+behind+the+straw+exercise',
       },
     ],
   },
@@ -62,10 +57,10 @@ export const exercises: Exercise[] = [
     links: [
       { label: 'Cambridge University Hospitals: lip trills handout', url: 'https://www.cuh.nhs.uk/patient-information/lip-trills-exercises/' },
       {
-        label: 'Royal Berkshire NHS: humming and lip trills (PDF)',
-        url: 'https://royalberkshire.nhs.uk/media/5fvclpqw/reducing-vocal-tension-using-humming-exercises-and-lip-trills_mar24.pdf',
+        label: 'Royal Berkshire NHS: humming and lip trills',
+        url: 'https://royalberkshire.nhs.uk/leaflets/reducing-vocal-tension-using-humming-exercises-and-lip-trills',
       },
-      { label: 'Royal Berkshire NHS demo video', url: 'https://youtu.be/LSbmqhPvW60' },
+      { label: 'County Durham and Darlington NHS: lip trill demo video', url: 'https://youtu.be/LSbmqhPvW60' },
       { label: 'Vinh Giang: 3 exercises to deepen your voice (lip trills at 2:59)', url: 'https://www.youtube.com/watch?v=HT9_VxN8iSE&t=179s' },
     ],
   },
@@ -114,8 +109,8 @@ export const exercises: Exercise[] = [
     animation: 'hum',
     links: [
       {
-        label: 'Royal Berkshire NHS handout, exercises 3a to 3e (PDF)',
-        url: 'https://royalberkshire.nhs.uk/media/5fvclpqw/reducing-vocal-tension-using-humming-exercises-and-lip-trills_mar24.pdf',
+        label: 'Royal Berkshire NHS handout, exercises 3a to 3e',
+        url: 'https://royalberkshire.nhs.uk/leaflets/reducing-vocal-tension-using-humming-exercises-and-lip-trills',
       },
     ],
   },
@@ -146,7 +141,7 @@ export const exercises: Exercise[] = [
       { label: 'Step-by-step guide (Adult Speech Therapy Workbook)', url: 'https://theadultspeechtherapyworkbook.com/vocal-function-exercises/' },
       {
         label: 'Stemple’s course on MedBridge (clinician-oriented)',
-        url: 'https://www.medbridge.com/course-catalog/details/vocal-function-exercises-joseph-stemple-speech-langauge-pathology-vocal-therapy',
+        url: 'https://www.medbridge.com/educate/courses/vocal-function-exercises-joseph-stemple-speech-langauge-pathology-vocal-therapy',
       },
     ],
   },
