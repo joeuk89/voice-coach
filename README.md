@@ -24,4 +24,15 @@ Every push to `main` builds the app and publishes it to GitHub Pages via `.githu
 
 ## Add or edit an exercise
 
-Coming with the first exercises in `src/exercises.ts`.
+Everything about the routine lives in `src/exercises.ts`, one object per exercise, in the order they run.
+
+- `duration` is seconds per routine (`short` and `full`). `0` leaves the exercise out of that routine.
+- `cues` are the 3 to 5 lines shown on screen. `tips` and `links` sit behind "More detail".
+- `animation` names an entry in `src/animations/index.ts`, or `null` for no animation.
+- `kind: 'audio'` with an `audioSrc` plays a bundled track from `public/audio/` instead of a countdown.
+
+Settings (routine, enabled exercises, duration overrides) and the completion log are stored in `localStorage` under `vt.*` keys.
+
+## Add an animation
+
+Create `src/animations/<id>.ts` exporting an `AnimationDef` (loop length, inline SVG, and caption phases as fractions of the loop) with a matching `<id>.css` scoped under `.anim-<id>`, then register it in `src/animations/index.ts`. Shared pieces (pitch strip, air flow, sound rings) live in `parts.ts` and `shared.css`. Colour rules: amber is air, blue is voice and pitch, rose is lips.
