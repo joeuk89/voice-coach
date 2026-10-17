@@ -46,6 +46,7 @@ describe('shareLabel', () => {
     expect(planSubSteps(byId('low-breathing'), 96, 8).map(shareLabel)).toEqual(['untimed', '× 8']);
     expect(planSubSteps(byId('straw'), 180).map(shareLabel)).toEqual(['untimed', '1:00', '2:00', '× 3', 'untimed']);
     expect(planSubSteps(byId('straw'), 90).map(shareLabel)).toEqual(['untimed', '0:30', '1:00', '× 3', 'untimed']);
+    expect(planSubSteps(byId('lip-trills'), 180).map(shareLabel)).toEqual(['0:45', '0:45', '1:30', 'untimed', 'untimed']);
     expect(planSubSteps(byId('read-aloud'), 120).map(shareLabel)).toEqual(['untimed', 'untimed']);
     expect(planSubSteps(byId('vfe'), 240).map(shareLabel)).toEqual(['× 2', '× 2', '× 2', '× 10']);
   });

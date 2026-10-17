@@ -58,12 +58,14 @@ export const exercises: Exercise[] = [
       { text: 'Add voice: “brrr” on one easy pitch.', window: [0.18, 0.36] },
       { text: 'Glide low to high, then high to low.', weight: 2, window: [0.36, 0.7] },
       {
-        text: 'Add a vowel on the end: “brrr-ah”.',
+        text: 'Add a vowel on the end. Once each:',
+        weight: 0,
         window: [0.7, 0.85],
         examples: ['brrr-ah', 'brrr-ee', 'brrr-eye', 'brrr-ay', 'brrr-oar'],
       },
       {
-        text: 'Add a word on the end: “brrr-ine”.',
+        text: 'Add a word on the end. Once each:',
+        weight: 0,
         window: [0.85, 1],
         examples: ['brrr-ine', 'brrr-awn', 'brrr-ain', 'brrr-ight', 'brrr-eeze', 'brrr-own', 'brrr-and', 'brrr-aid', 'brrr-oom', 'brrr-ush'],
       },

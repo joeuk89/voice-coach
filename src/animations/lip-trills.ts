@@ -60,7 +60,7 @@ export const lipTrills: AnimationDef = {
     { until: 0.18, caption: 'Loose lips, not pursed. Blow gently until they buzz. No voice yet.' },
     { until: 0.36, caption: 'Add voice: “brrr” on one easy pitch.' },
     { until: 0.7, caption: 'Glide low to high, then high to low.' },
-    { until: 0.85, caption: 'Add a vowel on the end: “brrr-ah”.' },
-    { until: 1, caption: 'Add a word on the end: “brrr-ine”.' },
+    { until: 0.85, caption: 'Add a vowel on the end.' },
+    { until: 1, caption: 'Add a word on the end.' },
   ],
 };
