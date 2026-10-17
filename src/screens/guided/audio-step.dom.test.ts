@@ -129,4 +129,22 @@ describe('mountAudioStep', () => {
     track.dispatchEvent(new Event('ended'));
     expect(hooks.setDone.mock.calls.filter(([done]) => done)).toHaveLength(1);
   });
+
+  it('plays from a blob URL when a service worker serves the track', async () => {
+    vi.stubGlobal('navigator', { ...navigator, serviceWorker: { controller: {} } });
+    fetchStub.mockImplementation(async (url: string) =>
+      url.endsWith('.mp3') ? new Response(new Blob(['mp3'])) : new Response('{}'),
+    );
+    const createObjectURL = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:track');
+    const { track } = mount();
+    await vi.waitFor(() => expect(track.src).toBe('blob:track'));
+    expect(fetchStub).toHaveBeenCalledWith('/voice-coach/audio/track.mp3');
+    createObjectURL.mockRestore();
+  });
+
+  it('streams the plain URL without a service worker', async () => {
+    const { track } = mount();
+    await vi.waitFor(() => expect(track.src).toContain('/voice-coach/audio/track.mp3'));
+    expect(fetchStub).not.toHaveBeenCalledWith('/voice-coach/audio/track.mp3');
+  });
 });

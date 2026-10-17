@@ -7,6 +7,20 @@ import { parsePeaks, peaksUrl, waveformShapes, WAVE_HEIGHT } from './waveform';
 const START_HINT = 'Tap Play to start the track.';
 const FINISHED = 'Track finished. Tap Next when you’re ready.';
 const SKIP_SEC = 10;
+/**
+ * A blob URL when a service worker serves the track. Its precached copy answers without byte ranges,
+ * so the browser could not seek in it.
+ */
+async function seekableSource(src: string): Promise<string> {
+  if (!navigator.serviceWorker?.controller) return src;
+  try {
+    const res = await fetch(src);
+    return res.ok ? URL.createObjectURL(await res.blob()) : src;
+  } catch {
+    return src;
+  }
+}
+
 const playIcon = icons.play.replace('class="icon"', 'class="icon player-icon"');
 const pauseIcon = icons.pause.replace('class="icon"', 'class="icon player-icon"');
 
@@ -51,7 +65,7 @@ export function mountAudioStep(card: HTMLElement, src: string, seconds: number, 
   const forward = $<HTMLButtonElement>(card, '#audio-forward');
   const reset = $<HTMLButtonElement>(card, '#audio-reset');
 
-  const track = new Audio(src);
+  const track = new Audio();
   track.preload = 'auto';
   let peaks: number[] | null = null;
   let peaksSettled = false;
@@ -60,6 +74,10 @@ export function mountAudioStep(card: HTMLElement, src: string, seconds: number, 
   let atEnd = false;
   let scrubbing = false;
   let stopped = false;
+  const source = seekableSource(src).then((url) => {
+    if (!stopped) track.src = url;
+    return url;
+  });
 
   const duration = () => (Number.isFinite(track.duration) && track.duration > 0 ? track.duration : seconds);
 
@@ -176,10 +194,12 @@ export function mountAudioStep(card: HTMLElement, src: string, seconds: number, 
       track.pause();
       return;
     }
-    track.play().catch((err: unknown) => {
-      if (track.error || (err instanceof DOMException && err.name === 'AbortError')) return;
-      showStatus('Playback blocked. Tap Play again.');
-    });
+    void source.then(() =>
+      track.play().catch((err: unknown) => {
+        if (track.error || (err instanceof DOMException && err.name === 'AbortError')) return;
+        showStatus('Playback blocked. Tap Play again.');
+      }),
+    );
   });
   reset.addEventListener('click', () => {
     toggle.focus({ preventScroll: true });
@@ -198,6 +218,9 @@ export function mountAudioStep(card: HTMLElement, src: string, seconds: number, 
       stopped = true;
       resized?.disconnect();
       track.pause();
+      void source.then((url) => {
+        if (url !== src) URL.revokeObjectURL(url);
+      });
     },
   };
 }
