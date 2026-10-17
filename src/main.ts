@@ -18,17 +18,16 @@ const screens: Record<Route, Screen> = {
 const app = document.querySelector<HTMLDivElement>('#app');
 if (!app) throw new Error('#app not found');
 
+const routes = new Map<string, Route>([
+  ['', 'home'],
+  ['#/', 'home'],
+  ['#/go', 'guided'],
+  ['#/done', 'done'],
+  ['#/settings', 'settings'],
+]);
+
 function routeFromHash(): Route {
-  switch (location.hash) {
-    case '#/go':
-      return 'guided';
-    case '#/done':
-      return 'done';
-    case '#/settings':
-      return 'settings';
-    default:
-      return 'home';
-  }
+  return routes.get(location.hash) ?? 'home';
 }
 
 /** Taking an update reloads the page, which would throw away a routine in progress. */
@@ -66,6 +65,10 @@ function applyUpdateIfIdle() {
 let cleanup: (() => void) | undefined;
 
 function render() {
+  if (!routes.has(location.hash)) {
+    location.replace('#/');
+    return;
+  }
   const route = routeFromHash();
   if (reloadPending && !isBusy(route)) {
     location.reload();

@@ -2,7 +2,7 @@ import { animationFor, mountAnimation, type AnimationPlayer } from '../animation
 import { mountReadingPanel } from '../panels/reading';
 import { mountSustainPanel, type SustainPanel } from '../panels/sustain';
 import { playCue } from '../lib/audio';
-import { $, esc, formatClock, on } from '../lib/dom';
+import { $, closeOnBackdrop, esc, formatClock, on } from '../lib/dom';
 import { buzz } from '../lib/haptics';
 import { createCountdown, type Countdown } from '../lib/timer';
 import { allowSleep, keepAwake } from '../lib/wakelock';
@@ -13,6 +13,7 @@ import { endSession, getSession } from '../state/session';
 import type { Exercise } from '../types';
 
 const START_HINT = 'Tap Play to start the track.';
+const DOUBLE_TAP_MS = 350;
 
 function timerControls(seconds: number, startLabel: string): string {
   return `
@@ -41,12 +42,6 @@ function detailSheet(exercise: Exercise): string {
       }
       <button class="btn" id="close-sheet">Close</button>
     </dialog>`;
-}
-
-function closeOnBackdrop(dialog: HTMLDialogElement): void {
-  dialog.addEventListener('click', (ev) => {
-    if (ev.target === dialog) dialog.close();
-  });
 }
 
 export function renderGuided(root: HTMLElement): () => void {
@@ -215,7 +210,8 @@ export function renderGuided(root: HTMLElement): () => void {
     on(root, '#close-ex-sheet', 'click', () => exSheet.close());
     on(root, '.jump', 'click', (_ev, el) => {
       exSheet.close();
-      goTo({ index: Number(el.dataset['jump']), subIndex: 0 });
+      const index = Number(el.dataset['jump']);
+      if (index !== session.index) goTo({ index, subIndex: 0 });
     });
     closeOnBackdrop(exSheet);
 
@@ -272,10 +268,19 @@ export function renderGuided(root: HTMLElement): () => void {
     row.innerHTML = timerControls(current.seconds, 'Start');
     const clock = $(row, '#clock');
     const toggle = $<HTMLButtonElement>(row, '#timer-toggle');
+    const restart = $(row, '#timer-restart');
+
+    function showFinished(finished: boolean) {
+      if (finished && document.activeElement === toggle) restart.focus({ preventScroll: true });
+      toggle.hidden = finished;
+      restart.classList.toggle('btn-primary', finished);
+      clock.classList.toggle('done', finished);
+    }
 
     function reset() {
       timer?.pause();
-      clock.classList.remove('paused', 'done');
+      clock.classList.remove('paused');
+      showFinished(false);
       toggle.textContent = 'Start';
       toggle.disabled = current.seconds <= 0;
       timer = createCountdown(
@@ -286,9 +291,7 @@ export function renderGuided(root: HTMLElement): () => void {
         () => {
           playCue();
           buzz();
-          toggle.textContent = 'Start';
-          toggle.disabled = true;
-          clock.classList.add('done');
+          showFinished(true);
         },
       );
     }
@@ -299,7 +302,7 @@ export function renderGuided(root: HTMLElement): () => void {
       toggle.textContent = running ? 'Pause' : 'Resume';
       clock.classList.toggle('paused', !running);
     });
-    $(row, '#timer-restart').addEventListener('click', reset);
+    restart.addEventListener('click', reset);
   }
 
   function showReps(row: HTMLElement, current: PlannedSubStep) {
@@ -329,7 +332,12 @@ export function renderGuided(root: HTMLElement): () => void {
     }
 
     draw();
-    done?.addEventListener('click', () => add(1));
+    let lastDoneAt = -Infinity;
+    done?.addEventListener('click', (ev) => {
+      if (ev.timeStamp - lastDoneAt < DOUBLE_TAP_MS) return;
+      lastDoneAt = ev.timeStamp;
+      add(1);
+    });
     $(row, '#timer-restart').addEventListener('click', () => {
       count = 0;
       sustain?.resetStep();

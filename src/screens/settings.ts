@@ -1,5 +1,5 @@
 import { exercises } from '../exercises';
-import { esc, formatClock, on, redrawKeepingFocus } from '../lib/dom';
+import { $, closeOnBackdrop, esc, formatClock, on, redrawKeepingFocus } from '../lib/dom';
 import { defaultSettings, durationFor, loadSettings, saveSettings } from '../state/settings';
 import { bindRoutineToggle, routineToggle } from '../lib/routine-toggle';
 
@@ -30,15 +30,19 @@ export function renderSettings(root: HTMLElement): () => void {
               const enabled = !settings.disabled.includes(e.id);
               const secs = durationFor(e, settings);
               const fixed = e.kind === 'audio';
+              const note = fixed && routine === 'short' ? 'Full only' : secs === 0 ? 'Not in this routine' : '';
               const name = esc(e.name);
-              const step = (dir: 'dec' | 'inc', label: string, symbol: string) =>
-                `<button class="btn btn-small" data-${dir}="${e.id}" data-focus="${dir}-${e.id}" ${fixed ? 'disabled' : ''} aria-label="${label}, ${name}" aria-describedby="dur-${e.id}">${symbol}</button>`;
-              return `<li class="${enabled ? '' : 'off'}">
-                <label class="ex-name"><input type="checkbox" data-id="${e.id}" data-focus="on-${e.id}" ${enabled ? 'checked' : ''}> ${name}</label>
+              const step = (dir: 'dec' | 'inc', label: string, symbol: string, disabled: boolean) =>
+                `<button class="btn btn-small" data-${dir}="${e.id}" data-focus="${dir}-${e.id}" ${disabled ? 'disabled' : ''} aria-label="${label}, ${name}" aria-describedby="dur-${e.id}">${symbol}</button>`;
+              return `<li class="${enabled && secs > 0 ? '' : 'off'}">
+                <label class="ex-name">
+                  <input type="checkbox" data-id="${e.id}" data-focus="on-${e.id}" ${enabled ? 'checked' : ''}>
+                  <span class="ex-text">${name}${note ? `<small class="muted">${note}</small>` : ''}</span>
+                </label>
                 <div class="stepper">
-                  ${step('dec', 'Shorter', '−')}
+                  ${step('dec', 'Shorter', '−', fixed || secs === 0)}
                   <span class="mono" id="dur-${e.id}">${formatClock(secs)}</span>
-                  ${step('inc', 'Longer', '+')}
+                  ${step('inc', 'Longer', '+', fixed)}
                 </div>
               </li>`;
             })
@@ -47,6 +51,15 @@ export function renderSettings(root: HTMLElement): () => void {
       </section>
 
       <button class="btn btn-ghost" id="reset" data-focus="reset">Reset to defaults</button>
+
+      <dialog class="confirm" id="reset-confirm" aria-labelledby="reset-title">
+        <h2 id="reset-title">Reset durations and exercises?</h2>
+        <p class="muted">Every exercise goes back on, at its default time.</p>
+        <div class="confirm-actions">
+          <button class="btn btn-primary" id="reset-cancel">Cancel</button>
+          <button class="btn" id="reset-yes">Reset</button>
+        </div>
+      </dialog>
     `;
 
     bindRoutineToggle(root, settings, persist);
@@ -57,10 +70,15 @@ export function renderSettings(root: HTMLElement): () => void {
     });
     on(root, '[data-dec]', 'click', (_ev, el) => adjust(el.dataset['dec']!, -STEP_SEC));
     on(root, '[data-inc]', 'click', (_ev, el) => adjust(el.dataset['inc']!, STEP_SEC));
-    on(root, '#reset', 'click', () => {
-      settings = defaultSettings();
+    const confirm = $<HTMLDialogElement>(root, '#reset-confirm');
+    on(root, '#reset', 'click', () => confirm.showModal());
+    on(root, '#reset-cancel', 'click', () => confirm.close());
+    on(root, '#reset-yes', 'click', () => {
+      confirm.close();
+      settings = { ...defaultSettings(), routine: settings.routine };
       persist();
     });
+    closeOnBackdrop(confirm);
   }
 
   function adjust(id: string, delta: number) {
@@ -68,6 +86,7 @@ export function renderSettings(root: HTMLElement): () => void {
     if (!exercise) return;
     const next = Math.max(0, durationFor(exercise, settings) + delta);
     settings.durations[settings.routine][id] = next;
+    if (next === 0) root.querySelector<HTMLElement>(`[data-inc="${id}"]`)?.focus({ preventScroll: true });
     persist();
   }
 

@@ -12,6 +12,16 @@ export function localDay(d = new Date()): string {
   return `${y}-${m}-${day}`;
 }
 
+const DAY = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+/** Local midnight of a YYYY-MM-DD day, or null if it is not a real calendar date. */
+export function parseDay(day: string): Date | null {
+  const match = DAY.exec(day);
+  if (!match) return null;
+  const d = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return localDay(d) === day ? d : null;
+}
+
 function isFeeling(value: unknown): value is Feeling {
   return FEELINGS.some((f) => f === value);
 }
@@ -20,6 +30,7 @@ function toEntry(value: unknown): LogEntry | null {
   if (!isRecord(value)) return null;
   const { date, completedAt, routine, totalSec, feeling } = value;
   if (typeof date !== 'string' || typeof completedAt !== 'string' || !isFiniteNumber(totalSec)) return null;
+  if (!parseDay(date) || Number.isNaN(Date.parse(completedAt))) return null;
   if (routine !== 'short' && routine !== 'full') return null;
   const entry: LogEntry = { date, completedAt, routine, totalSec };
   if (isFeeling(feeling)) entry.feeling = feeling;

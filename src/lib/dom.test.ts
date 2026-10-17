@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { esc, formatClock, formatMinutes } from './dom';
+import { esc, formatClock, formatDuration, formatMinutes } from './dom';
 
 describe('formatClock', () => {
   it('shows minutes and padded seconds', () => {
@@ -15,6 +15,26 @@ describe('formatClock', () => {
 
   it('never goes below zero', () => {
     expect(formatClock(-5)).toBe('0:00');
+  });
+});
+
+describe('formatDuration', () => {
+  it('shows m:ss under an hour', () => {
+    expect(formatDuration(0)).toBe('0:00');
+    expect(formatDuration(754)).toBe('12:34');
+    expect(formatDuration(3599)).toBe('59:59');
+  });
+
+  it('shows hours and minutes from an hour on', () => {
+    expect(formatDuration(3600)).toBe('1 h');
+    expect(formatDuration(5400)).toBe('1 h 30 min');
+    expect(formatDuration(7200)).toBe('2 h');
+    expect(formatDuration(7260)).toBe('2 h 1 min');
+    expect(formatDuration(108061)).toBe('30 h 1 min');
+  });
+
+  it('rounds to the second before choosing a format', () => {
+    expect(formatDuration(3599.6)).toBe('1 h');
   });
 });
 

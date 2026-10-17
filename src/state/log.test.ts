@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { stubLocalStorage } from '../test/local-storage';
 import type { LogEntry } from '../types';
-import { appendLog, currentStreak, loadLog, localDay, setFeeling } from './log';
+import { appendLog, currentStreak, loadLog, localDay, parseDay, setFeeling } from './log';
 
 let storage: Storage;
 
@@ -33,6 +33,19 @@ describe('localDay', () => {
   it('changes at local midnight', () => {
     expect(localDay(new Date(2026, 9, 17, 23, 59, 59))).toBe('2026-10-17');
     expect(localDay(new Date(2026, 9, 18, 0, 0, 0))).toBe('2026-10-18');
+  });
+});
+
+describe('parseDay', () => {
+  it('gives local midnight of a real day', () => {
+    expect(parseDay('2026-10-17')).toEqual(new Date(2026, 9, 17));
+    expect(parseDay('2024-02-29')).toEqual(new Date(2024, 1, 29));
+  });
+
+  it('rejects other shapes and impossible dates', () => {
+    for (const bad of ['', 'x', '2026-1-17', '2026-10-17T08:00', '17/10/2026', '2026-13-01', '2026-02-30', '0050-01-01']) {
+      expect(parseDay(bad)).toBeNull();
+    }
   });
 });
 
@@ -76,6 +89,12 @@ describe('loadLog', () => {
     expect(loadLog()).toEqual([good]);
   });
 
+  it('drops entries with a bad date or completedAt', () => {
+    const good = entry('2026-10-17');
+    saveLog([{ ...good, date: 'x' }, { ...good, date: '2026-02-30' }, { ...good, completedAt: 'x' }, good]);
+    expect(loadLog()).toEqual([good]);
+  });
+
   it('drops an unknown feeling but keeps the entry', () => {
     saveLog([{ ...entry('2026-10-17'), feeling: '"><b>' }, { ...entry('2026-10-18'), feeling: 'ok' }]);
     expect(loadLog().map((e) => e.feeling)).toEqual([undefined, 'ok']);
@@ -89,12 +108,14 @@ describe('loadLog', () => {
 
 describe('appendLog', () => {
   it('keeps the newest 400 entries', () => {
-    saveLog(Array.from({ length: 400 }, (_, i) => entry('2026-01-01', `t${i}`)));
-    expect(appendLog(entry('2026-10-17', 'newest'))).toBe(true);
+    const at = (i: number) => new Date(Date.UTC(2026, 0, 1, 0, i)).toISOString();
+    saveLog(Array.from({ length: 400 }, (_, i) => entry('2026-01-01', at(i))));
+    const newest = entry('2026-10-17');
+    expect(appendLog(newest)).toBe(true);
     const log = loadLog();
     expect(log).toHaveLength(400);
-    expect(log[0]!.completedAt).toBe('t1');
-    expect(log[399]!.completedAt).toBe('newest');
+    expect(log[0]!.completedAt).toBe(at(1));
+    expect(log[399]!.completedAt).toBe(newest.completedAt);
   });
 
   it('returns false when the write fails', () => {
@@ -107,14 +128,14 @@ describe('appendLog', () => {
 
 describe('setFeeling', () => {
   it('sets the feeling on the entry with that completedAt', () => {
-    saveLog([entry('2026-10-16', 'a'), entry('2026-10-17', 'b')]);
-    expect(setFeeling('a', 'strong')).toBe(true);
+    saveLog([entry('2026-10-16'), entry('2026-10-17')]);
+    expect(setFeeling('2026-10-16T08:00:00.000Z', 'strong')).toBe(true);
     expect(loadLog().map((e) => e.feeling)).toEqual(['strong', undefined]);
   });
 
   it('changes nothing when no entry matches', () => {
-    saveLog([entry('2026-10-17', 'b')]);
-    expect(setFeeling('missing', 'ok')).toBe(false);
+    saveLog([entry('2026-10-17')]);
+    expect(setFeeling('2026-10-16T08:00:00.000Z', 'ok')).toBe(false);
     expect(loadLog()[0]!.feeling).toBeUndefined();
   });
 });

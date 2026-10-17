@@ -1,4 +1,4 @@
-import { esc, formatClock, on } from '../lib/dom';
+import { esc, formatDuration, on } from '../lib/dom';
 import { appendLog, localDay, setFeeling } from '../state/log';
 import { endSession, getSession } from '../state/session';
 import type { Feeling } from '../types';
@@ -22,7 +22,7 @@ export function renderDone(root: HTMLElement): () => void {
     <header class="done-head">
       <div class="eyebrow">Routine complete</div>
       <h1 tabindex="-1">Nice work.</h1>
-      <p class="muted">${esc(formatClock(totalSec))} of practice.</p>
+      <p class="muted">${esc(formatDuration(totalSec))} of practice.</p>
     </header>
 
     <section class="card">

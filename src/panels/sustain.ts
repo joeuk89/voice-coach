@@ -7,13 +7,20 @@ function fmt(sec: number): string {
   return `${sec.toFixed(1)} s`;
 }
 
+/** Header line: last time and best ever before today's first hold, then today's best and best ever. */
+export function sustainSummary(today: number[], previous: number, best: number): string {
+  if (best <= 0) return 'First time';
+  const first = today.length ? `Best today ${fmt(Math.max(...today))}` : previous ? `Last time ${fmt(previous)}` : '';
+  return [first, `Best ever ${fmt(best)}`].filter(Boolean).join(' · ');
+}
+
 export interface SustainEvents {
   onRecord?: () => void;
   onUndo?: () => void;
 }
 
 export interface SustainPanel {
-  /** Forget the holds recorded so far, so Undo only reaches holds from the next sub-step on. */
+  /** Start a new sub-step: Undo forgets earlier holds, and a hold still running is logged but not reported. */
   resetStep(): void;
   stop(): void;
 }
@@ -23,16 +30,16 @@ export function mountSustainPanel(container: HTMLElement, events: SustainEvents 
   let startedAt = 0;
   let interval: ReturnType<typeof setInterval> | undefined;
   let stepHolds: string[] = [];
+  let step = 0;
+  let holdStep = 0;
 
   function draw() {
-    const today = todaySustains();
-    const best = bestEver();
-    const prev = previousBest();
     const running = interval !== undefined;
+    const today = todaySustains();
     container.innerHTML = `
       <div class="sustain-head">
         <h2>Sustain timer</h2>
-        <span class="muted">${prev ? `Last time ${esc(fmt(prev))}` : 'First time'}${best ? ` · Best ${esc(fmt(best))}` : ''}</span>
+        <span class="muted">${esc(sustainSummary(today, previousBest(), bestEver()))}</span>
       </div>
       <div class="sustain-row">
         <div class="sustain-clock mono" id="sustain-clock">${fmt(running ? elapsed() : 0)}</div>
@@ -69,14 +76,16 @@ export function mountSustainPanel(container: HTMLElement, events: SustainEvents 
       const day = localDay();
       stop();
       const recorded = held >= 0.5 && recordSustain(held, day);
-      if (recorded) stepHolds.push(day);
+      const counts = recorded && holdStep === step;
+      if (counts) stepHolds.push(day);
       buzz(40);
       draw();
       // After buzz(40), so a listener's own buzz replaces the short one.
-      if (recorded) events.onRecord?.();
+      if (counts) events.onRecord?.();
       return;
     }
     startedAt = Date.now();
+    holdStep = step;
     const button = $(container, '#sustain-toggle');
     button.textContent = 'Stop';
     button.classList.add('running');
@@ -95,6 +104,7 @@ export function mountSustainPanel(container: HTMLElement, events: SustainEvents 
   draw();
   return {
     resetStep() {
+      step += 1;
       if (!stepHolds.length) return;
       stepHolds = [];
       draw();

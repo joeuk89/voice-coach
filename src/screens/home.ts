@@ -1,12 +1,17 @@
-import { esc, formatMinutes, on, redrawKeepingFocus } from '../lib/dom';
+import { esc, formatClock, formatMinutes, on, redrawKeepingFocus } from '../lib/dom';
 import { initAudio } from '../lib/audio';
-import { currentStreak, lastEntry, localDay, recentEntries } from '../state/log';
+import { exercises } from '../exercises';
+import { currentStreak, lastEntry, localDay, parseDay, recentEntries } from '../state/log';
 import { startSession } from '../state/session';
-import { loadSettings, planRoutine, saveSettings, totalSeconds } from '../state/settings';
+import { durationFor, loadSettings, planRoutine, saveSettings, totalSeconds } from '../state/settings';
 import { bindRoutineToggle, routineToggle } from '../lib/routine-toggle';
-import type { Feeling, LogEntry } from '../types';
+import type { Feeling, LogEntry, Settings } from '../types';
 
 const SHORT_DATE: Intl.DateTimeFormatOptions = { weekday: 'short', day: 'numeric', month: 'short' };
+
+function dayLabel(date: string): string {
+  return parseDay(date)?.toLocaleDateString(undefined, SHORT_DATE) ?? date;
+}
 
 function lastDoneLabel(): string {
   const last = lastEntry();
@@ -17,15 +22,20 @@ function lastDoneLabel(): string {
   const yesterday = localDay(dayBefore);
   if (last.date === today) return 'Done today';
   if (last.date === yesterday) return 'Last done yesterday';
-  const d = new Date(last.completedAt);
-  return `Last done ${d.toLocaleDateString(undefined, SHORT_DATE)}`;
+  return `Last done ${dayLabel(last.date)}`;
 }
 
 const FEELING_NAMES: Record<Feeling, string> = { strong: 'strong', ok: 'OK', strained: 'strained' };
 
 function feelingLabel(entry: LogEntry): string {
-  const day = new Date(entry.completedAt).toLocaleDateString(undefined, SHORT_DATE);
-  return `${day}: ${entry.feeling ? FEELING_NAMES[entry.feeling] : 'no note'}`;
+  return `${dayLabel(entry.date)}: ${entry.feeling ? FEELING_NAMES[entry.feeling] : 'no note'}`;
+}
+
+function emptyRoutineHint(settings: Settings): string {
+  const canTurnOn = exercises.some((e) => settings.disabled.includes(e.id) && durationFor(e, settings) > 0);
+  return canTurnOn
+    ? 'All exercises are off. Turn some on in Settings.'
+    : 'Every exercise is at 0:00 in this routine. Give some time in Settings.';
 }
 
 export function renderHome(root: HTMLElement): () => void {
@@ -47,11 +57,15 @@ export function renderHome(root: HTMLElement): () => void {
       <section class="card routine">
         <div class="routine-title">
           <span>${routine === 'short' ? 'Short' : 'Full'} routine</span>
-          <span class="muted">${steps.length} exercises · ${formatMinutes(totalSeconds(settings))}</span>
+          <span class="muted">${steps.length} ${steps.length === 1 ? 'exercise' : 'exercises'} · ${formatMinutes(totalSeconds(settings))}</span>
         </div>
-        <ol class="routine-list">
-          ${steps.map((s) => `<li><span>${esc(s.exercise.name)}</span><span class="muted">${formatMinutes(s.seconds)}</span></li>`).join('')}
-        </ol>
+        ${
+          steps.length
+            ? `<ol class="routine-list">
+                ${steps.map((s) => `<li><span>${esc(s.exercise.name)}</span><span class="muted mono">${formatClock(s.seconds)}</span></li>`).join('')}
+              </ol>`
+            : `<p class="muted routine-empty">${emptyRoutineHint(settings)}</p>`
+        }
       </section>
 
       <button class="btn btn-primary btn-start" id="start" ${steps.length === 0 ? 'disabled' : ''}>Start</button>

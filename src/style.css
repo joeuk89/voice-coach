@@ -85,6 +85,7 @@ header { display: flex; flex-direction: column; gap: 4px; }
   cursor: pointer;
 }
 .btn:disabled { opacity: 0.4; cursor: default; }
+.btn[hidden] { display: none; }
 .btn-primary { background: var(--accent); color: var(--accent-text); }
 .btn-ghost { background: transparent; color: var(--muted); }
 .btn-small { min-height: 44px; min-width: 44px; padding: 0 12px; font-size: 1.3rem; }
@@ -93,6 +94,7 @@ header { display: flex; flex-direction: column; gap: 4px; }
 .routine-title { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; }
 .routine-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.95rem; }
 .routine-list li { display: flex; justify-content: space-between; gap: 12px; }
+.routine-empty { margin-top: 12px; font-size: 0.95rem; }
 .streak { display: flex; flex-direction: column; gap: 4px; }
 .streak strong { font-size: 1.4rem; }
 .feelings { display: flex; gap: 8px; margin: 8px 0 0; padding: 0; list-style: none; }
@@ -100,6 +102,7 @@ header { display: flex; flex-direction: column; gap: 4px; }
 .dot.strong { background: var(--good); }
 .dot.ok { background: var(--warn); }
 .dot.strained { background: var(--bad); }
+.dot.none { background: transparent; border: 2px solid var(--muted); }
 
 #app[data-route='guided'] { padding-bottom: 0; }
 .step-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -178,7 +181,7 @@ header { display: flex; flex-direction: column; gap: 4px; }
   color: var(--fg);
   width: 100%;
   max-width: 520px;
-  margin: auto 0 0;
+  margin: auto auto 0;
   padding: 20px 20px calc(env(safe-area-inset-bottom) + 20px);
   max-height: 85dvh;
   overflow: auto;
@@ -215,7 +218,9 @@ header { display: flex; flex-direction: column; gap: 4px; }
 .ex-list li { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .ex-list li.off .ex-name { color: var(--muted); }
 .ex-name { display: flex; align-items: center; gap: 10px; min-height: 44px; flex: 1; min-width: 0; }
-.ex-name input { width: 22px; height: 22px; accent-color: var(--accent); }
+.ex-name input { flex-shrink: 0; width: 22px; height: 22px; margin: 0; accent-color: var(--accent); }
+.ex-text { display: flex; flex-direction: column; min-width: 0; }
+.ex-text small { font-size: 0.8rem; }
 .stepper { display: flex; align-items: center; gap: 6px; }
 .stepper .mono { min-width: 3.2em; text-align: center; }
 
