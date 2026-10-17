@@ -8,11 +8,16 @@ Live: https://joeuk89.github.io/voice-coach/
 
 Open the live URL in Chrome on Android, then choose "Add to Home screen" (or "Install app") from the menu. It opens full screen and works offline after the first load. New versions download in the background, and the app checks for one each time you come back to it. A new version takes over on Home or Settings, never during a routine.
 
+## How a routine works
+
+Pick Short or Full on Home and press Start. Each exercise walks through its steps one at a time: read the step, press Start when you are ready, and press Next when you are done. Nothing moves on by itself. Timed steps count down and stop at zero; counted steps show "Rep 3 of 8" or, on the vocal function exercises, count your holds from the stopwatch. The step list and the "n of 8" picker let you jump anywhere. Finish opens the Done screen, which logs the day and asks how your voice felt.
+
 ## Run locally
 
 ```sh
 npm install
 npm run dev
+npm test
 ```
 
 Open the URL Vite prints. To test the installable PWA and offline mode, use a production build:
@@ -42,6 +47,7 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
 - `subSteps` are the ordered instructions shown on screen, each with a `text`. `tips` and `links` sit behind "More detail".
   - `weight` sets the sub-step's share of the duration relative to the others. It defaults to `1`; `0` means no timer.
   - `reps` fixes a rep count, for protocols that set one. `repSec` is the length of one rep instead, and the count comes from the sub-step's time share. `reps` wins if both are set.
+  - `repsPerPitch` makes the hold counter name the current pitch (adduction: two holds per pitch).
   - `window` is the `[from, to)` fraction of the animation loop to play during the sub-step. Leave it out to play the whole loop.
 - `animation` names an entry in `src/animations/index.ts`, or `null` for no animation.
 - `kind: 'audio'` with an `audioSrc` plays a bundled track from `public/audio/` instead of a countdown.
@@ -52,4 +58,8 @@ Settings (routine, enabled exercises, duration overrides), the completion log, t
 
 ## Add an animation
 
-Create `src/animations/<id>.ts` exporting an `AnimationDef` (loop length, inline SVG, and caption phases as fractions of the loop) with a matching `<id>.css` scoped under `.anim-<id>`, then register it in `src/animations/index.ts`. Shared pieces (pitch strip, air flow, sound rings) live in `parts.ts` and `shared.css`. Colour rules: amber is air, blue is voice and pitch, rose is lips.
+Create `src/animations/<id>.ts` exporting an `AnimationDef` (loop length, inline SVG, and caption phases as fractions of the loop) with a matching `<id>.css` scoped under `.anim-<id>`, then register it in `src/animations/index.ts`. Shared pieces (pitch strip, air flow, sound rings, lips) live in `parts.ts` and `shared.css`. Colour rules: amber is air, blue is voice and pitch, rose is lips. Phase switches are hard cuts on the window edges; the player slows windows shorter than 4 s and holds the last frame for half a second. An optional `compactViewBox` crops the card on the guided screen when a panel sits under it.
+
+## Decisions
+
+Judgment calls that the code cannot explain are recorded in `docs/decisions-log.md`.
