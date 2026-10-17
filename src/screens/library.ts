@@ -3,7 +3,7 @@ import { exercises } from '../exercises';
 import { esc, formatClock, on } from '../lib/dom';
 import { icons } from '../lib/icons';
 import { planSubSteps } from '../state/plan';
-import { durationFor, loadSettings } from '../state/settings';
+import { defaultSettings, durationFor, loadSettings, repsFor } from '../state/settings';
 import type { Exercise, Settings } from '../types';
 import { libraryIdFromHash, routineDurations, shareLabel } from './library/helpers';
 
@@ -37,12 +37,12 @@ function listView(settings: Settings): string {
 
 /** The Full routine time the step shares are taken from; the default when Settings leaves the exercise out. */
 function fullSeconds(exercise: Exercise, settings: Settings): number {
-  return durationFor(exercise, settings, 'full') || exercise.duration.full;
+  return durationFor(exercise, settings, 'full') || durationFor(exercise, defaultSettings(), 'full');
 }
 
 function detailView(exercise: Exercise, settings: Settings, hasAnimation: boolean): string {
   const full = fullSeconds(exercise, settings);
-  const plan = planSubSteps(exercise, full);
+  const plan = planSubSteps(exercise, full, repsFor(exercise, settings, 'full'));
   const showChips = hasAnimation && plan.length > 0;
   return `
     <header>
@@ -55,7 +55,7 @@ function detailView(exercise: Exercise, settings: Settings, hasAnimation: boolea
     ${
       exercise.kind === 'audio'
         ? `<section class="card lib-track">
-            <div class="eyebrow">Track · ${formatClock(exercise.duration.full)}</div>
+            <div class="eyebrow">Track · ${formatClock(full)}</div>
             <p class="muted">Plays in the Full routine.</p>
           </section>`
         : ''

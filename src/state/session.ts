@@ -4,6 +4,8 @@ import { createProgress, type RoutineProgress } from './progress';
 export interface Step {
   exercise: Exercise;
   seconds: number;
+  /** The rep count for a reps exercise, which the planner hands to its counted sub-steps. */
+  reps?: number;
 }
 
 export interface Session {

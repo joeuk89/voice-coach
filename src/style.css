@@ -352,7 +352,7 @@ header > .back-link { align-self: flex-start; }
 .seg small { color: var(--muted); font-weight: 400; }
 .seg[aria-pressed='true'] { background: var(--surface-3); box-shadow: var(--selected-ring); }
 .ex-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.stepper { display: flex; align-items: center; gap: 6px; }
+.stepper { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 
 .hold-panel { display: flex; flex-direction: column; gap: 4px; }
 .hold-panel[hidden] { display: none; }
@@ -456,7 +456,7 @@ header > .back-link { align-self: flex-start; }
 .ex-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: var(--tap); }
 .ex-name { font-weight: 600; min-width: 0; }
 .ex-row.off .ex-name { color: var(--muted); font-weight: 400; }
-.ex-detail { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: var(--fs-sm); }
+.ex-detail { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: var(--tap); font-size: var(--fs-sm); }
 .ex-time .mono { font-size: var(--fs-md); }
 .switch {
   appearance: none; border: 0; background: transparent; padding: 0; cursor: pointer;
@@ -473,6 +473,7 @@ header > .back-link { align-self: flex-start; }
 }
 .switch[aria-checked='true'] .switch-track { background: var(--muted); }
 .switch[aria-checked='true'] .switch-track::after { background: var(--bg); transform: translateX(20px); }
+.switch:disabled { cursor: default; opacity: 0.35; }
 
 @keyframes draw-stroke { from { stroke-dashoffset: 1; } }
 

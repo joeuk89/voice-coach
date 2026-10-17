@@ -28,14 +28,12 @@ export interface SubStep {
   window?: [number, number];
 }
 
-export interface Exercise {
+interface ExerciseBase {
   id: string;
   name: string;
   purpose: string;
   subSteps: SubStep[];
   tips?: string[];
-  /** Seconds per routine. 0 leaves the exercise out of that routine. */
-  duration: Record<RoutineId, number>;
   animation: AnimationId | null;
   /** 'audio' plays a bundled track instead of running a countdown. */
   kind?: 'audio';
@@ -44,6 +42,31 @@ export interface Exercise {
   audioSrc?: string;
   links: Link[];
 }
+
+/** Runs for a set time that Settings can change. */
+export interface TimedExercise extends ExerciseBase {
+  control?: 'timed';
+  /** Seconds per routine. 0 leaves the exercise out of that routine. */
+  duration: Record<RoutineId, number>;
+}
+
+/** Runs for as long as it takes; `duration` is only the time it usually takes. */
+export interface UntimedExercise extends ExerciseBase {
+  control: 'untimed';
+  duration: Record<RoutineId, number>;
+}
+
+/** Counted in reps that Settings can change; its time is reps × `repSec`. */
+export interface RepsExercise extends ExerciseBase {
+  control: 'reps';
+  /** Reps per routine. 0 leaves the exercise out of that routine. */
+  reps: Record<RoutineId, number>;
+  repSec: number;
+  /** What one rep is called, singular ("breath"); Settings adds an "s" for more than one. */
+  repNoun: string;
+}
+
+export type Exercise = TimedExercise | UntimedExercise | RepsExercise;
 
 export type Feeling = 'strong' | 'ok' | 'strained';
 
@@ -62,6 +85,7 @@ export interface Settings {
   routine: RoutineId;
   disabled: string[];
   durations: Record<RoutineId, Record<string, number>>;
+  reps: Record<RoutineId, Record<string, number>>;
 }
 
 export interface Phase {

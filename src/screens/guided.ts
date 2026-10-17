@@ -78,7 +78,7 @@ export function renderGuided(root: HTMLElement): () => void {
     const { exercise } = step;
     const isAudio = exercise.kind === 'audio';
     const def = animationFor(exercise.animation);
-    plan = planSubSteps(exercise, step.seconds);
+    plan = planSubSteps(exercise, step.seconds, step.reps);
 
     root.innerHTML = `
       ${stepHeader(steps, session.index)}

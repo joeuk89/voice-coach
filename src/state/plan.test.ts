@@ -3,18 +3,17 @@ import { exercises } from '../exercises';
 import type { Exercise, SubStep } from '../types';
 import { planSubSteps } from './plan';
 
+const base = { id: 'fixture', name: 'Fixture', purpose: '', animation: null, links: [] };
+
 function fixture(subSteps: SubStep[]): Exercise {
-  return {
-    id: 'fixture',
-    name: 'Fixture',
-    purpose: '',
-    subSteps,
-    duration: { short: 0, full: 0 },
-    animation: null,
-    links: [],
-  };
+  return { ...base, subSteps, duration: { short: 0, full: 0 } };
 }
 
+function repsFixture(subSteps: SubStep[]): Exercise {
+  return { ...base, subSteps, control: 'reps', reps: { short: 0, full: 0 }, repSec: 12, repNoun: 'rep' };
+}
+
+const byId = (id: string) => exercises.find((e) => e.id === id)!;
 const weighted = (...weights: number[]) => fixture(weights.map((weight) => ({ text: '', weight })));
 const seconds = (ex: Exercise, total: number) => planSubSteps(ex, total).map((p) => p.seconds);
 
@@ -78,8 +77,35 @@ describe('planSubSteps', () => {
     ]);
   });
 
+  it('gives a counted sub-step on a reps exercise the exercise rep count', () => {
+    const plan = planSubSteps(repsFixture([{ text: '' }, { text: '', weight: 3, repSec: 12 }]), 60, 3);
+    expect(plan.map((p) => [p.mode, p.reps])).toEqual([
+      ['timed', undefined],
+      ['reps', 3],
+    ]);
+  });
+
+  it('keeps a sub-step fixed rep count and weight 0 on a reps exercise', () => {
+    const plan = planSubSteps(repsFixture([{ text: '', reps: 2 }, { text: '', weight: 0, repSec: 12 }]), 60, 7);
+    expect(plan.map((p) => [p.mode, p.reps])).toEqual([
+      ['reps', 2],
+      ['untimed', undefined],
+    ]);
+  });
+
+  it('ignores a rep count on an exercise that is not counted in reps', () => {
+    expect(planSubSteps(fixture([{ text: '', weight: 3, repSec: 12 }]), 120, 3)[0]).toMatchObject({ reps: 10 });
+  });
+
+  it('counts low breathing in the routine rep count', () => {
+    expect(planSubSteps(byId('low-breathing'), 96, 8).map((p) => p.reps)).toEqual([undefined, undefined, 8]);
+    expect(planSubSteps(byId('low-breathing'), 60, 5).map((p) => p.reps)).toEqual([undefined, undefined, 5]);
+    expect(planSubSteps(byId('low-breathing'), 60, 5)[1]!.seconds).toBeGreaterThanOrEqual(5);
+  });
+
   it('fills every real exercise exactly, with at least 5 seconds per timed sub-step', () => {
     for (const exercise of exercises) {
+      if (exercise.control === 'reps') continue;
       for (const total of Object.values(exercise.duration)) {
         if (total === 0 || exercise.subSteps.length === 0) continue;
         const plan = planSubSteps(exercise, total);

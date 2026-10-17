@@ -43,7 +43,10 @@ Every push to `main` builds the app and publishes it to GitHub Pages via `.githu
 
 Everything about the routine lives in `src/exercises.ts`, one object per exercise, in the order they run.
 
-- `duration` is seconds per routine (`short` and `full`). `0` leaves the exercise out of that routine.
+- `control` says what Settings can change. Leave it out for a timed exercise.
+  - Timed: `duration` is seconds per routine (`short` and `full`). `0` leaves the exercise out of that routine. Settings sets the time.
+  - `'reps'`: `reps` is the rep count per routine, `repSec` the seconds one rep takes, and `repNoun` what one rep is called ("breath"). It has no `duration`; its time is `reps × repSec`. Settings sets the count. Counted sub-steps without a fixed `reps` use it.
+  - `'untimed'`: `duration` is only the time it usually takes, shown as "about N min". Settings can only switch it off.
 - `subSteps` are the ordered instructions shown on screen, each with a `text`. `tips` and `links` sit behind "More detail".
   - `weight` sets the sub-step's share of the duration relative to the others. It defaults to `1`; `0` means no timer.
   - `reps` fixes a rep count, for protocols that set one. `repSec` is the length of one rep instead, and the count comes from the sub-step's time share. `reps` wins if both are set.
@@ -54,7 +57,7 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
 
 Read-aloud passages live in `src/paragraphs.ts`; wrap a word in `*asterisks*` to show it bold.
 
-Settings (routine, enabled exercises, duration overrides), the completion log, the sustain log and whether the first-run note was seen are stored in `localStorage` under `vt.*` keys.
+Settings (routine, enabled exercises, time and rep count overrides), the completion log, the sustain log and whether the first-run note was seen are stored in `localStorage` under `vt.*` keys.
 
 ## Add an animation
 
