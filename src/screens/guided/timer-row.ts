@@ -1,13 +1,17 @@
+import type { AnimationPlayer } from '../../animations';
 import { playCue } from '../../lib/audio';
 import { $, formatClock } from '../../lib/dom';
 import { buzz } from '../../lib/haptics';
 import { icons } from '../../lib/icons';
 import { createCountdown, type Countdown } from '../../lib/timer';
 import type { SustainPanel } from '../../panels/sustain';
+import { paceAt, type PaceMoment } from '../../state/pace';
 import type { PlannedSubStep } from '../../state/plan';
 import { isComplete, repLabel } from '../../state/reps';
 
 const DOUBLE_TAP_MS = 350;
+const PACE_TICK_MS = 100;
+const SWITCH_BUZZ_MS = 40;
 const UNTIMED_HINT = 'No timer. Tap Next when you’re ready.';
 
 const doneMark = `<span class="done-mark">${icons.check}</span>`;
@@ -188,4 +192,129 @@ export function mountHoldCount(sustain: SustainPanel, planned: PlannedSubStep, h
       showReset();
     },
   };
+}
+
+type PacedPicture = Pick<AnimationPlayer, 'rest' | 'restart' | 'pause'>;
+
+/**
+ * Paces each breath: Start runs a 3 s lead-in, then the picture and the row count every breath in
+ * and out. Pause freezes the picture; Resume replays the interrupted breath after a new lead-in.
+ */
+export function mountPaced(row: HTMLElement, planned: PlannedSubStep, hooks: RowHooks, picture?: PacedPicture): StepRow {
+  const pace = planned.subStep.pace!;
+  const total = planned.reps!;
+  row.innerHTML = `
+    <div class="pace-readout">
+      <div class="timer rep-count" id="pace-count" aria-live="polite"></div>
+      <p class="pace-phase" aria-live="polite"><span id="pace-word"></span><span id="pace-left" aria-hidden="true"></span></p>
+    </div>
+    <button class="btn timer-btn" id="timer-toggle" data-primary>Start</button>
+    ${resetButton}`;
+  const count = $(row, '#pace-count');
+  const phaseWord = $(row, '#pace-word');
+  const phaseLeft = $(row, '#pace-left');
+  const toggle = $<HTMLButtonElement>(row, '#timer-toggle');
+  const reset = $<HTMLButtonElement>(row, '#timer-reset');
+
+  /** The breath the next run starts on; a paused breath runs again in full. */
+  let from = 0;
+  let startedAt = 0;
+  let interval: ReturnType<typeof setInterval> | undefined;
+  let lastPhase = '';
+
+  /** Writes only what changed, so the live regions announce the phase word at a switch and not every second. */
+  function show(countHtml: string, word = '', left = '') {
+    if (count.innerHTML !== countHtml) count.innerHTML = countHtml;
+    if (phaseWord.textContent !== word) phaseWord.textContent = word;
+    if (phaseLeft.textContent !== left) phaseLeft.textContent = left;
+  }
+
+  const breathMarkup = (breath: number) => countMarkup(breath + 1, total, 'Breath');
+
+  function showMoment(moment: PaceMoment) {
+    if (moment.phase === 'ready') {
+      show(`<small>Ready ·</small> ${moment.secondsLeft}`);
+      return;
+    }
+    const word = moment.phase === 'in' ? 'In' : 'Out';
+    show(breathMarkup(moment.breath), word, ` · ${moment.secondsLeft}`);
+  }
+
+  const now = () => paceAt(performance.now() - startedAt, pace, total, from);
+
+  function halt() {
+    clearInterval(interval);
+    interval = undefined;
+  }
+
+  function showFinished(finished: boolean) {
+    if (finished && document.activeElement === toggle) reset.focus({ preventScroll: true });
+    toggle.hidden = finished;
+    count.classList.toggle('done', finished);
+    hooks.setDone(finished, finished);
+  }
+
+  function finish() {
+    halt();
+    from = total;
+    picture?.rest();
+    show(`${breathMarkup(total - 1)}${doneMark}`);
+    playCue();
+    buzz();
+    showFinished(true);
+  }
+
+  function tick() {
+    const moment = now();
+    if (moment.phase === 'done') return finish();
+    const phase = `${moment.phase}${moment.breath}`;
+    if (phase !== lastPhase && moment.phase !== 'ready') {
+      buzz(SWITCH_BUZZ_MS);
+      picture?.restart(moment.breathMs);
+    }
+    lastPhase = phase;
+    showMoment(moment);
+  }
+
+  function run() {
+    hooks.started();
+    startedAt = performance.now();
+    lastPhase = '';
+    picture?.rest();
+    count.classList.remove('paused');
+    toggle.textContent = 'Pause';
+    reset.disabled = false;
+    interval = setInterval(tick, PACE_TICK_MS);
+    tick();
+  }
+
+  function pause() {
+    const moment = now();
+    if (moment.phase === 'done') return finish();
+    halt();
+    if (moment.phase !== 'ready') from = moment.breath;
+    picture?.pause();
+    count.classList.add('paused');
+    toggle.textContent = 'Resume';
+    show(breathMarkup(from), 'Paused');
+  }
+
+  function restart() {
+    halt();
+    from = 0;
+    picture?.rest();
+    count.classList.remove('paused');
+    showFinished(false);
+    toggle.textContent = 'Start';
+    reset.disabled = true;
+    show(breathMarkup(0));
+  }
+
+  restart();
+  toggle.addEventListener('click', () => (interval === undefined ? run() : pause()));
+  reset.addEventListener('click', () => {
+    toggle.focus({ preventScroll: true });
+    restart();
+  });
+  return { stop: halt };
 }

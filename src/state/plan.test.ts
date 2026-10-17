@@ -106,15 +106,43 @@ describe('planSubSteps', () => {
     expect(planSubSteps(fixture([{ text: '', weight: 3, repSec: 12 }]), 120, 3)[0]).toMatchObject({ reps: 10 });
   });
 
-  it('counts low breathing in the routine rep count', () => {
-    expect(planSubSteps(byId('low-breathing'), 96, 8).map((p) => [p.mode, p.reps])).toEqual([
-      ['untimed', undefined],
-      ['reps', 8],
+  it('paces low breathing for the routine rep count', () => {
+    expect(planSubSteps(byId('low-breathing'), 96, 8).map((p) => [p.mode, p.seconds, p.reps])).toEqual([
+      ['untimed', 0, undefined],
+      ['paced', 0, 8],
     ]);
-    expect(planSubSteps(byId('low-breathing'), 60, 5).map((p) => [p.mode, p.reps])).toEqual([
-      ['untimed', undefined],
-      ['reps', 5],
+    expect(planSubSteps(byId('low-breathing'), 60, 5).map((p) => [p.mode, p.seconds, p.reps])).toEqual([
+      ['untimed', 0, undefined],
+      ['paced', 0, 5],
     ]);
+  });
+
+  it('keeps low breathing nominal rep time equal to one paced breath', () => {
+    const lowBreathing = byId('low-breathing');
+    const pace = lowBreathing.subSteps.find((s) => s.pace)!.pace!;
+    expect(lowBreathing.control === 'reps' ? lowBreathing.repSec : undefined).toBe(pace.inSec + pace.outSec);
+  });
+
+  it('gives a paced sub-step no time share, so the timed sub-steps split the whole time', () => {
+    const plan = planSubSteps(repsFixture([{ text: '' }, { text: '', pace: { inSec: 4, outSec: 8 } }]), 60, 6);
+    expect(plan.map((p) => [p.mode, p.seconds, p.reps])).toEqual([
+      ['timed', 60, undefined],
+      ['paced', 0, 6],
+    ]);
+  });
+
+  it('lets a paced sub-step fix its own count, or derive it from a weighted share', () => {
+    const fixed = planSubSteps(repsFixture([{ text: '', reps: 3, pace: { inSec: 4, outSec: 8 } }]), 60, 6);
+    expect(fixed[0]).toMatchObject({ mode: 'paced', seconds: 0, reps: 3 });
+    const shared = planSubSteps(fixture([{ text: '' }, { text: '', weight: 1, pace: { inSec: 4, outSec: 8 } }]), 120);
+    expect(shared[1]).toMatchObject({ mode: 'paced', seconds: 60, reps: 5 });
+  });
+
+  it('treats weight 0 as untimed even with a pace', () => {
+    expect(planSubSteps(fixture([{ text: '', weight: 0, pace: { inSec: 4, outSec: 8 } }]), 60)[0]).toMatchObject({
+      mode: 'untimed',
+      seconds: 0,
+    });
   });
 
   it('counts hum steps 2 to 4 in fives and gives step 1 the whole time', () => {

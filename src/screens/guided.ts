@@ -11,7 +11,7 @@ import { exampleChips } from '../lib/example-chips';
 import { icons } from '../lib/icons';
 import { mountAudioStep } from './guided/audio-step';
 import { detailSheet, exerciseSheet, leaveDialog, stepHeader, stepList } from './guided/markup';
-import { mountHoldCount, mountReps, mountTimed, mountUntimed, type RowHooks, type StepRow } from './guided/timer-row';
+import { mountHoldCount, mountPaced, mountReps, mountTimed, mountUntimed, type RowHooks, type StepRow } from './guided/timer-row';
 
 export function renderGuided(root: HTMLElement): () => void {
   const found = getSession();
@@ -268,6 +268,7 @@ export function renderGuided(root: HTMLElement): () => void {
     const row = $(root, '#timer-row');
     if (current.mode === 'untimed') stepRow = mountUntimed(row, hooks);
     else if (current.mode === 'timed') stepRow = mountTimed(row, current, hooks);
+    else if (current.mode === 'paced') stepRow = mountPaced(row, current, hooks, player);
     else if (sustain) stepRow = mountHoldCount(sustain, current, hooks);
     else stepRow = mountReps(row, current, hooks);
   }

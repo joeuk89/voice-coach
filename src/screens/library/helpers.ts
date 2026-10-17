@@ -30,6 +30,6 @@ export function playsIn(inShort: boolean, inFull: boolean): string {
 
 export function shareLabel(planned: PlannedSubStep): string {
   if (planned.mode === 'untimed') return 'untimed';
-  if (planned.mode === 'reps') return `× ${planned.reps}`;
+  if (planned.mode === 'reps' || planned.mode === 'paced') return `× ${planned.reps}`;
   return formatClock(planned.seconds);
 }

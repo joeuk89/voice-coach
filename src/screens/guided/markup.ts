@@ -14,7 +14,7 @@ function rowLead(number: string): string {
 
 function listValue(planned: PlannedSubStep): string {
   if (planned.mode === 'untimed') return '';
-  if (planned.mode === 'reps') return `× ${planned.reps}`;
+  if (planned.mode === 'reps' || planned.mode === 'paced') return `× ${planned.reps}`;
   return formatClock(planned.seconds);
 }
 

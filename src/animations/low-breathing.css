@@ -6,6 +6,8 @@
 }
 .anim-low-breathing .lb-in { animation: lb-phase-in var(--cycle) linear infinite; }
 .anim-low-breathing .lb-out { animation: lb-phase-out var(--cycle) linear infinite; }
+/* The cycle's first frame is already the inhale; at rest no air flows yet. */
+.anim-low-breathing.anim-resting .lb-in { visibility: hidden; }
 .anim-low-breathing .lb-track { fill: var(--surface-2); }
 .anim-low-breathing .lb-fill {
   fill: var(--air); transform-box: view-box; transform-origin: 30px 0;

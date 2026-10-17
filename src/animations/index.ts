@@ -31,8 +31,14 @@ function captionAt(def: AnimationDef, progress: number): string {
 export interface AnimationPlayer {
   /** Loop only this slice of the cycle. Null or the whole loop plays everything freely. */
   setWindow(window: LoopWindow | null | undefined): void;
-  /** Hold every part, inner loops included, at a fraction of the cycle until the next setWindow. */
+  /** Hold every part, inner loops included, at a fraction of the cycle until the next setWindow or restart. */
   scrubTo(fraction: number): void;
+  /** Hold the start of the cycle and mark the card `.anim-resting`, so it can hide parts that belong to the cycle already running. */
+  rest(): void;
+  /** Play the whole loop from `fromMs` into the cycle, every part and the progress bar together. */
+  restart(fromMs?: number): void;
+  /** Freeze every part where it is, inner loops included, until the next setWindow, rest or restart. */
+  pause(): void;
   stop(): void;
 }
 
@@ -129,9 +135,24 @@ export function mountAnimation(
   showCaption();
   run();
 
+  function setResting(resting: boolean) {
+    animEl.classList.toggle('anim-resting', resting);
+  }
+
+  function scrub(fraction: number) {
+    scrubbing = true;
+    setResting(false);
+    animEl.classList.remove('anim-windowed');
+    collectParts();
+    hold(fraction * cycleMs, true, fraction * cycleMs);
+    showCaption();
+    run();
+  }
+
   return {
     setWindow(next) {
       scrubbing = false;
+      setResting(false);
       loopWindow = canDrive ? activeWindow(next) : null;
       animEl.classList.toggle('anim-windowed', loopWindow !== null);
       collectParts();
@@ -151,12 +172,34 @@ export function mountAnimation(
       showCaption();
       run();
     },
-    scrubTo(fraction) {
-      scrubbing = true;
+    scrubTo: scrub,
+    rest() {
+      scrub(0);
+      setResting(true);
+    },
+    restart(fromMs = 0) {
+      scrubbing = false;
+      loopWindow = null;
+      heldAt = null;
+      setResting(false);
       animEl.classList.remove('anim-windowed');
       collectParts();
-      hold(fraction * cycleMs, true, fraction * cycleMs);
+      for (const { animation, duration, delay } of parts) {
+        animation.currentTime = animationTime(fromMs, duration, delay);
+        animation.play();
+      }
+      if (barClock) {
+        barClock.currentTime = fromMs;
+        barClock.play();
+      }
       showCaption();
+      run();
+    },
+    pause() {
+      scrubbing = true;
+      collectParts();
+      parts.forEach(({ animation }) => animation.pause());
+      barClock?.pause();
       run();
     },
     stop() {

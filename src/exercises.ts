@@ -13,7 +13,7 @@ export const exercises: Exercise[] = [
         text: 'One hand on your belly, one on your chest. Shoulders down. In through the nose: the belly hand moves, the chest hand stays still.',
         weight: 0,
       },
-      { text: 'In for 4, out on a steady “sss” for 8. Tap +1 after each breath.', repSec: 12 },
+      { text: 'In for 4, out on a steady “sss” for 8.', pace: { inSec: 4, outSec: 8 } },
     ],
     tips: ['If your shoulders rise, the breath is high. Let them drop and start again.'],
     control: 'reps',
