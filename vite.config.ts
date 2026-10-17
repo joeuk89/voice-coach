@@ -9,7 +9,7 @@ export default defineConfig({
     rollupOptions: { input: ['index.html', 'gallery.html'] },
   },
   test: {
-    exclude: [...configDefaults.exclude, '**/.claude/**'],
+    exclude: [...configDefaults.exclude, '**/.claude/**', '**/.worktrees/**'],
   },
   plugins: [
     VitePWA({
