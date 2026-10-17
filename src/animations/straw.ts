@@ -75,7 +75,7 @@ export const straw: AnimationDef = {
     { until: 0.12, caption: 'Thin stirring straw between the lips. No air leaking around it.' },
     { until: 0.3, caption: 'Hum gently through the straw on a comfortable pitch.' },
     { until: 0.64, caption: 'Slow sirens through the straw: low to high to low, smooth.' },
-    { until: 0.82, caption: '“Speak” a sentence through it: “How are you today?”' },
+    { until: 0.82, caption: '“Speak” a sentence through it.' },
     { until: 1, caption: 'Hum a tune through it: “God Save the King”.' },
   ],
 };

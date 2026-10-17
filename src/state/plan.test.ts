@@ -142,7 +142,6 @@ describe('planSubSteps', () => {
     for (const exercise of exercises) {
       if (exercise.control === 'reps' || !exercise.subSteps.some(takesShare)) continue;
       for (const total of Object.values(exercise.duration)) {
-        if (total === 0) continue;
         const plan = planSubSteps(exercise, total);
         expect(plan.reduce((sum, p) => sum + p.seconds, 0), exercise.id).toBe(total);
         for (const p of plan.filter((p) => takesShare(p.subStep))) expect(p.seconds, exercise.id).toBeGreaterThanOrEqual(5);
