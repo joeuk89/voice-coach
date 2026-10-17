@@ -206,12 +206,13 @@ export function mountPaced(row: HTMLElement, planned: PlannedSubStep, hooks: Row
   row.innerHTML = `
     <div class="pace-readout">
       <div class="timer rep-count" id="pace-count" aria-live="polite"></div>
-      <p class="pace-phase" id="pace-phase" aria-live="polite"></p>
+      <p class="pace-phase" aria-live="polite"><span id="pace-word"></span><span id="pace-left" aria-hidden="true"></span></p>
     </div>
     <button class="btn timer-btn" id="timer-toggle" data-primary>Start</button>
     ${resetButton}`;
   const count = $(row, '#pace-count');
-  const phaseLine = $(row, '#pace-phase');
+  const phaseWord = $(row, '#pace-word');
+  const phaseLeft = $(row, '#pace-left');
   const toggle = $<HTMLButtonElement>(row, '#timer-toggle');
   const reset = $<HTMLButtonElement>(row, '#timer-reset');
 
@@ -221,20 +222,22 @@ export function mountPaced(row: HTMLElement, planned: PlannedSubStep, hooks: Row
   let interval: ReturnType<typeof setInterval> | undefined;
   let lastPhase = '';
 
-  function show(countHtml: string, phaseHtml: string) {
+  /** Writes only what changed, so the live regions announce the phase word at a switch and not every second. */
+  function show(countHtml: string, word = '', left = '') {
     if (count.innerHTML !== countHtml) count.innerHTML = countHtml;
-    if (phaseLine.innerHTML !== phaseHtml) phaseLine.innerHTML = phaseHtml;
+    if (phaseWord.textContent !== word) phaseWord.textContent = word;
+    if (phaseLeft.textContent !== left) phaseLeft.textContent = left;
   }
 
   const breathMarkup = (breath: number) => countMarkup(breath + 1, total, 'Breath');
 
   function showMoment(moment: PaceMoment) {
     if (moment.phase === 'ready') {
-      show(`<small>Ready ·</small> ${moment.secondsLeft}`, '');
+      show(`<small>Ready ·</small> ${moment.secondsLeft}`);
       return;
     }
     const word = moment.phase === 'in' ? 'In' : 'Out';
-    show(breathMarkup(moment.breath), `${word}<span aria-hidden="true"> · ${moment.secondsLeft}</span>`);
+    show(breathMarkup(moment.breath), word, ` · ${moment.secondsLeft}`);
   }
 
   const now = () => paceAt(performance.now() - startedAt, pace, total, from);
@@ -255,7 +258,7 @@ export function mountPaced(row: HTMLElement, planned: PlannedSubStep, hooks: Row
     halt();
     from = total;
     picture?.rest();
-    show(`${breathMarkup(total - 1)}${doneMark}`, '');
+    show(`${breathMarkup(total - 1)}${doneMark}`);
     playCue();
     buzz();
     showFinished(true);
@@ -304,7 +307,7 @@ export function mountPaced(row: HTMLElement, planned: PlannedSubStep, hooks: Row
     showFinished(false);
     toggle.textContent = 'Start';
     reset.disabled = true;
-    show(breathMarkup(0), '');
+    show(breathMarkup(0));
   }
 
   restart();

@@ -33,7 +33,7 @@ export interface AnimationPlayer {
   setWindow(window: LoopWindow | null | undefined): void;
   /** Hold every part, inner loops included, at a fraction of the cycle until the next setWindow or restart. */
   scrubTo(fraction: number): void;
-  /** Hold the start of the cycle and mark the card `.anim-resting`, so it can hide parts that only show mid-cycle. */
+  /** Hold the start of the cycle and mark the card `.anim-resting`, so it can hide parts that belong to the cycle already running. */
   rest(): void;
   /** Play the whole loop from `fromMs` into the cycle, every part and the progress bar together. */
   restart(fromMs?: number): void;

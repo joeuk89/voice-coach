@@ -38,7 +38,7 @@ afterEach(() => {
 });
 
 const text = (selector: string) => row.querySelector(selector)!.textContent!.replace(/\s+/g, ' ').trim();
-const readout = () => [text('#pace-count'), text('#pace-phase')];
+const readout = () => [text('#pace-count'), text('.pace-phase')];
 const toggle = () => row.querySelector<HTMLButtonElement>('#timer-toggle')!;
 const reset = () => row.querySelector<HTMLButtonElement>('#timer-reset')!;
 const seconds = (sec: number) => vi.advanceTimersByTime(sec * 1000);
@@ -77,6 +77,26 @@ describe('mountPaced', () => {
     seconds(8);
     expect(readout()).toEqual(['Breath 2 of 8', 'In · 4']);
     expect(buzz).toHaveBeenCalledTimes(3);
+  });
+
+  it('changes the announced phase word only at a switch', () => {
+    mountPaced(row, planned(8), hooks, picture);
+    toggle().click();
+    seconds(3);
+    const word = row.querySelector('#pace-word')!;
+    const inNode = word.firstChild;
+    expect(inNode?.textContent).toBe('In');
+    seconds(3);
+    expect(readout()).toEqual(['Breath 1 of 8', 'In · 1']);
+    expect(word.firstChild).toBe(inNode);
+    seconds(1);
+    expect(word.firstChild).not.toBe(inNode);
+    const outNode = word.firstChild;
+    expect(outNode?.textContent).toBe('Out');
+    seconds(7);
+    expect(readout()).toEqual(['Breath 1 of 8', 'Out · 1']);
+    expect(word.firstChild).toBe(outNode);
+    expect(row.querySelector('#pace-left')!.getAttribute('aria-hidden')).toBe('true');
   });
 
   it('chimes, buzzes and finishes the step after the last exhale', () => {
