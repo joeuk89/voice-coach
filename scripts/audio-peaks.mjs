@@ -4,16 +4,24 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
+const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const TRACKS = ['public/audio/roger-love-daily-warmup-male.mp3'];
 const SAMPLE_RATE = 22050;
 const BARS = 600;
+
+class UsageError extends Error {}
 
 function decode(mp3) {
   const dir = mkdtempSync(join(tmpdir(), 'audio-peaks-'));
   try {
     const wav = join(dir, 'track.wav');
-    execFileSync('afconvert', ['-f', 'WAVE', '-d', `LEI16@${SAMPLE_RATE}`, '-c', '1', mp3, wav]);
+    try {
+      execFileSync('afconvert', ['-f', 'WAVE', '-d', `LEI16@${SAMPLE_RATE}`, '-c', '1', mp3, wav]);
+    } catch (err) {
+      throw err.code === 'ENOENT' ? new UsageError('afconvert not found: npm run peaks needs macOS') : err;
+    }
     return readFileSync(wav);
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -46,10 +54,17 @@ function peaksOf(samples) {
   return rms.map((value) => Math.round((value / loudest) * 1000) / 1000);
 }
 
-for (const mp3 of TRACKS) {
-  const samples = samplesOf(decode(mp3));
-  const duration = Math.round((samples.length / SAMPLE_RATE) * 100) / 100;
-  const out = mp3.replace(/\.mp3$/, '.peaks.json');
-  writeFileSync(out, JSON.stringify({ duration, peaks: peaksOf(samples) }) + '\n');
-  console.log(`${out}: ${BARS} bars, ${duration} s`);
+try {
+  for (const track of TRACKS) {
+    const mp3 = join(ROOT, track);
+    const samples = samplesOf(decode(mp3));
+    const duration = Math.round((samples.length / SAMPLE_RATE) * 100) / 100;
+    const out = mp3.replace(/\.mp3$/, '.peaks.json');
+    writeFileSync(out, JSON.stringify({ duration, peaks: peaksOf(samples) }) + '\n');
+    console.log(`${track.replace(/\.mp3$/, '.peaks.json')}: ${BARS} bars, ${duration} s`);
+  }
+} catch (err) {
+  if (!(err instanceof UsageError)) throw err;
+  console.error(err.message);
+  process.exitCode = 1;
 }

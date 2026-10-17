@@ -1,7 +1,10 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { buzz } from '../../lib/haptics';
 import { mountAudioStep } from './audio-step';
 import type { RowHooks } from './timer-row';
+
+vi.mock('../../lib/haptics', () => ({ buzz: vi.fn() }));
 
 const SECONDS = 836;
 
@@ -9,6 +12,7 @@ interface Mounted {
   card: HTMLElement;
   hooks: RowHooks & { setDone: ReturnType<typeof vi.fn>; started: ReturnType<typeof vi.fn> };
   track: HTMLAudioElement;
+  stop: () => void;
 }
 
 function mount(): Mounted {
@@ -21,8 +25,8 @@ function mount(): Mounted {
     track = new RealAudio(src);
     return track;
   });
-  mountAudioStep(card, '/voice-coach/audio/track.mp3', SECONDS, hooks);
-  return { card, hooks, track };
+  const row = mountAudioStep(card, '/voice-coach/audio/track.mp3', SECONDS, hooks);
+  return { card, hooks, track, stop: row.stop };
 }
 
 const fetchStub = vi.fn();
@@ -37,12 +41,14 @@ function seekWith(card: HTMLElement, value: number) {
 }
 
 beforeEach(() => {
+  vi.mocked(buzz).mockClear();
   fetchStub.mockReset();
   fetchStub.mockResolvedValue(new Response(JSON.stringify({ duration: SECONDS, peaks: [0.2, 1, 0.5] })));
   vi.stubGlobal('fetch', fetchStub);
 });
 
 afterEach(() => {
+  vi.restoreAllMocks();
   vi.unstubAllGlobals();
   document.body.innerHTML = '';
 });
@@ -127,7 +133,40 @@ describe('mountAudioStep', () => {
     const { card, hooks, track } = mount();
     seekWith(card, SECONDS);
     track.dispatchEvent(new Event('ended'));
+    expect(buzz).toHaveBeenCalledOnce();
     expect(hooks.setDone.mock.calls.filter(([done]) => done)).toHaveLength(1);
+  });
+
+  it('restarts from the top when Play is pressed after a skip to the end, without finishing again', async () => {
+    const { card, hooks, track } = mount();
+    await track.play();
+    seekWith(card, SECONDS - 4);
+    el(card, '#audio-forward').click();
+    expect(track.currentTime).toBe(SECONDS);
+    expect(track.paused).toBe(true);
+    expect(text(card, '#audio-status')).toBe('Track finished. Tap Next when you’re ready.');
+
+    el(card, '#audio-toggle').click();
+    await Promise.resolve();
+    expect(track.currentTime).toBe(0);
+    expect(track.paused).toBe(false);
+    expect(buzz).toHaveBeenCalledOnce();
+    expect(hooks.setDone.mock.calls.filter(([done]) => done)).toHaveLength(1);
+    expect(hooks.setDone).toHaveBeenLastCalledWith(true, true);
+  });
+
+  it('revokes the blob URL when the step stops', async () => {
+    vi.stubGlobal('navigator', { ...navigator, serviceWorker: { controller: {} } });
+    fetchStub.mockImplementation(async (url: string) =>
+      url.endsWith('.mp3') ? new Response(new Blob(['mp3'])) : new Response('{}'),
+    );
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:track');
+    const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    const { track, stop } = mount();
+    await vi.waitFor(() => expect(track.src).toBe('blob:track'));
+    expect(revoke).not.toHaveBeenCalled();
+    stop();
+    await vi.waitFor(() => expect(revoke).toHaveBeenCalledWith('blob:track'));
   });
 
   it('plays from a blob URL when a service worker serves the track, with Play disabled while it loads', async () => {

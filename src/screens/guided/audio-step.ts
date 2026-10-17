@@ -122,6 +122,7 @@ export function mountAudioStep(card: HTMLElement, src: string, seconds: number, 
   function finish() {
     if (atEnd) return;
     atEnd = true;
+    track.pause();
     buzz();
     showToggle(false);
     showStatus(FINISHED);
@@ -182,7 +183,7 @@ export function mountAudioStep(card: HTMLElement, src: string, seconds: number, 
     hooks.started();
   });
   track.addEventListener('pause', () => {
-    if (track.ended) return;
+    if (track.ended || atEnd) return;
     showToggle(false);
     showStatus(track.currentTime > 0 ? 'Paused' : START_HINT);
   });
@@ -204,6 +205,8 @@ export function mountAudioStep(card: HTMLElement, src: string, seconds: number, 
       track.pause();
       return;
     }
+    // Chrome leaves `ended` false after a seek to the end, so play() would not restart the track by itself.
+    if (atEnd || track.currentTime >= duration()) track.currentTime = 0;
     track.play().catch((err: unknown) => {
       if (track.error || (err instanceof DOMException && err.name === 'AbortError')) return;
       showStatus('Playback blocked. Tap Play again.');
