@@ -5,6 +5,7 @@ import type { RowHooks, StepRow } from './timer-row';
 import { parsePeaks, peaksUrl, waveformShapes, WAVE_HEIGHT } from './waveform';
 
 const START_HINT = 'Tap Play to start the track.';
+const LOADING = 'Loading track…';
 const FINISHED = 'Track finished. Tap Next when you’re ready.';
 const SKIP_SEC = 10;
 /**
@@ -74,8 +75,13 @@ export function mountAudioStep(card: HTMLElement, src: string, seconds: number, 
   let atEnd = false;
   let scrubbing = false;
   let stopped = false;
+  let loading = Boolean(navigator.serviceWorker?.controller);
   const source = seekableSource(src).then((url) => {
-    if (!stopped) track.src = url;
+    if (stopped) return url;
+    track.src = url;
+    loading = false;
+    toggle.disabled = false;
+    if (!atEnd) showStatus(track.currentTime > 0 ? 'Paused' : START_HINT);
     return url;
   });
 
@@ -138,12 +144,16 @@ export function mountAudioStep(card: HTMLElement, src: string, seconds: number, 
       return;
     }
     atEnd = false;
-    if (track.paused) showStatus(target > 0 ? 'Paused' : START_HINT);
+    if (track.paused && !loading) showStatus(target > 0 ? 'Paused' : START_HINT);
   }
 
   showToggle(false);
   hooks.setDone(false, false);
   showPosition(0);
+  if (loading) {
+    toggle.disabled = true;
+    showStatus(LOADING);
+  }
 
   fetch(peaksUrl(src))
     .then((res) => (res.ok ? res.json() : null))
@@ -194,12 +204,10 @@ export function mountAudioStep(card: HTMLElement, src: string, seconds: number, 
       track.pause();
       return;
     }
-    void source.then(() =>
-      track.play().catch((err: unknown) => {
-        if (track.error || (err instanceof DOMException && err.name === 'AbortError')) return;
-        showStatus('Playback blocked. Tap Play again.');
-      }),
-    );
+    track.play().catch((err: unknown) => {
+      if (track.error || (err instanceof DOMException && err.name === 'AbortError')) return;
+      showStatus('Playback blocked. Tap Play again.');
+    });
   });
   reset.addEventListener('click', () => {
     toggle.focus({ preventScroll: true });
@@ -209,7 +217,7 @@ export function mountAudioStep(card: HTMLElement, src: string, seconds: number, 
     atEnd = false;
     reset.disabled = true;
     hooks.setDone(false, false);
-    showStatus(START_HINT);
+    showStatus(loading ? LOADING : START_HINT);
     showPosition(0);
   });
 

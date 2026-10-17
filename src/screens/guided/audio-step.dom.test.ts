@@ -130,16 +130,37 @@ describe('mountAudioStep', () => {
     expect(hooks.setDone.mock.calls.filter(([done]) => done)).toHaveLength(1);
   });
 
-  it('plays from a blob URL when a service worker serves the track', async () => {
+  it('plays from a blob URL when a service worker serves the track, with Play disabled while it loads', async () => {
     vi.stubGlobal('navigator', { ...navigator, serviceWorker: { controller: {} } });
-    fetchStub.mockImplementation(async (url: string) =>
-      url.endsWith('.mp3') ? new Response(new Blob(['mp3'])) : new Response('{}'),
+    let deliver!: (res: Response) => void;
+    fetchStub.mockImplementation((url: string) =>
+      url.endsWith('.mp3') ? new Promise((resolve) => (deliver = resolve)) : Promise.resolve(new Response('{}')),
     );
     const createObjectURL = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:track');
-    const { track } = mount();
+    const { card, track } = mount();
+    expect(el<HTMLButtonElement>(card, '#audio-toggle').disabled).toBe(true);
+    expect(text(card, '#audio-status')).toBe('Loading track…');
+    seekWith(card, 30);
+    expect(text(card, '#audio-status')).toBe('Loading track…');
+
+    deliver(new Response(new Blob(['mp3'])));
     await vi.waitFor(() => expect(track.src).toBe('blob:track'));
+    expect(el<HTMLButtonElement>(card, '#audio-toggle').disabled).toBe(false);
+    expect(text(card, '#audio-status')).toBe('Paused');
     expect(fetchStub).toHaveBeenCalledWith('/voice-coach/audio/track.mp3');
     createObjectURL.mockRestore();
+  });
+
+  it('falls back to the plain URL when the track fetch fails', async () => {
+    vi.stubGlobal('navigator', { ...navigator, serviceWorker: { controller: {} } });
+    fetchStub.mockImplementation(async (url: string) => {
+      if (url.endsWith('.mp3')) throw new TypeError('Failed to fetch');
+      return new Response('{}');
+    });
+    const { card, track } = mount();
+    await vi.waitFor(() => expect(track.src).toContain('/voice-coach/audio/track.mp3'));
+    expect(el<HTMLButtonElement>(card, '#audio-toggle').disabled).toBe(false);
+    expect(text(card, '#audio-status')).toBe('Tap Play to start the track.');
   });
 
   it('streams the plain URL without a service worker', async () => {
