@@ -1,6 +1,7 @@
 import { exercises } from '../exercises';
-import { esc, formatClock, formatMinutes, on } from '../lib/dom';
-import { defaultSettings, durationFor, loadSettings, saveSettings, totalSeconds } from '../state/settings';
+import { esc, formatClock, on } from '../lib/dom';
+import { defaultSettings, durationFor, loadSettings, saveSettings } from '../state/settings';
+import { routineToggle } from '../lib/routine-toggle';
 import type { RoutineId } from '../types';
 
 const STEP_SEC = 30;
@@ -18,14 +19,7 @@ export function renderSettings(root: HTMLElement): () => void {
 
       <section class="card">
         <h2>Routine</h2>
-        <div class="segmented" role="radiogroup">
-          ${(['short', 'full'] as RoutineId[])
-            .map(
-              (r) => `<button class="seg ${routine === r ? 'on' : ''}" data-routine="${r}" role="radio" aria-checked="${routine === r}">
-                ${r === 'short' ? 'Short' : 'Full'} <small>${formatMinutes(totalSeconds(settings, r))}</small></button>`,
-            )
-            .join('')}
-        </div>
+        ${routineToggle(settings, 'Routine')}
       </section>
 
       <section class="card">
