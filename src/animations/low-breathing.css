@@ -1,8 +1,9 @@
 .anim-low-breathing .lb-belly {
-  transform-box: view-box; transform-origin: 120px 150px;
+  transform-box: view-box; transform-origin: 110px 160px;
   animation: lb-belly var(--cycle) infinite;
 }
 .anim-low-breathing .lb-hand { animation: lb-hand var(--cycle) infinite; }
+.anim-low-breathing .lb-nose { stroke-linejoin: round; }
 .anim-low-breathing .lb-in { animation: lb-phase-in var(--cycle) linear infinite; }
 .anim-low-breathing .lb-out { animation: lb-phase-out var(--cycle) linear infinite; }
 .anim-low-breathing .lb-sss { fill: var(--air); font: 600 13px var(--font); }
@@ -15,17 +16,17 @@
 .anim-low-breathing .lb-sep-major { stroke: var(--fg); stroke-width: 2; }
 
 @keyframes lb-belly {
-  0% { transform: scale(0.82); animation-timing-function: ease-in-out; }
+  0% { transform: scale(0.8, 0.9); animation-timing-function: ease-in-out; }
   33.3% { transform: scale(1); animation-timing-function: ease-out; }
-  100% { transform: scale(0.82); }
+  100% { transform: scale(0.8, 0.9); }
 }
 @keyframes lb-hand {
-  0% { transform: translateX(-9px); animation-timing-function: ease-in-out; }
+  0% { transform: translateX(-8.4px); animation-timing-function: ease-in-out; }
   33.3% { transform: translateX(0); animation-timing-function: ease-out; }
-  100% { transform: translateX(-9px); }
+  100% { transform: translateX(-8.4px); }
 }
-@keyframes lb-phase-in { 0%, 31% { opacity: 1; } 34%, 98% { opacity: 0; } 100% { opacity: 1; } }
-@keyframes lb-phase-out { 0%, 33% { opacity: 0; } 36%, 97% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes lb-phase-in { 0%, 30% { opacity: 1; } 33.3%, 98.5% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes lb-phase-out { 0%, 33.4% { opacity: 0; } 36%, 95% { opacity: 1; } 98.5%, 100% { opacity: 0; } }
 @keyframes lb-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 @media (prefers-reduced-motion: reduce) {
