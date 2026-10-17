@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { exercises } from '../exercises';
 import { stubLocalStorage } from '../test/local-storage';
-import { defaultSettings, durationFor, loadSettings, planRoutine, repsFor, resetSettings, totalSeconds } from './settings';
+import { defaultSettings, durationFor, isOn, loadSettings, planRoutine, repsFor, resetSettings, totalSeconds } from './settings';
 
 let storage: Storage;
 const byId = (id: string) => exercises.find((e) => e.id === id)!;
@@ -32,14 +32,29 @@ describe('loadSettings', () => {
 
   it('drops values of the wrong type', () => {
     const settings = saved(
-      JSON.stringify({ routine: 3, disabled: ['hum', 4], durations: { short: { hum: 'x', straw: 30 }, full: null } }),
+      JSON.stringify({
+        routine: 3,
+        disabled: { short: ['hum', 4], full: 'straw' },
+        durations: { short: { hum: 'x', straw: 30 }, full: null },
+      }),
     );
     expect(settings).toEqual({
       routine: 'full',
-      disabled: ['hum'],
+      disabled: { short: ['hum'], full: [] },
       durations: { short: { straw: 30 }, full: {} },
       reps: { short: {}, full: {} },
     });
+  });
+
+  it('keeps saved switches per routine', () => {
+    expect(saved('{"disabled":{"short":["straw"],"full":["vfe","hum"]}}').disabled).toEqual({
+      short: ['straw'],
+      full: ['vfe', 'hum'],
+    });
+  });
+
+  it('keeps an empty saved list, so an exercise that is off by default can be on', () => {
+    expect(saved('{"disabled":{"short":[],"full":[]}}').disabled).toEqual({ short: [], full: [] });
   });
 
   it('keeps saved rep counts per routine', () => {
@@ -55,8 +70,91 @@ describe('loadSettings', () => {
     expect(saved('{"reps":7}').reps).toEqual({ short: {}, full: {} });
   });
 
-  it('ignores a disabled list that is not an array', () => {
-    expect(saved('{"disabled":"hum"}').disabled).toEqual([]);
+  it('ignores a disabled value that is neither a list nor a per-routine record', () => {
+    expect(saved('{"disabled":"hum"}').disabled).toEqual(defaultSettings().disabled);
+  });
+
+  it('raises saved times below 30 seconds to 30', () => {
+    expect(saved('{"durations":{"short":{"straw":10,"hum":29.5},"full":{"sirens":30}}}').durations).toEqual({
+      short: { straw: 30, hum: 30 },
+      full: { sirens: 30 },
+    });
+  });
+
+  it('drops negative saved times', () => {
+    expect(saved('{"durations":{"short":{"straw":-30},"full":{}}}').durations.short).toEqual({});
+  });
+});
+
+describe('loadSettings migration from older saves', () => {
+  it('turns an id in the old flat list off in both routines, on top of the defaults', () => {
+    const { disabled } = saved('{"disabled":["hum"]}');
+    expect(disabled.short).toEqual([...defaultSettings().disabled.short, 'hum']);
+    expect(disabled.full).toEqual(['hum']);
+  });
+
+  it('keeps a default-off exercise on where the old save gave it a time', () => {
+    const settings = saved(JSON.stringify({ routine: 'short', disabled: [], durations: { short: { vfe: 60 }, full: {} } }));
+    expect(isOn(byId('vfe'), settings, 'short')).toBe(true);
+    expect(planRoutine(settings, 'short').find((s) => s.exercise.id === 'vfe')?.seconds).toBe(60);
+    expect(isOn(byId('roger-love'), settings, 'short')).toBe(false);
+  });
+
+  it('still turns a default-off exercise off when the old flat list has it, whatever its time', () => {
+    const settings = saved(JSON.stringify({ disabled: ['vfe'], durations: { short: { vfe: 60 }, full: {} } }));
+    expect(isOn(byId('vfe'), settings, 'short')).toBe(false);
+    expect(isOn(byId('vfe'), settings, 'full')).toBe(false);
+  });
+
+  it('does not list an id twice when the old flat list repeats a default', () => {
+    expect(saved('{"disabled":["vfe","vfe"]}').disabled.short).toEqual(defaultSettings().disabled.short);
+  });
+
+  it('turns a timed exercise with a saved 0 off in that routine only and drops the 0', () => {
+    const settings = saved('{"durations":{"short":{"sirens":0,"straw":60},"full":{}}}');
+    expect(settings.disabled.short).toContain('sirens');
+    expect(settings.disabled.full).not.toContain('sirens');
+    expect(settings.durations).toEqual({ short: { straw: 60 }, full: {} });
+  });
+
+  it('drops a stale 0 on a counted or untimed exercise without turning it off, as the old app ignored it', () => {
+    const settings = saved('{"durations":{"short":{},"full":{"low-breathing":0,"read-aloud":0}}}');
+    expect(settings.disabled.full).toEqual([]);
+    expect(settings.durations.full).toEqual({});
+  });
+
+  it('migrates the handoff example: hum off in both, sirens off in Short only', () => {
+    const settings = saved(JSON.stringify({ disabled: ['hum'], durations: { short: { sirens: 0 }, full: {} } }));
+    expect(isOn(byId('hum'), settings, 'short')).toBe(false);
+    expect(isOn(byId('hum'), settings, 'full')).toBe(false);
+    expect(isOn(byId('sirens'), settings, 'short')).toBe(false);
+    expect(isOn(byId('sirens'), settings, 'full')).toBe(true);
+    expect(settings.durations).toEqual({ short: {}, full: {} });
+  });
+});
+
+describe('defaultSettings', () => {
+  it('turns the track, the vocal function exercises and the read-aloud off in Short only', () => {
+    const settings = defaultSettings();
+    const on = (routine: 'short' | 'full') => exercises.filter((e) => isOn(e, settings, routine)).map((e) => e.id);
+    expect(on('short')).toEqual(['low-breathing', 'straw', 'lip-trills', 'sirens', 'hum']);
+    expect(on('full')).toEqual(exercises.map((e) => e.id));
+  });
+});
+
+describe('exercise data', () => {
+  it('gives every exercise a time of at least 30 seconds in both routines', () => {
+    for (const e of exercises) {
+      for (const routine of ['short', 'full'] as const) {
+        expect(durationFor(e, defaultSettings(), routine), `${e.id} ${routine}`).toBeGreaterThanOrEqual(30);
+      }
+    }
+  });
+
+  it('gives the default-off exercises the same time in Short as in Full', () => {
+    for (const id of ['roger-love', 'vfe', 'read-aloud']) {
+      expect(durationFor(byId(id), defaultSettings(), 'short')).toBe(durationFor(byId(id), defaultSettings(), 'full'));
+    }
   });
 });
 
@@ -87,7 +185,7 @@ describe('durationFor', () => {
   it('ignores duration overrides on rep and untimed exercises', () => {
     const settings = defaultSettings();
     settings.durations.full['low-breathing'] = 300;
-    settings.durations.full['read-aloud'] = 0;
+    settings.durations.full['read-aloud'] = 300;
     expect(durationFor(byId('low-breathing'), settings, 'full')).toBe(96);
     expect(durationFor(byId('read-aloud'), settings, 'full')).toBe(120);
   });
@@ -110,25 +208,25 @@ describe('repsFor', () => {
 describe('planRoutine', () => {
   const ids = (settings = defaultSettings()) => planRoutine(settings, 'full').map((s) => s.exercise.id);
 
-  it('drops disabled exercises', () => {
+  it('drops exercises switched off in that routine only', () => {
     const settings = defaultSettings();
-    settings.disabled = ['straw'];
+    settings.disabled.full = ['straw'];
     expect(ids(settings)).not.toContain('straw');
     expect(ids(settings)).toContain('lip-trills');
+    expect(planRoutine(settings, 'short').map((s) => s.exercise.id)).toContain('straw');
   });
 
-  it('drops timed exercises set to zero seconds', () => {
+  it('runs an exercise that is off by default in Short once it is switched on there', () => {
     const settings = defaultSettings();
-    settings.durations.full['lip-trills'] = 0;
-    expect(ids(settings)).not.toContain('lip-trills');
-    expect(ids(settings)).toContain('straw');
+    settings.disabled.short = settings.disabled.short.filter((id) => id !== 'roger-love');
+    expect(planRoutine(settings, 'short').find((s) => s.exercise.id === 'roger-love')?.seconds).toBe(836);
   });
 
-  it('keeps rep and untimed exercises that a stale duration override set to zero', () => {
+  it('is empty when every exercise is off in that routine', () => {
     const settings = defaultSettings();
-    settings.durations.full['low-breathing'] = 0;
-    settings.durations.full['read-aloud'] = 0;
-    expect(ids(settings)).toEqual(expect.arrayContaining(['low-breathing', 'read-aloud']));
+    settings.disabled.short = exercises.map((e) => e.id);
+    expect(planRoutine(settings, 'short')).toEqual([]);
+    expect(planRoutine(settings, 'full')).toHaveLength(exercises.length);
   });
 
   it('carries the rep count for a reps exercise only', () => {
@@ -143,7 +241,7 @@ describe('planRoutine', () => {
 describe('totalSeconds', () => {
   it('adds the nominal time of rep and untimed exercises', () => {
     const settings = defaultSettings();
-    settings.disabled = exercises.map((e) => e.id).filter((id) => id !== 'low-breathing' && id !== 'read-aloud');
+    settings.disabled.full = exercises.map((e) => e.id).filter((id) => id !== 'low-breathing' && id !== 'read-aloud');
     expect(totalSeconds(settings, 'full')).toBe(96 + 120);
   });
 });
@@ -152,7 +250,8 @@ describe('resetSettings', () => {
   it('clears exercises, durations and reps but keeps the routine', () => {
     const settings = defaultSettings();
     settings.routine = 'short';
-    settings.disabled = ['hum'];
+    settings.disabled.short = ['hum'];
+    settings.disabled.full = ['vfe'];
     settings.durations.short['straw'] = 30;
     settings.reps.short['low-breathing'] = 3;
     expect(resetSettings(settings)).toEqual({ ...defaultSettings(), routine: 'short' });

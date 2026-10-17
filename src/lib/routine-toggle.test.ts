@@ -30,6 +30,17 @@ describe('routineToggle', () => {
     expect(html).toMatch(/data-routine="full"[^>]*aria-pressed="false"/);
     expect(html).not.toContain('role="radio"');
   });
+
+  it('shows each routine\'s minutes from its own switches', () => {
+    const settings = defaultSettings();
+    const minutes = (html: string, r: string) => html.match(new RegExp(`data-routine="${r}"[^>]*>\\s*\\w+ <small>([^<]*)`))![1];
+    const before = routineToggle(settings, 'Routine');
+    settings.disabled.short = settings.disabled.short.filter((id) => id !== 'roger-love');
+    const after = routineToggle(settings, 'Routine');
+    expect(minutes(before, 'short')).toBe('6 min');
+    expect(minutes(after, 'short')).toBe('20 min');
+    expect(minutes(after, 'full')).toBe(minutes(before, 'full'));
+  });
 });
 
 describe('bindRoutineToggle', () => {

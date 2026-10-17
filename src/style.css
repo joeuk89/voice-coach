@@ -475,7 +475,6 @@ header > .back-link { align-self: flex-start; }
 }
 .switch[aria-checked='true'] .switch-track { background: var(--muted); }
 .switch[aria-checked='true'] .switch-track::after { background: var(--bg); transform: translateX(20px); }
-.switch:disabled { cursor: default; opacity: 0.35; }
 
 @keyframes draw-stroke { from { stroke-dashoffset: 1; } }
 
@@ -497,10 +496,6 @@ header > .back-link { align-self: flex-start; }
 .lib-row-name { font-weight: 600; display: flex; align-items: center; gap: 8px; }
 .lib-row-purpose { font-size: var(--fs-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .lib-row-dur { font-size: var(--fs-xs); }
-.lib-off {
-  font-size: var(--fs-xs); font-weight: 400; color: var(--muted);
-  border-radius: 999px; padding: 0 8px; box-shadow: var(--hairline);
-}
 .lib-track { display: flex; flex-direction: column; gap: 6px; }
 .lib-loop { display: flex; flex-direction: column; gap: 12px; margin-top: -8px; }
 .lib-chips { margin-top: 0; }
