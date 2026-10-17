@@ -1,0 +1,13 @@
+/**
+ * Short passages for the pitch-variety read-aloud. Words wrapped in *asterisks*
+ * are shown bold as a nudge for where the pitch should move. Add as many as you like;
+ * the app rotates through them by day and the "Another" button steps on.
+ */
+export const paragraphs: string[] = [
+  'I wasn’t going to say anything, *honestly*. But then she asked me, in front of *everyone*, whether I had actually read the report. Of course I’d read it. I’d read it *twice*. What I hadn’t done was understand a *single* word of it, and that, it turned out, was the *real* question.',
+  'There are two kinds of people at a train station. The ones who arrive *twenty minutes early* and stand exactly where the doors will open, and the ones who are *sprinting* down the platform as the whistle goes. I have been both. I know which one gets the *good seat*.',
+  'Here’s the thing about mornings. Nobody *likes* them, not really. The ones who claim to are simply the people who went to bed at a *sensible hour*, and I refuse to let them take the credit for that. It isn’t *virtue*. It’s *scheduling*.',
+  'The recipe said *simmer gently*. What I did was walk away, answer one email, and come back to something that could reasonably be described as *charcoal*. The smoke alarm agreed. The neighbours, I suspect, agreed too. Dinner, in the end, was *toast*. Excellent toast, though.',
+  'Picture the room. Forty people, one projector, and a slide that says, in letters a foot high, *Any questions?* Silence. Not thoughtful silence. The *other* kind. And then, from the back, one hand goes up, and a voice says: *could you go back to the beginning?*',
+  'My grandfather had a rule about tools. You could borrow *anything*, as long as you brought it back *cleaner* than you found it. For years I thought this was about the tools. It wasn’t. It was about *you*, and whether he could trust you with the *bigger* things later.',
+];

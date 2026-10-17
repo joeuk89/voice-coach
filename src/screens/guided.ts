@@ -1,4 +1,5 @@
 import { animationFor, mountAnimation } from '../animations';
+import { mountReadingPanel } from '../panels/reading';
 import { mountSustainPanel } from '../panels/sustain';
 import { playCue } from '../lib/audio';
 import { $, esc, formatClock, on } from '../lib/dom';
@@ -95,6 +96,7 @@ export function renderGuided(root: HTMLElement): () => void {
     const demo = $(root, '#demo');
     if (def) stopAnimation = mountAnimation(demo, def);
     if (exercise.panel === 'sustain') stopPanel = mountSustainPanel($(root, '#panel'));
+    if (exercise.panel === 'reading') stopPanel = mountReadingPanel($(root, '#panel'));
 
     const clock = $(root, '#clock');
     const toggle = $<HTMLButtonElement>(root, '#toggle');

@@ -174,3 +174,11 @@ header { display: flex; flex-direction: column; gap: 4px; }
 .sustain-today { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 0.9rem; }
 .chip { background: var(--surface-2); border-radius: 999px; padding: 2px 10px; }
 .sustain-today .btn-small { min-height: 32px; font-size: 0.85rem; }
+
+/* Reading panel */
+.reading-head { display: flex; justify-content: space-between; align-items: baseline; }
+.reading-head h2 { margin: 0; }
+.passage { font-size: 1.25rem; line-height: 1.5; margin: 12px 0 8px; text-wrap: pretty; }
+.passage strong { color: var(--accent); font-weight: 600; }
+.reading-hint { font-size: 0.9rem; }
+.panel .btn-ghost { margin-top: 6px; padding: 0; min-height: 44px; justify-content: flex-start; }

@@ -31,7 +31,9 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
 - `animation` names an entry in `src/animations/index.ts`, or `null` for no animation.
 - `kind: 'audio'` with an `audioSrc` plays a bundled track from `public/audio/` instead of a countdown.
 
-Settings (routine, enabled exercises, duration overrides) and the completion log are stored in `localStorage` under `vt.*` keys.
+Read-aloud passages live in `src/paragraphs.ts`; wrap a word in `*asterisks*` to show it bold.
+
+Settings (routine, enabled exercises, duration overrides), the completion log and the sustain log are stored in `localStorage` under `vt.*` keys.
 
 ## Add an animation
 

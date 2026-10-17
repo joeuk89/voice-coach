@@ -151,6 +151,7 @@ export const exercises: Exercise[] = [
     ],
     duration: { short: 0, full: 120 },
     animation: 'read-aloud',
+    panel: 'reading',
     links: [{ label: 'Vinh Giang: how to become more articulate', url: 'https://vinhgiang.com/blog/how-to-become-more-articulate' }],
   },
 ];
