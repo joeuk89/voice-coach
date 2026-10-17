@@ -481,6 +481,8 @@ header > .back-link { align-self: flex-start; }
 @media (prefers-reduced-motion: reduce) {
   .check-ring-circle, .check-ring-tick { animation-name: fade-in; }
   .switch-track, .switch-track::after { transition-property: background-color; }
+}
+
 .lib-link { align-self: flex-start; margin: -10px 0; color: var(--fg); }
 .lib-link .icon, .lib-chevron .icon { transform: scaleX(-1); color: var(--muted); }
 .lib-list { list-style: none; margin: 0; padding: 6px; display: flex; flex-direction: column; gap: 2px; }
