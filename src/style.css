@@ -149,18 +149,11 @@ header > .back-link { align-self: flex-start; }
   filter: var(--press-light);
 }
 
-.routine-title { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; }
 .routine-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-sm); }
 .routine-list li { display: flex; justify-content: space-between; gap: 12px; }
 .routine-empty { margin-top: 12px; font-size: var(--fs-sm); }
 .streak { display: flex; flex-direction: column; gap: 4px; }
 .streak strong { font-size: var(--fs-lg); }
-.feelings { display: flex; gap: 8px; margin: 8px 0 0; padding: 0; list-style: none; }
-.dot { width: 12px; height: 12px; border-radius: 50%; background: var(--surface-2); }
-.dot.strong { background: var(--good); }
-.dot.ok { background: var(--warn); }
-.dot.strained { background: var(--bad); }
-.dot.none { background: transparent; border: 2px solid var(--muted); }
 
 #app[data-route='guided'] { padding-bottom: 0; gap: 12px; }
 .step-purpose { font-size: var(--fs-sm); }
@@ -361,14 +354,7 @@ header > .back-link { align-self: flex-start; }
 .seg small { color: var(--muted); font-weight: 400; }
 .seg[aria-pressed='true'] { background: var(--surface-3); box-shadow: var(--selected-ring); }
 .ex-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.ex-list li { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.ex-list li.off .ex-name { color: var(--muted); }
-.ex-name { display: flex; align-items: center; gap: 10px; min-height: var(--tap); flex: 1; min-width: 0; }
-.ex-name input { flex-shrink: 0; width: 22px; height: 22px; margin: 0; accent-color: var(--fg); }
-.ex-text { display: flex; flex-direction: column; min-width: 0; }
-.ex-text small { font-size: var(--fs-xs); }
 .stepper { display: flex; align-items: center; gap: 6px; }
-.stepper .mono { min-width: 3.2em; text-align: center; }
 
 .hold-panel { display: flex; flex-direction: column; gap: 4px; }
 .hold-panel[hidden] { display: none; }
@@ -423,4 +409,76 @@ header > .back-link { align-self: flex-start; }
   @supports (overlay: auto) {
     .sheet:not([open]), .confirm:not([open]) { opacity: 0; }
   }
+}
+
+.routine-title { margin: 0; font-size: var(--fs-md); }
+.streak-count { font-size: var(--fs-md); }
+
+.done-today { display: flex; align-items: flex-start; gap: 14px; box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--good) 45%, transparent); }
+.done-today h2 { color: var(--good); margin: 0 0 2px; }
+.done-today-mark {
+  flex-shrink: 0; width: var(--tap); height: var(--tap); border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--good); background: color-mix(in srgb, var(--good) 16%, var(--surface));
+}
+.done-today-mark .icon { width: var(--mark-size); height: var(--mark-size); stroke-width: 2.25; }
+.done-today-feeling { margin-top: 4px; font-size: var(--fs-sm); color: var(--feel); }
+.done-today-feeling.strong, .day-dot.strong { --feel: var(--good); }
+.done-today-feeling.ok, .day-dot.ok { --feel: var(--warn); }
+.done-today-feeling.strained, .day-dot.strained { --feel: var(--bad); }
+
+.day-strip { display: grid; grid-template-columns: repeat(7, 1fr); margin: 10px 0 0; padding: 0; list-style: none; }
+.day { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.day-initial { font-size: var(--fs-xs); color: var(--muted); }
+.day.today .day-initial { color: var(--fg); font-weight: 600; }
+.day-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--feel, var(--muted)); }
+.day-dot.empty { background: transparent; box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--muted) 70%, transparent); }
+.day.today .day-dot { outline: 2px solid var(--fg); outline-offset: 3px; }
+
+.done-head { align-items: center; text-align: center; gap: 8px; padding-top: 12px; }
+.done-week .day-strip { margin: 0; }
+#app[data-route='done'] #home { margin-top: auto; }
+.check-ring { display: block; margin-bottom: 8px; }
+.check-ring circle, .check-ring path { stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.check-ring-track { stroke: color-mix(in srgb, var(--good) 16%, transparent); }
+.check-ring-circle, .check-ring-tick {
+  stroke: var(--good); stroke-dasharray: 1; stroke-dashoffset: 0;
+  animation: draw-stroke 500ms var(--ease) backwards;
+}
+.check-ring-tick { animation-duration: 260ms; animation-delay: 340ms; }
+.feeling-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.feeling { gap: 6px; padding: 0 8px; min-width: 0; font-size: var(--fs-sm); }
+.feeling-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--feel); flex-shrink: 0; }
+
+.welcome h2 { font-size: var(--fs-lg); }
+
+.settings-intro { font-size: var(--fs-sm); }
+.ex-row { display: flex; flex-direction: column; gap: 4px; }
+.ex-row + .ex-row { padding-top: 10px; box-shadow: 0 -1px 0 rgb(255 255 255 / 0.06); }
+.ex-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: var(--tap); }
+.ex-name { font-weight: 600; min-width: 0; }
+.ex-row.off .ex-name { color: var(--muted); font-weight: 400; }
+.ex-detail { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: var(--fs-sm); }
+.ex-time .mono { font-size: var(--fs-md); }
+.switch {
+  appearance: none; border: 0; background: transparent; padding: 0; cursor: pointer;
+  width: 56px; height: var(--tap); flex-shrink: 0; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.switch-track {
+  position: relative; width: 48px; height: 28px; border-radius: 999px;
+  background: var(--surface-3); transition: background-color var(--t) var(--ease);
+}
+.switch-track::after {
+  content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--muted); transition: transform var(--t) var(--ease), background-color var(--t) var(--ease);
+}
+.switch[aria-checked='true'] .switch-track { background: var(--muted); }
+.switch[aria-checked='true'] .switch-track::after { background: var(--bg); transform: translateX(20px); }
+
+@keyframes draw-stroke { from { stroke-dashoffset: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .check-ring-circle, .check-ring-tick { animation-name: fade-in; }
+  .switch-track, .switch-track::after { transition-property: background-color; }
 }

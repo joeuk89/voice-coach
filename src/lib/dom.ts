@@ -27,6 +27,12 @@ export function formatMinutes(totalSec: number): string {
   return `${Math.max(1, Math.round(totalSec / 60))} min`;
 }
 
+/** Time spent on a routine: minutes under an hour, then hours and minutes. */
+export function formatPractice(totalSec: number): string {
+  if (totalSec < 60) return 'under 1 min';
+  return totalSec < 3600 ? formatMinutes(totalSec) : formatDuration(totalSec);
+}
+
 export function $<T extends Element = HTMLElement>(root: ParentNode, selector: string): T {
   const el = root.querySelector<T>(selector);
   if (!el) throw new Error(`Missing element: ${selector}`);

@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { stubLocalStorage } from '../test/local-storage';
 import type { LogEntry } from '../types';
-import { appendLog, currentStreak, loadLog, localDay, parseDay, setFeeling } from './log';
+import { appendLog, currentStreak, loadLog, localDay, parseDay, setFeeling, streakWithToday, todayEntry } from './log';
 
 let storage: Storage;
 
@@ -82,7 +82,49 @@ describe('currentStreak', () => {
   });
 });
 
+describe('streakWithToday', () => {
+  it('is Day 1 on a first day, saved or not', () => {
+    expect(streakWithToday(new Date(2026, 9, 17, 9))).toBe(1);
+    saveLog([entry('2026-10-17')]);
+    expect(streakWithToday(new Date(2026, 9, 17, 9))).toBe(1);
+  });
+
+  it('adds today to a streak that ended yesterday', () => {
+    saveLog([entry('2026-10-15'), entry('2026-10-16')]);
+    expect(streakWithToday(new Date(2026, 9, 17, 9))).toBe(3);
+  });
+
+  it('does not count today twice after a second routine', () => {
+    saveLog([entry('2026-10-16'), entry('2026-10-17'), entry('2026-10-17', '2026-10-17T18:00:00.000Z')]);
+    expect(streakWithToday(new Date(2026, 9, 17, 19))).toBe(2);
+  });
+
+  it('starts again after a missed day', () => {
+    saveLog([entry('2026-10-14'), entry('2026-10-15')]);
+    expect(streakWithToday(new Date(2026, 9, 17, 9))).toBe(1);
+  });
+});
+
+describe('todayEntry', () => {
+  it('is the latest entry for today', () => {
+    const later = entry('2026-10-17', '2026-10-17T18:00:00.000Z');
+    saveLog([entry('2026-10-16'), entry('2026-10-17'), later]);
+    expect(todayEntry(new Date(2026, 9, 17, 19))).toEqual(later);
+  });
+
+  it('is undefined when today has no entry', () => {
+    saveLog([entry('2026-10-16')]);
+    expect(todayEntry(new Date(2026, 9, 17, 9))).toBeUndefined();
+  });
+});
+
 describe('loadLog', () => {
+  it('keeps a positive whole step count and drops any other', () => {
+    const good = entry('2026-10-17');
+    saveLog([{ ...good, steps: 8 }, { ...good, steps: 0 }, { ...good, steps: 2.5 }, { ...good, steps: '8' }]);
+    expect(loadLog().map((e) => e.steps)).toEqual([8, undefined, undefined, undefined]);
+  });
+
   it('keeps only well-formed entries', () => {
     const good = entry('2026-10-17');
     saveLog([null, 5, { date: '2026-10-17' }, { ...good, routine: 'medium' }, { ...good, totalSec: '600' }, good]);

@@ -53,6 +53,8 @@ export interface LogEntry {
   completedAt: string;
   routine: RoutineId;
   totalSec: number;
+  /** Exercises in the routine; missing on entries saved before it was recorded. */
+  steps?: number;
   feeling?: Feeling;
 }
 

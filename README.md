@@ -44,7 +44,7 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
 
 Read-aloud passages live in `src/paragraphs.ts`; wrap a word in `*asterisks*` to show it bold.
 
-Settings (routine, enabled exercises, duration overrides), the completion log and the sustain log are stored in `localStorage` under `vt.*` keys.
+Settings (routine, enabled exercises, duration overrides), the completion log, the sustain log and whether the first-run note was seen are stored in `localStorage` under `vt.*` keys.
 
 ## Add an animation
 

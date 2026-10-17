@@ -28,11 +28,12 @@ function isFeeling(value: unknown): value is Feeling {
 
 function toEntry(value: unknown): LogEntry | null {
   if (!isRecord(value)) return null;
-  const { date, completedAt, routine, totalSec, feeling } = value;
+  const { date, completedAt, routine, totalSec, steps, feeling } = value;
   if (typeof date !== 'string' || typeof completedAt !== 'string' || !isFiniteNumber(totalSec)) return null;
   if (!parseDay(date) || Number.isNaN(Date.parse(completedAt))) return null;
   if (routine !== 'short' && routine !== 'full') return null;
   const entry: LogEntry = { date, completedAt, routine, totalSec };
+  if (Number.isInteger(steps) && (steps as number) > 0) entry.steps = steps as number;
   if (isFeeling(feeling)) entry.feeling = feeling;
   return entry;
 }
@@ -66,7 +67,16 @@ export function lastEntry(): LogEntry | undefined {
 
 /** Consecutive days with a completed routine, counting back from today or yesterday. */
 export function currentStreak(now = new Date()): number {
-  const days = new Set(loadLog().map((e) => e.date));
+  return streakOf(loadLog().map((e) => e.date), now);
+}
+
+/** The streak once today counts as done, even if today's entry could not be saved. */
+export function streakWithToday(now = new Date()): number {
+  return streakOf([...loadLog().map((e) => e.date), localDay(now)], now);
+}
+
+function streakOf(dates: string[], now: Date): number {
+  const days = new Set(dates);
   const cursor = new Date(now);
   if (!days.has(localDay(cursor))) {
     cursor.setDate(cursor.getDate() - 1);
@@ -80,6 +90,8 @@ export function currentStreak(now = new Date()): number {
   return streak;
 }
 
-export function recentEntries(count = 7): LogEntry[] {
-  return loadLog().slice(-count);
+/** The latest entry for today, if the routine was finished today. */
+export function todayEntry(now = new Date()): LogEntry | undefined {
+  const today = localDay(now);
+  return loadLog().filter((e) => e.date === today).at(-1);
 }

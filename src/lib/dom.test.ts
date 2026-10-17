@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { esc, formatClock, formatDuration, formatMinutes } from './dom';
+import { esc, formatClock, formatDuration, formatMinutes, formatPractice } from './dom';
 
 describe('formatClock', () => {
   it('shows minutes and padded seconds', () => {
@@ -52,6 +52,20 @@ describe('formatMinutes', () => {
     expect(formatMinutes(89)).toBe('1 min');
     expect(formatMinutes(90)).toBe('2 min');
     expect(formatMinutes(600)).toBe('10 min');
+  });
+});
+
+describe('formatPractice', () => {
+  it('says under 1 min for less than a minute', () => {
+    expect(formatPractice(0)).toBe('under 1 min');
+    expect(formatPractice(59)).toBe('under 1 min');
+  });
+
+  it('shows minutes under an hour, then hours and minutes', () => {
+    expect(formatPractice(60)).toBe('1 min');
+    expect(formatPractice(1925)).toBe('32 min');
+    expect(formatPractice(3599)).toBe('60 min');
+    expect(formatPractice(3900)).toBe('1 h 5 min');
   });
 });
 
