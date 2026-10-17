@@ -68,6 +68,7 @@ function applyUpdateIfIdle() {
 }
 
 let cleanup: (() => void) | undefined;
+let firstRender = true;
 
 function render() {
   if (!routes.has(location.hash) && !isLibraryHash(location.hash)) {
@@ -83,7 +84,8 @@ function render() {
   app!.dataset['route'] = route;
   app!.innerHTML = '';
   cleanup = screens[route](app!);
-  playEntrance(app!);
+  if (!firstRender) playEntrance(app!);
+  firstRender = false;
   window.scrollTo(0, 0);
   app!.querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
   applyUpdateIfIdle();
