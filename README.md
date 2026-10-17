@@ -10,7 +10,7 @@ Open the live URL in Chrome on Android, then choose "Add to Home screen" (or "In
 
 ## How a routine works
 
-Pick Short or Full on Home and press Start. Each exercise walks through its steps one at a time: read the step, press Start when you are ready, and press Next when you are done. Nothing moves on by itself. Timed steps count down and stop at zero; counted steps show "Rep 3 of 8" or, on the vocal function exercises, count your holds from the stopwatch. The step list and the "n of 8" picker let you jump anywhere. Finish opens the Done screen, which logs the day and asks how your voice felt.
+Pick Short or Full on Home and press Start. Each exercise walks through its steps one at a time: read the step, press Start when you are ready, and press Next when you are done. Nothing moves on by itself. Timed steps count down and stop at zero; counted steps show "Rep 3 of 8" or, on the vocal function exercises, count your holds from the stopwatch. Low breathing's second step is paced: Start runs a 3-second "Ready" count, then the picture and the row lead each breath, in for 4 and out for 8, with a short buzz at each switch, until the routine's breath count is done. Pause freezes the picture, and Resume replays the interrupted breath after a new lead-in. The step list and the "n of 8" picker let you jump anywhere. Finish opens the Done screen, which logs the day and asks how your voice felt.
 
 ## Run locally
 
@@ -50,6 +50,7 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
 - `subSteps` are the ordered instructions shown on screen, each with a `text`. `tips` and `links` sit behind "Tips and sources".
   - `weight` sets the sub-step's share of the duration relative to the others. It defaults to `1`; `0` means no timer.
   - `reps` fixes a rep count, for protocols that set one. A sub-step with a fixed `reps` and no `weight` takes no time share, so the timed sub-steps split the whole duration. Set a `weight` too if it should take a share. `repSec` is the length of one rep instead, and the count comes from the sub-step's time share. `reps` wins if both are set.
+  - `pace` (`{ inSec, outSec }`) makes a paced sub-step: after a 3-second lead-in the app leads each breath, in for `inSec` and out for `outSec`, and counts the breaths. The count is the sub-step's `reps`, else the routine's rep count on a `'reps'` exercise. Like a fixed `reps`, it takes no time share unless it sets a `weight`. Keep the exercise's `repSec` equal to `inSec + outSec` so Settings shows the real time; a test checks low breathing.
   - `repsPerPitch` makes the hold counter name the current pitch (adduction: two holds per pitch).
   - `window` is the `[from, to)` fraction of the animation loop to play during the sub-step. Leave it out to play the whole loop.
   - `examples` lists words or sounds to try during the sub-step. They show as chips under its text on the guided screen and in the Library.
@@ -66,7 +67,7 @@ Settings (routine, enabled exercises, time and rep count overrides), the complet
 
 ## Add an animation
 
-Create `src/animations/<id>.ts` exporting an `AnimationDef` (loop length, inline SVG, and caption phases as fractions of the loop) with a matching `<id>.css` scoped under `.anim-<id>`, then register it in `src/animations/index.ts`. `svg` can also be a function that builds the SVG from an input string; `mountAnimation` passes it the `input` option, and the function picks a default when there is none. Read-aloud uses this: the guided screen passes the current passage's demo line and remounts the card on "New passage". Shared pieces (pitch strip, air flow, sound rings, lips) live in `parts.ts` and `shared.css`. Colour rules: amber is air, blue is voice and pitch, rose is lips. Phase switches are hard cuts on the window edges; the player slows windows shorter than 4 s and holds the last frame for half a second. An optional `compactViewBox` crops the card on the guided screen when a panel sits under it.
+Create `src/animations/<id>.ts` exporting an `AnimationDef` (loop length, inline SVG, and caption phases as fractions of the loop) with a matching `<id>.css` scoped under `.anim-<id>`, then register it in `src/animations/index.ts`. `svg` can also be a function that builds the SVG from an input string; `mountAnimation` passes it the `input` option, and the function picks a default when there is none. Read-aloud uses this: the guided screen passes the current passage's demo line and remounts the card on "New passage". Shared pieces (pitch strip, air flow, sound rings, lips) live in `parts.ts` and `shared.css`. Colour rules: amber is air, blue is voice and pitch, rose is lips. Phase switches are hard cuts on the window edges; the player slows windows shorter than 4 s and holds the last frame for half a second. An optional `compactViewBox` crops the card on the guided screen when a panel sits under it. Before each paced breath the player holds the first frame and marks the card `.anim-resting`, so a card can hide parts that belong to the cycle already running (low breathing hides its inhale air).
 
 ## Decisions
 
