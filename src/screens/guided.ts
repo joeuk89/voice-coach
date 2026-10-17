@@ -257,7 +257,7 @@ export function renderGuided(root: HTMLElement): () => void {
   function showStepControl(current: PlannedSubStep) {
     stepRow?.stop();
     engaged = false;
-    sustain?.resetStep();
+    sustain?.setStep(session.subIndex);
     const row = $(root, '#timer-row');
     if (current.mode === 'untimed') stepRow = mountUntimed(row, hooks);
     else if (current.mode === 'timed') stepRow = mountTimed(row, current, hooks);

@@ -40,7 +40,9 @@ export interface SustainPanel {
   readonly row: HTMLElement;
   /** Where the screen shows its hold count, under the stopwatch. */
   readonly note: HTMLElement;
-  /** Start a new sub-step: a running hold is discarded and Undo forgets earlier holds. */
+  /** Move to another sub-step: as resetStep, and Today, Last time and Best ever show that step's holds. */
+  setStep(step: number): void;
+  /** Start the sub-step again: a running hold is discarded and Undo forgets earlier holds. */
   resetStep(): void;
   /** Whether Start hold carries the screen's primary style. */
   setPrimary(primary: boolean): void;
@@ -51,6 +53,7 @@ export interface SustainPanel {
 
 /** Tap-to-start, tap-to-stop stopwatch for sustained notes; each hold is logged for the day. */
 export function mountSustainPanel(container: HTMLElement, events: SustainEvents = {}): SustainPanel {
+  let step = 0;
   let startedAt = 0;
   let interval: ReturnType<typeof setInterval> | undefined;
   let stepHolds: string[] = [];
@@ -74,11 +77,11 @@ export function mountSustainPanel(container: HTMLElement, events: SustainEvents 
 
   function drawToday() {
     const running = interval !== undefined;
-    const today = todaySustains();
+    const today = todaySustains(step);
     const { shown, more } = recentHolds(today);
     todayEl.innerHTML = `
       ${tooShort ? `<span class="muted hold-short">${TOO_SHORT}</span>` : ''}
-      <span class="muted">${esc(summaryNote(today, previousBest(), bestEver()))}</span>
+      <span class="muted">${esc(summaryNote(today, previousBest(step), bestEver(step)))}</span>
       ${shown.map((s) => `<span class="chip mono">${esc(fmt(s))}</span>`).join('')}
       ${more ? `<span class="muted">+${more} more</span>` : ''}`;
     undoSlot.innerHTML =
@@ -103,7 +106,7 @@ export function mountSustainPanel(container: HTMLElement, events: SustainEvents 
   function undo() {
     const day = stepHolds.pop();
     if (day === undefined) return;
-    removeLastSustain(day);
+    removeLastSustain(step, day);
     clock.innerHTML = clockMarkup(0);
     drawToday();
     events.onUndo?.();
@@ -116,7 +119,7 @@ export function mountSustainPanel(container: HTMLElement, events: SustainEvents 
       stop();
       clock.innerHTML = clockMarkup(held);
       showTooShort(held < MIN_HOLD_SEC);
-      const recorded = !tooShort && recordSustain(held, day);
+      const recorded = !tooShort && recordSustain(step, held, day);
       if (recorded) stepHolds.push(day);
       buzz(40);
       drawToday();
@@ -150,16 +153,22 @@ export function mountSustainPanel(container: HTMLElement, events: SustainEvents 
     drawToday();
   }
 
+  function resetStep() {
+    discardHold();
+    stepHolds = [];
+    drawToday();
+  }
+
   button.addEventListener('click', toggle);
   drawToday();
   return {
     row,
     note: $(container, '#hold-note'),
-    resetStep() {
-      discardHold();
-      stepHolds = [];
-      drawToday();
+    setStep(next) {
+      step = next;
+      resetStep();
     },
+    resetStep,
     setPrimary(primary) {
       button.classList.toggle('btn-primary', primary);
     },
