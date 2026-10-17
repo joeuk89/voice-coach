@@ -8,6 +8,7 @@ const AUDIO_BASE = import.meta.env.BASE_URL + 'audio/';
  * - animation must match an id registered in animations/index.ts, or null
  * - subSteps run in order; each takes a share of the duration by weight (default 1, 0 is untimed)
  * - reps fixes a rep count; repSec derives one from the sub-step's time share
+ * - repsPerPitch makes the rep counter show which pitch you are on
  * - window is the [from, to) fraction of the animation loop to play for that sub-step
  * - tips and links go behind "More detail"
  */
@@ -138,7 +139,12 @@ export const exercises: Exercise[] = [
       },
       { text: 'Stretch: glide low to high on “knoll”. Twice.', reps: 2, window: [0.25, 0.45] },
       { text: 'Contract: glide high to low on “knoll”. Twice.', reps: 2, window: [0.45, 0.65] },
-      { text: 'Adduction: sustain “ol” softly on five successive pitches. Twice each.', reps: 10, window: [0.65, 1] },
+      {
+        text: 'Adduction: sustain “ol” softly on five successive pitches. Twice each.',
+        reps: 10,
+        repsPerPitch: 2,
+        window: [0.65, 1],
+      },
     ],
     tips: ['Time the sustains. Longer over weeks means a stronger, more efficient voice.'],
     duration: { short: 0, full: 240 },

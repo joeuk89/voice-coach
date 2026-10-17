@@ -6,8 +6,13 @@ function fmt(sec: number): string {
   return `${sec.toFixed(1)} s`;
 }
 
+export interface SustainEvents {
+  onRecord?: () => void;
+  onUndo?: () => void;
+}
+
 /** Tap-to-start, tap-to-stop stopwatch for sustained notes; each hold is logged for the day. */
-export function mountSustainPanel(container: HTMLElement): () => void {
+export function mountSustainPanel(container: HTMLElement, events: SustainEvents = {}): () => void {
   let startedAt = 0;
   let interval: ReturnType<typeof setInterval> | undefined;
 
@@ -37,16 +42,20 @@ export function mountSustainPanel(container: HTMLElement): () => void {
     container.querySelector('#sustain-undo')?.addEventListener('click', () => {
       removeLastSustain();
       draw();
+      events.onUndo?.();
     });
   }
 
   function toggle() {
     if (interval) {
       const held = (Date.now() - startedAt) / 1000;
+      const recorded = held >= 0.5;
       stop();
-      if (held >= 0.5) recordSustain(held);
+      if (recorded) recordSustain(held);
       buzz(40);
       draw();
+      // After buzz(40), so a listener's own buzz replaces the short one.
+      if (recorded) events.onRecord?.();
       return;
     }
     startedAt = Date.now();

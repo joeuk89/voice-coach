@@ -22,6 +22,8 @@ export interface SubStep {
   reps?: number;
   /** Seconds one rep takes; the rep count is derived from the time share. */
   repSec?: number;
+  /** Reps sung on each pitch before moving up; the rep counter then names the current pitch. */
+  repsPerPitch?: number;
   /** Fraction of the animation loop to play, [from, to). Default whole loop. */
   window?: [number, number];
 }

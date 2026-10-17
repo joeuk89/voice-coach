@@ -8,6 +8,7 @@ import { createCountdown, type Countdown } from '../lib/timer';
 import { allowSleep, keepAwake } from '../lib/wakelock';
 import { planSubSteps, type PlannedSubStep } from '../state/plan';
 import { isLast, nextPosition, prevPosition, type Position } from '../state/position';
+import { isComplete, repLabel } from '../state/reps';
 import { endSession, getSession } from '../state/session';
 import type { Exercise } from '../types';
 
@@ -18,6 +19,12 @@ function timerControls(seconds: number, startLabel: string): string {
     <div class="timer" id="clock" aria-live="off">${formatClock(seconds)}</div>
     <button class="btn btn-primary timer-btn" id="timer-toggle">${startLabel}</button>
     <button class="btn timer-btn" id="timer-restart">Restart</button>`;
+}
+
+function listValue(planned: PlannedSubStep): string {
+  if (planned.mode === 'untimed') return '';
+  if (planned.mode === 'reps') return `× ${planned.reps}`;
+  return formatClock(planned.seconds);
 }
 
 function detailSheet(exercise: Exercise): string {
@@ -56,6 +63,7 @@ export function renderGuided(root: HTMLElement): () => void {
   let timer: Countdown | undefined;
   let stopAnimation: (() => void) | undefined;
   let stopPanel: (() => void) | undefined;
+  let onHold: ((delta: number) => void) | undefined;
   let audio: HTMLAudioElement | undefined;
 
   function teardownExercise() {
@@ -65,6 +73,7 @@ export function renderGuided(root: HTMLElement): () => void {
     stopAnimation = undefined;
     stopPanel?.();
     stopPanel = undefined;
+    onHold = undefined;
     audio?.pause();
     audio = undefined;
   }
@@ -125,7 +134,7 @@ export function renderGuided(root: HTMLElement): () => void {
               .map(
                 (p, i) => `<li><button class="row-btn substep" data-sub="${i}">
                   <span>${esc(p.subStep.text)}</span>
-                  <span class="mono">${p.mode === 'untimed' ? '' : formatClock(p.seconds)}</span>
+                  <span class="mono">${listValue(p)}</span>
                 </button></li>`,
               )
               .join('')}</ol>`
@@ -169,7 +178,12 @@ export function renderGuided(root: HTMLElement): () => void {
 
     const demo = $(root, '#demo');
     if (def) stopAnimation = mountAnimation(demo, def, { caption: false });
-    if (exercise.panel === 'sustain') stopPanel = mountSustainPanel($(root, '#panel'));
+    if (exercise.panel === 'sustain') {
+      stopPanel = mountSustainPanel($(root, '#panel'), {
+        onRecord: () => onHold?.(1),
+        onUndo: () => onHold?.(-1),
+      });
+    }
     if (exercise.panel === 'reading') stopPanel = mountReadingPanel($(root, '#panel'));
     if (isAudio && exercise.audioSrc) mountAudioStep(demo, exercise.audioSrc, step.seconds);
 
@@ -240,9 +254,14 @@ export function renderGuided(root: HTMLElement): () => void {
   function showTimer(current: PlannedSubStep) {
     timer?.stop();
     timer = undefined;
+    onHold = undefined;
     const row = $(root, '#timer-row');
     if (current.mode === 'untimed') {
       row.innerHTML = '<span class="muted">No timer for this step</span>';
+      return;
+    }
+    if (current.mode === 'reps') {
+      showReps(row, current);
       return;
     }
     row.innerHTML = timerControls(current.seconds, 'Start');
@@ -276,6 +295,41 @@ export function renderGuided(root: HTMLElement): () => void {
       clock.classList.toggle('paused', !running);
     });
     $(row, '#timer-restart').addEventListener('click', reset);
+  }
+
+  function showReps(row: HTMLElement, current: PlannedSubStep) {
+    const target = current.reps!;
+    const countsHolds = steps[session.index]!.exercise.panel === 'sustain';
+    row.innerHTML = `
+      <div class="timer rep-count" id="reps" aria-live="polite"></div>
+      ${countsHolds ? '' : '<button class="btn btn-primary timer-btn" id="rep-done">Done</button>'}
+      <button class="btn timer-btn" id="timer-restart">Restart</button>`;
+    const counter = $(row, '#reps');
+    const done = row.querySelector<HTMLButtonElement>('#rep-done');
+    let count = 0;
+
+    function draw() {
+      const label = repLabel(count, target, countsHolds ? 'Hold' : 'Rep', current.subStep.repsPerPitch);
+      counter.innerHTML = `${label.lead ? `<small>${label.lead}</small> ` : ''}${label.shown} <small>${label.tail}</small>`;
+      const complete = isComplete(count, target);
+      counter.classList.toggle('done', complete);
+      if (done) done.disabled = complete;
+    }
+
+    function add(delta: number) {
+      const wasComplete = isComplete(count, target);
+      count = Math.max(0, count + delta);
+      if (!wasComplete && isComplete(count, target)) buzz();
+      draw();
+    }
+
+    draw();
+    done?.addEventListener('click', () => add(1));
+    $(row, '#timer-restart').addEventListener('click', () => {
+      count = 0;
+      draw();
+    });
+    if (countsHolds) onHold = add;
   }
 
   function mountAudioStep(demo: HTMLElement, src: string, seconds: number) {

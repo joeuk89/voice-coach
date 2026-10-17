@@ -128,6 +128,8 @@ header { display: flex; flex-direction: column; gap: 4px; }
 .timer.paused { color: var(--muted); }
 .timer.done { color: var(--accent); }
 .timer-btn { flex: 0 1 104px; min-width: 88px; padding: 0 12px; }
+.rep-count { white-space: nowrap; }
+.rep-count small { font-size: 1rem; font-weight: 600; letter-spacing: 0; color: var(--muted); }
 .substeps, .jump-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .row-btn {
   appearance: none;
