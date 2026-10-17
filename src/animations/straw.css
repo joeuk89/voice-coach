@@ -9,15 +9,19 @@
 .anim-straw .st-t-hum { animation: st-show-hum var(--cycle) step-end infinite; }
 .anim-straw .st-t-siren { animation: st-show-siren var(--cycle) step-end infinite; }
 .anim-straw .st-t-speak { animation: st-show-speak var(--cycle) step-end infinite; }
+.anim-straw .st-t-tune { animation: st-show-tune var(--cycle) step-end infinite; }
 .anim-straw .st-t-hum .pitch-line { animation: st-trace-hum var(--cycle) linear infinite; }
 .anim-straw .st-t-siren .pitch-line { animation: st-trace-siren var(--cycle) linear infinite; }
 .anim-straw .st-t-speak .pitch-line { animation: st-trace-speak var(--cycle) linear infinite; }
+.anim-straw .st-t-tune .pitch-line { animation: st-trace-tune var(--cycle) linear infinite; }
 .anim-straw .st-t-hum .pitch-dot { animation: st-dot-hum var(--cycle) linear infinite; }
 .anim-straw .st-t-siren .pitch-dot { animation: st-dot-siren var(--cycle) linear infinite; }
 .anim-straw .st-t-speak .pitch-dot { animation: st-dot-speak var(--cycle) linear infinite; }
+.anim-straw .st-t-tune .pitch-dot { animation: st-dot-tune var(--cycle) linear infinite; }
 
-/* Phase boundaries match the sub-step windows in exercises.ts: straw in place to 12%, hum to 30%, siren to 70%, then speak.
-   The lips close onto the straw over the first 2% before the air starts. */
+/* Phase boundaries match the sub-step windows in exercises.ts: straw in place to 12%, hum to 30%, siren to 64%,
+   speak to 82%, then tune. The lips close onto the straw over the first 2% before the air starts. Each trace
+   finishes 96% of the way through its window and holds there. */
 @keyframes st-seal-upper { 0% { transform: translateY(-9px); animation-timing-function: ease-out; } 2%, 100% { transform: translateY(0); } }
 @keyframes st-seal-lower { 0% { transform: translateY(9px); animation-timing-function: ease-out; } 2%, 100% { transform: translateY(0); } }
 @keyframes st-before-air { 0% { opacity: 1; } 2%, 100% { opacity: 0; } }
@@ -26,11 +30,14 @@
 
 @keyframes st-show-place { 0% { opacity: 1; } 12%, 100% { opacity: 0; } }
 @keyframes st-show-hum { 0% { opacity: 0; } 12% { opacity: 1; } 30%, 100% { opacity: 0; } }
-@keyframes st-show-siren { 0% { opacity: 0; } 30% { opacity: 1; } 70%, 100% { opacity: 0; } }
-@keyframes st-show-speak { 0% { opacity: 0; } 70%, 100% { opacity: 1; } }
+@keyframes st-show-siren { 0% { opacity: 0; } 30% { opacity: 1; } 64%, 100% { opacity: 0; } }
+@keyframes st-show-speak { 0% { opacity: 0; } 64% { opacity: 1; } 82%, 100% { opacity: 0; } }
+@keyframes st-show-tune { 0% { opacity: 0; } 82%, 100% { opacity: 1; } }
 @keyframes st-trace-hum { 0%, 12% { stroke-dashoffset: 1; } 29.3%, 100% { stroke-dashoffset: 0; } }
-@keyframes st-trace-siren { 0%, 30% { stroke-dashoffset: 1; } 68.4%, 100% { stroke-dashoffset: 0; } }
-@keyframes st-trace-speak { 0%, 70% { stroke-dashoffset: 1; } 98.8%, 100% { stroke-dashoffset: 0; } }
+@keyframes st-trace-siren { 0%, 30% { stroke-dashoffset: 1; } 62.6%, 100% { stroke-dashoffset: 0; } }
+@keyframes st-trace-speak { 0%, 64% { stroke-dashoffset: 1; } 81.3%, 100% { stroke-dashoffset: 0; } }
+@keyframes st-trace-tune { 0%, 82% { stroke-dashoffset: 1; } 99.3%, 100% { stroke-dashoffset: 0; } }
 @keyframes st-dot-hum { 0%, 12% { offset-distance: 0%; } 29.3%, 100% { offset-distance: 100%; } }
-@keyframes st-dot-siren { 0%, 30% { offset-distance: 0%; } 68.4%, 100% { offset-distance: 100%; } }
-@keyframes st-dot-speak { 0%, 70% { offset-distance: 0%; } 98.8%, 100% { offset-distance: 100%; } }
+@keyframes st-dot-siren { 0%, 30% { offset-distance: 0%; } 62.6%, 100% { offset-distance: 100%; } }
+@keyframes st-dot-speak { 0%, 64% { offset-distance: 0%; } 81.3%, 100% { offset-distance: 100%; } }
+@keyframes st-dot-tune { 0%, 82% { offset-distance: 0%; } 99.3%, 100% { offset-distance: 100%; } }

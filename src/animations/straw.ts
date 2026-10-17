@@ -20,6 +20,27 @@ const speakPath = [
   'C 318 254, 332 258, 344 256',
 ].join(' ');
 
+/** The first two lines of “God Save the King” as [semitones above the easy pitch, beats]. */
+const tuneNotes: Array<[number, number]> = [
+  [0, 1], [0, 1], [2, 1], [-1, 1.5], [0, 0.5], [2, 1],
+  [4, 1], [4, 1], [5, 1], [4, 1.5], [2, 0.5], [0, 1],
+];
+
+function steppedPath(notes: Array<[number, number]>, left: number, right: number, semitonePx: number): string {
+  const beatPx = (right - left) / notes.reduce((sum, [, beats]) => sum + beats, 0);
+  const y = (step: number) => easy - step * semitonePx;
+  let x = left;
+  const parts = [`M${left} ${y(notes[0]![0])}`];
+  notes.forEach(([step, beats], i) => {
+    if (i > 0 && step !== notes[i - 1]![0]) parts.push(`L${x.toFixed(1)} ${y(step)}`);
+    x += beats * beatPx;
+    parts.push(`L${x.toFixed(1)} ${y(step)}`);
+  });
+  return parts.join(' ');
+}
+
+const tunePath = steppedPath(tuneNotes, 60, 344, 5);
+
 const voiceLabel = (state: string) => `<text class="anim-label" x="60" y="206">VOICE · ${state}</text>`;
 
 const svg = `
@@ -43,6 +64,7 @@ const svg = `
   ${pitchTrace(humPath, 'st-t-hum', voiceLabel('hum'))}
   ${pitchTrace(sirenPath, 'st-t-siren', voiceLabel('siren'))}
   ${pitchTrace(speakPath, 'st-t-speak', voiceLabel('speak'))}
+  ${pitchTrace(tunePath, 'st-t-tune', voiceLabel('tune'))}
 </svg>`;
 
 export const straw: AnimationDef = {
@@ -52,7 +74,8 @@ export const straw: AnimationDef = {
   phases: [
     { until: 0.12, caption: 'Thin stirring straw between the lips. No air leaking around it.' },
     { until: 0.3, caption: 'Hum gently through the straw on a comfortable pitch.' },
-    { until: 0.7, caption: 'Slow sirens through the straw: low to high to low, smooth.' },
-    { until: 1, caption: '“Speak” a sentence or hum a tune through it.' },
+    { until: 0.64, caption: 'Slow sirens through the straw: low to high to low, smooth.' },
+    { until: 0.82, caption: '“Speak” a sentence through it: “How are you today?”' },
+    { until: 1, caption: 'Hum a tune through it: “God Save the King”.' },
   ],
 };
