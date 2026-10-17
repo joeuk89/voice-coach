@@ -1,0 +1,45 @@
+.anim-read-aloud .ra-text { fill: var(--muted); font: 18px var(--font); }
+.anim-read-aloud .ra-text .hot { fill: var(--fg); font-weight: 600; }
+.anim-read-aloud .ra-pass { animation: var(--cycle) linear infinite; }
+.anim-read-aloud .ra-pass-1 { animation-name: ra-half-1; }
+.anim-read-aloud .ra-pass-2 { animation-name: ra-half-2; }
+.anim-read-aloud .ra-line {
+  fill: none; stroke: var(--voice); stroke-width: 3; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  animation: var(--cycle) linear infinite;
+}
+.anim-read-aloud .ra-line-1 { animation-name: ra-trail-1; }
+.anim-read-aloud .ra-line-2 { animation-name: ra-trail-2; }
+.anim-read-aloud .ra-dot { fill: var(--voice); offset-rotate: 0deg; animation: var(--cycle) linear infinite; }
+.anim-read-aloud .ra-dot-1 {
+  offset-path: path('M36 140 C 70 140, 100 70, 130 70 C 150 70, 155 140, 168 140 C 180 140, 185 80, 203 80 C 220 80, 230 140, 245 140 C 262 140, 272 60, 297 60 C 312 60, 318 110, 326 130');
+  animation-name: ra-glide-1;
+}
+.anim-read-aloud .ra-dot-2 {
+  offset-path: path('M36 140 C 70 140, 100 91, 130 91 C 150 91, 155 140, 168 140 C 180 140, 185 98, 203 98 C 220 98, 230 140, 245 140 C 262 140, 272 84, 297 84 C 312 84, 318 118, 326 132');
+  animation-name: ra-glide-2;
+}
+@keyframes ra-half-1 { 0%, 48% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes ra-half-2 { 0%, 50% { opacity: 0; } 52%, 98% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes ra-trail-1 {
+  0% { stroke-dashoffset: 1; opacity: 1; }
+  46% { stroke-dashoffset: 0; opacity: 1; }
+  48%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+@keyframes ra-trail-2 {
+  0%, 50% { stroke-dashoffset: 1; opacity: 0; }
+  50.1% { stroke-dashoffset: 1; opacity: 1; }
+  96% { stroke-dashoffset: 0; opacity: 1; }
+  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+@keyframes ra-glide-1 {
+  0% { offset-distance: 0%; opacity: 1; }
+  46% { offset-distance: 100%; opacity: 1; }
+  48%, 100% { offset-distance: 100%; opacity: 0; }
+}
+@keyframes ra-glide-2 {
+  0%, 50% { offset-distance: 0%; opacity: 0; }
+  50.1% { offset-distance: 0%; opacity: 1; }
+  96% { offset-distance: 100%; opacity: 1; }
+  98%, 100% { offset-distance: 100%; opacity: 0; }
+}

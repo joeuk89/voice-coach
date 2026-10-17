@@ -1,0 +1,8 @@
+.anim-straw .st-straw { fill: var(--surface-2); stroke: var(--line); stroke-width: 2; }
+.anim-straw .st-air { stroke-width: 2.5; stroke-dasharray: 5 7; }
+.anim-straw .st-spray { stroke-width: 2; stroke-dasharray: 3 7; opacity: 0.7; }
+.anim-straw .st-pitch .pitch-line { animation: anim-trail-full var(--cycle) linear infinite; }
+.anim-straw .st-pitch .pitch-dot {
+  offset-path: path('M70 248 L140 248 C 165 248, 180 200, 205 200 C 230 200, 240 248, 262 248 C 270 238, 278 252, 288 242 C 296 234, 304 250, 314 240 C 320 236, 326 248, 334 242');
+  animation: anim-glide-full var(--cycle) linear infinite;
+}

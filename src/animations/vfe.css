@@ -1,0 +1,41 @@
+.anim-vfe .vf-steps text { animation: var(--cycle) linear infinite; }
+.anim-vfe .vf-steps text:nth-child(1) { animation-name: vf-step1; }
+.anim-vfe .vf-steps text:nth-child(2) { animation-name: vf-step2; }
+.anim-vfe .vf-steps text:nth-child(3) { animation-name: vf-step3; }
+.anim-vfe .vf-steps text:nth-child(4) { animation-name: vf-step4; }
+.anim-vfe .vf-watch { animation: vf-watch var(--cycle) linear infinite; }
+.anim-vfe .vf-nub { fill: var(--line); }
+.anim-vfe .vf-hand {
+  stroke: var(--voice); stroke-width: 2.5; stroke-linecap: round;
+  transform-box: view-box; transform-origin: 320px 72px;
+  animation: vf-hand 4s linear infinite;
+}
+.anim-vfe .vf-seg { animation: var(--cycle) linear infinite; }
+.anim-vfe .vf-seg-1 { animation-name: vf-seg-1; }
+.anim-vfe .vf-seg-2 { animation-name: vf-seg-2; }
+.anim-vfe .vf-seg-3 { animation-name: vf-seg-3; }
+.anim-vfe .vf-seg-4 { animation-name: vf-seg-4; }
+.anim-vfe .vf-pitch .pitch-dot {
+  offset-path: path('M40 170 L150 170 M158 230 C 170 230, 178 110, 198 110 M206 110 C 226 110, 234 230, 254 230 M262 230 L272 230 L272 215 L284 215 L284 200 L296 200 L296 185 L308 185 L308 170 L320 170');
+  animation: vf-glide var(--cycle) linear infinite;
+}
+
+/* Phase boundaries 25/45/65% mapped onto each subpath's share of the total length. */
+@keyframes vf-glide {
+  0% { offset-distance: 0%; opacity: 1; }
+  25% { offset-distance: 21.86%; }
+  45% { offset-distance: 47.66%; }
+  65% { offset-distance: 74.16%; }
+  97% { offset-distance: 100%; opacity: 1; }
+  98%, 100% { offset-distance: 100%; opacity: 0; }
+}
+@keyframes vf-seg-1 { 0% { stroke-dashoffset: 1; opacity: 1; } 25%, 97% { stroke-dashoffset: 0; opacity: 1; } 98%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes vf-seg-2 { 0%, 25% { stroke-dashoffset: 1; opacity: 1; } 45%, 97% { stroke-dashoffset: 0; opacity: 1; } 98%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes vf-seg-3 { 0%, 45% { stroke-dashoffset: 1; opacity: 1; } 65%, 97% { stroke-dashoffset: 0; opacity: 1; } 98%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes vf-seg-4 { 0%, 65% { stroke-dashoffset: 1; opacity: 1; } 97% { stroke-dashoffset: 0; opacity: 1; } 98%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes vf-step1 { 0%, 25% { fill: var(--fg); } 26%, 100% { fill: var(--muted); } }
+@keyframes vf-step2 { 0%, 25% { fill: var(--muted); } 26%, 45% { fill: var(--fg); } 46%, 100% { fill: var(--muted); } }
+@keyframes vf-step3 { 0%, 45% { fill: var(--muted); } 46%, 65% { fill: var(--fg); } 66%, 100% { fill: var(--muted); } }
+@keyframes vf-step4 { 0%, 65% { fill: var(--muted); } 66%, 100% { fill: var(--fg); } }
+@keyframes vf-watch { 0%, 25% { opacity: 1; } 27%, 63% { opacity: 0.3; } 65%, 100% { opacity: 1; } }
+@keyframes vf-hand { to { transform: rotate(360deg); } }

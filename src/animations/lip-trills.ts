@@ -1,5 +1,5 @@
 import type { AnimationDef } from '../types';
-import { pitchStrip } from './parts';
+import { pitchStrip, rings } from './parts';
 import './lip-trills.css';
 
 const svg = `
@@ -15,19 +15,15 @@ const svg = `
 
   <text class="anim-label" x="80" y="88">LIPS</text>
   <path class="lt-air" d="M16 126 L 344 126"/>
-  <rect class="lt-lip lt-lip-upper" x="80" y="104" width="100" height="18" rx="9"/>
-  <rect class="lt-lip lt-lip-lower" x="80" y="130" width="100" height="18" rx="9"/>
+  <rect class="lip lt-lip-upper" x="80" y="104" width="100" height="18" rx="9"/>
+  <rect class="lip lt-lip-lower" x="80" y="130" width="100" height="18" rx="9"/>
 
   <g class="lt-buzz">
     <path d="M190 112 q 6 14 0 28"/>
     <path d="M197 107 q 9 19 0 38"/>
   </g>
 
-  <g class="lt-rings">
-    <path d="M184 90 a 36 36 0 0 1 0 72"/>
-    <path d="M184 90 a 36 36 0 0 1 0 72"/>
-    <path d="M184 90 a 36 36 0 0 1 0 72"/>
-  </g>
+  ${rings(184, 126, 36, 'lt-rings')}
 
   <g class="lt-tip">
     <path class="lt-finger-outline" d="M18 54 L 64 100"/>

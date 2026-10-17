@@ -1,0 +1,17 @@
+.anim-hum .hm-lower { animation: hm-lower var(--cycle) ease-in-out infinite; }
+.anim-hum .hm-throat { fill: none; stroke: var(--muted); stroke-width: 2; stroke-dasharray: 4 5; }
+.anim-hum .hm-lip-rings { animation: hm-lip-rings var(--cycle) linear infinite; }
+@keyframes hm-lower {
+  0%, 30% { transform: translateY(0); }
+  33%, 55% { transform: translateY(20px); }
+  58% { transform: translateY(0); }
+  62% { transform: translateY(20px); }
+  66% { transform: translateY(0); }
+  70% { transform: translateY(20px); }
+  74% { transform: translateY(0); }
+  78% { transform: translateY(20px); }
+  80%, 100% { transform: translateY(0); }
+  82%, 88%, 94% { transform: translateY(8px); }
+  85%, 91%, 97% { transform: translateY(0); }
+}
+@keyframes hm-lip-rings { 0%, 30% { opacity: 1; } 33%, 100% { opacity: 1; } }

@@ -3,6 +3,9 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   base: '/voice-coach/',
+  build: {
+    rollupOptions: { input: ['index.html', 'gallery.html'] },
+  },
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',

@@ -4,12 +4,23 @@
 
 .anim .pitch-axis { stroke: color-mix(in srgb, var(--fg) 14%, transparent); stroke-width: 1; }
 .anim .pitch-line {
-  fill: none; stroke: var(--voice); stroke-width: 3; stroke-linecap: round;
+  fill: none; stroke: var(--voice); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
   stroke-dasharray: 1; stroke-dashoffset: 1;
 }
 .anim .pitch-dot { fill: var(--voice); offset-rotate: 0deg; }
 
-.anim-caption { min-height: 3.2em; padding: 0 20px 14px; background: var(--surface); }
+.anim .ring {
+  fill: none; stroke: var(--voice); stroke-width: 2.5; stroke-linecap: round;
+  transform-box: view-box; animation: anim-ring 1.2s ease-out infinite;
+}
+.anim .air {
+  fill: none; stroke: var(--air); stroke-width: 3; stroke-linecap: round;
+  stroke-dasharray: 6 10; animation: anim-flow 0.5s linear infinite;
+}
+.anim .lip { fill: var(--lip); stroke: var(--line); stroke-width: 2; }
+.anim .body { fill: var(--body); stroke: var(--line); stroke-width: 2; }
+
+.anim-caption { min-height: 4.4em; padding: 0 20px 14px; background: var(--surface); font-size: 0.95rem; }
 .anim-progress { height: 3px; background: color-mix(in srgb, var(--fg) 10%, transparent); }
 .anim-progress i {
   display: block; height: 100%; background: var(--muted);
@@ -20,3 +31,19 @@
 @keyframes anim-ring { 0% { transform: scale(0.35); opacity: 0.95; } 100% { transform: scale(1.35); opacity: 0; } }
 @keyframes anim-press { 0% { transform: scale(0.5); opacity: 0.9; } 100% { transform: scale(1.6); opacity: 0; } }
 @keyframes anim-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* Whole-cycle pitch trace: reveal over the loop, blink out, start again. */
+@keyframes anim-trail-full {
+  0% { stroke-dashoffset: 1; opacity: 1; }
+  96% { stroke-dashoffset: 0; opacity: 1; }
+  97%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+@keyframes anim-glide-full {
+  0% { offset-distance: 0%; opacity: 1; }
+  96% { offset-distance: 100%; opacity: 1; }
+  97%, 100% { offset-distance: 100%; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim .ring, .anim .air { animation: none; }
+  .anim .ring { opacity: 0.5; transform: scale(0.9); }
+}

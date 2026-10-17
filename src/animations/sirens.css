@@ -1,0 +1,13 @@
+.anim-sirens .sr-mouth {
+  fill: var(--body); stroke: var(--lip); stroke-width: 3;
+  transform-box: view-box; transform-origin: 60px 160px;
+  animation: sr-mouth var(--cycle) ease-in-out infinite;
+}
+.anim-sirens .sr-oo { fill: var(--muted); font: 12px var(--font); }
+.anim-sirens .sr-edge { opacity: 0.6; }
+.anim-sirens .sr-pitch .pitch-line { animation: anim-trail-full var(--cycle) linear infinite; }
+.anim-sirens .sr-pitch .pitch-dot {
+  offset-path: path('M120 226 C 160 226, 180 86, 230 86 C 280 86, 300 236, 336 236');
+  animation: anim-glide-full var(--cycle) linear infinite;
+}
+@keyframes sr-mouth { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
