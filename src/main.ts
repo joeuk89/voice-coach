@@ -4,6 +4,7 @@ import { renderDone } from './screens/done';
 import { renderGuided } from './screens/guided';
 import { renderHome } from './screens/home';
 import { renderSettings } from './screens/settings';
+import { playEntrance } from './lib/dom';
 
 type Route = 'home' | 'guided' | 'done' | 'settings';
 type Screen = (root: HTMLElement) => () => void;
@@ -78,6 +79,7 @@ function render() {
   app!.dataset['route'] = route;
   app!.innerHTML = '';
   cleanup = screens[route](app!);
+  playEntrance(app!);
   window.scrollTo(0, 0);
   app!.querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
   applyUpdateIfIdle();

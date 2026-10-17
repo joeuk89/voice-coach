@@ -1,10 +1,15 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
+import { configDefaults } from 'vitest/config';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   base: '/voice-coach/',
   build: {
     rollupOptions: { input: ['index.html', 'gallery.html'] },
+  },
+  test: {
+    exclude: [...configDefaults.exclude, '**/.claude/**'],
   },
   plugins: [
     VitePWA({

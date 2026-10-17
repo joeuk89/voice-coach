@@ -1,6 +1,5 @@
-.anim { background: var(--surface); }
 .anim svg { display: block; width: 100%; height: auto; }
-.anim-label { fill: var(--muted); font: 11px var(--font); letter-spacing: 0.08em; }
+.anim-label { fill: var(--muted); font: 13px var(--font); letter-spacing: 0.08em; }
 
 .anim .pitch-axis { stroke: color-mix(in srgb, var(--fg) 14%, transparent); stroke-width: 1; }
 .anim .pitch-line {
@@ -20,8 +19,11 @@
 .anim .lip { fill: var(--lip); stroke: var(--line); stroke-width: 2; }
 .anim .body { fill: var(--body); stroke: var(--line); stroke-width: 2; }
 
-.anim-caption { min-height: 4.4em; padding: 0 20px 14px; background: var(--surface); font-size: 0.95rem; }
-.anim-progress { height: 3px; background: color-mix(in srgb, var(--fg) 10%, transparent); }
+.anim-caption { min-height: 4.4em; padding: 0 20px 14px; font-size: var(--fs-sm); }
+.anim-progress {
+  height: 4px; margin: 0 16px 16px; border-radius: 2px; overflow: hidden;
+  background: color-mix(in srgb, var(--fg) 10%, transparent);
+}
 .anim-progress i {
   display: block; height: 100%; background: var(--muted);
   transform-origin: left; animation: anim-progress var(--cycle, 10s) linear infinite;

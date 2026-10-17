@@ -2,6 +2,7 @@ import { exercises } from '../exercises';
 import { $, closeOnBackdrop, esc, formatClock, on, redrawKeepingFocus } from '../lib/dom';
 import { defaultSettings, durationFor, loadSettings, saveSettings } from '../state/settings';
 import { bindRoutineToggle, routineToggle } from '../lib/routine-toggle';
+import { icons } from '../lib/icons';
 
 const STEP_SEC = 30;
 
@@ -12,7 +13,7 @@ export function renderSettings(root: HTMLElement): () => void {
     const routine = settings.routine;
     root.innerHTML = `
       <header>
-        <a class="back-link" href="#/"><span aria-hidden="true">‹</span> Home</a>
+        <a class="back-link" href="#/">${icons.chevronLeft}Home</a>
         <h1 tabindex="-1">Settings</h1>
       </header>
 

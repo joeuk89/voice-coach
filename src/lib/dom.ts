@@ -59,3 +59,14 @@ export function closeOnBackdrop(dialog: HTMLDialogElement): void {
     if (ev.target === dialog) dialog.close();
   });
 }
+
+/** Restarts a CSS animation tied to `className`, even if the class is already on. */
+export function replayClass(el: HTMLElement, className: string): void {
+  el.classList.remove(className);
+  void el.offsetWidth;
+  el.classList.add(className);
+}
+
+export function playEntrance(screen: HTMLElement): void {
+  replayClass(screen, 'entering');
+}

@@ -5,6 +5,7 @@ import { currentStreak, lastEntry, localDay, parseDay, recentEntries } from '../
 import { startSession } from '../state/session';
 import { durationFor, loadSettings, planRoutine, saveSettings, totalSeconds } from '../state/settings';
 import { bindRoutineToggle, routineToggle } from '../lib/routine-toggle';
+import { icons } from '../lib/icons';
 import type { Feeling, LogEntry, Settings } from '../types';
 
 const SHORT_DATE: Intl.DateTimeFormatOptions = { weekday: 'short', day: 'numeric', month: 'short' };
@@ -48,8 +49,11 @@ export function renderHome(root: HTMLElement): () => void {
     const steps = planRoutine(settings);
     root.innerHTML = `
       <header class="home-head">
-        <div class="eyebrow">${esc(new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' }))}</div>
-        <h1 tabindex="-1">Voice Trainer</h1>
+        <div>
+          <div class="eyebrow">${esc(new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' }))}</div>
+          <h1 tabindex="-1">Voice Trainer</h1>
+        </div>
+        <a class="icon-link" href="#/settings" aria-label="Settings">${icons.gear}</a>
       </header>
 
       ${routineToggle(settings, 'Routine')}
@@ -82,8 +86,6 @@ export function renderHome(root: HTMLElement): () => void {
             .join('')}
         </ol>
       </section>
-
-      <a class="btn btn-ghost" href="#/settings">Settings</a>
     `;
 
     bindRoutineToggle(root, settings, () => {

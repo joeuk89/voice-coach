@@ -4,6 +4,7 @@ import { animationFor, mountAnimation, type AnimationPlayer } from './animations
 import type { LoopWindow } from './animations/window';
 import { exercises } from './exercises';
 import { esc } from './lib/dom';
+import { icons } from './lib/icons';
 
 function shortLabel(text: string, max = 18): string {
   if (text.length <= max) return text;
@@ -16,7 +17,7 @@ const shown = exercises.filter((e) => e.animation);
 const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = `
   <header>
-    <a class="back-link" href="./"><span aria-hidden="true">‹</span> App</a>
+    <a class="back-link" href="./">${icons.chevronLeft}App</a>
     <h1>Animations</h1>
     <label class="muted">Scrub <input id="scrub" type="range" min="0" max="100" value="0"> <span id="scrub-val">live</span></label>
   </header>

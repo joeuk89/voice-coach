@@ -1,4 +1,6 @@
 .anim-vfe .vf-steps text { animation: var(--cycle) step-end infinite; }
+/* The four step names only fit across the card below the shared 13px label size. */
+.anim-vfe .vf-steps .anim-label { font-size: 11px; }
 .anim-vfe .vf-steps text:nth-child(1) { animation-name: vf-step1; }
 .anim-vfe .vf-steps text:nth-child(2) { animation-name: vf-step2; }
 .anim-vfe .vf-steps text:nth-child(3) { animation-name: vf-step3; }

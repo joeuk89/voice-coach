@@ -22,6 +22,8 @@ export interface SustainEvents {
 export interface SustainPanel {
   /** Start a new sub-step: Undo forgets earlier holds, and a hold still running is logged but not reported. */
   resetStep(): void;
+  /** Whether Start hold carries the screen's primary style. */
+  setPrimary(primary: boolean): void;
   stop(): void;
 }
 
@@ -32,6 +34,7 @@ export function mountSustainPanel(container: HTMLElement, events: SustainEvents 
   let stepHolds: string[] = [];
   let step = 0;
   let holdStep = 0;
+  let primary = true;
 
   function draw() {
     const running = interval !== undefined;
@@ -43,7 +46,7 @@ export function mountSustainPanel(container: HTMLElement, events: SustainEvents 
       </div>
       <div class="sustain-row">
         <div class="sustain-clock mono" id="sustain-clock">${fmt(running ? elapsed() : 0)}</div>
-        <button class="btn btn-primary sustain-btn ${running ? 'running' : ''}" id="sustain-toggle">${running ? 'Stop' : 'Start hold'}</button>
+        <button class="btn sustain-btn ${primary ? 'btn-primary' : ''} ${running ? 'running' : ''}" id="sustain-toggle">${running ? 'Stop' : 'Start hold'}</button>
       </div>
       <div class="sustain-today">
         ${
@@ -108,6 +111,10 @@ export function mountSustainPanel(container: HTMLElement, events: SustainEvents 
       if (!stepHolds.length) return;
       stepHolds = [];
       draw();
+    },
+    setPrimary(next) {
+      primary = next;
+      container.querySelector('#sustain-toggle')?.classList.toggle('btn-primary', next);
     },
     stop,
   };

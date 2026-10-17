@@ -2,8 +2,9 @@ import { animationFor, mountAnimation, type AnimationPlayer } from '../animation
 import { mountReadingPanel } from '../panels/reading';
 import { mountSustainPanel, type SustainPanel } from '../panels/sustain';
 import { playCue } from '../lib/audio';
-import { $, closeOnBackdrop, esc, formatClock, on } from '../lib/dom';
+import { $, closeOnBackdrop, esc, formatClock, on, playEntrance, replayClass } from '../lib/dom';
 import { buzz } from '../lib/haptics';
+import { icons } from '../lib/icons';
 import { createCountdown, type Countdown } from '../lib/timer';
 import { allowSleep, keepAwake } from '../lib/wakelock';
 import { planSubSteps, type PlannedSubStep } from '../state/plan';
@@ -15,11 +16,22 @@ import type { Exercise } from '../types';
 const START_HINT = 'Tap Play to start the track.';
 const DOUBLE_TAP_MS = 350;
 
+const doneMark = `<span class="done-mark">${icons.check}</span>`;
+const restartButton = `<button class="btn btn-square" id="timer-restart" aria-label="Restart">${icons.reset}</button>`;
+
 function timerControls(seconds: number, startLabel: string): string {
   return `
-    <div class="timer" id="clock" aria-live="off">${formatClock(seconds)}</div>
+    <div class="timer-readout">
+      <div class="timer" id="clock" aria-live="off">${formatClock(seconds)}</div>
+      <span class="done-mark" id="clock-check" hidden>${icons.check}</span>
+    </div>
     <button class="btn btn-primary timer-btn" id="timer-toggle">${startLabel}</button>
-    <button class="btn timer-btn" id="timer-restart">Restart</button>`;
+    ${restartButton}`;
+}
+
+function showClockDone(row: HTMLElement, done: boolean) {
+  $(row, '#clock').classList.toggle('done', done);
+  $(row, '#clock-check').hidden = !done;
 }
 
 function listValue(planned: PlannedSubStep): string {
@@ -87,6 +99,7 @@ export function renderGuided(root: HTMLElement): () => void {
     }
     const focusedId = document.activeElement?.id;
     showExercise();
+    playEntrance(root);
     window.scrollTo(0, 0);
     const keep = focusedId === 'next' || focusedId === 'back' ? root.querySelector<HTMLElement>(`#${focusedId}`) : null;
     (keep ?? $(root, 'h1')).focus({ preventScroll: true });
@@ -103,9 +116,9 @@ export function renderGuided(root: HTMLElement): () => void {
     root.innerHTML = `
       <header class="step-head">
         <div class="step-top">
-          <a class="back-link" href="#/" id="home"><span aria-hidden="true">‹</span> Home</a>
+          <a class="back-link" href="#/" id="home">${icons.chevronLeft}Home</a>
           <button class="ex-picker eyebrow" id="exercises" aria-haspopup="dialog">
-            Exercise ${session.index + 1} of ${steps.length} · ${formatClock(step.seconds)} <span aria-hidden="true">▾</span>
+            Exercise ${session.index + 1} of ${steps.length} · ${formatClock(step.seconds)} ${icons.chevronDown}
           </button>
         </div>
         <h1 tabindex="-1">${esc(exercise.name)}</h1>
@@ -117,8 +130,10 @@ export function renderGuided(root: HTMLElement): () => void {
       ${
         plan.length
           ? `<section class="substep-now" aria-live="polite">
-              <div class="eyebrow" id="sub-eyebrow"></div>
-              <p class="substep-text" id="sub-text"></p>
+              <div class="substep-body">
+                <div class="eyebrow" id="sub-eyebrow"></div>
+                <p class="substep-text" id="sub-text"></p>
+              </div>
             </section>`
           : ''
       }
@@ -143,7 +158,7 @@ export function renderGuided(root: HTMLElement): () => void {
       <button class="btn btn-ghost" id="detail">More detail</button>
 
       <nav class="step-nav">
-        <button class="btn" id="back">Back</button>
+        <button class="btn btn-square" id="back" aria-label="Back">${icons.chevronLeft}</button>
         <button class="btn" id="next">Next</button>
       </nav>
 
@@ -230,15 +245,36 @@ export function renderGuided(root: HTMLElement): () => void {
     showSubStep();
   }
 
+  /** One primary per state: the step's own control while it runs, then Next or Finish. */
+  function setStepDone(done: boolean) {
+    $(root, '#next').classList.toggle('btn-primary', done);
+    root.querySelector('#timer-toggle')?.classList.toggle('btn-primary', !done);
+    sustain?.setPrimary(!done);
+  }
+
+  function crossfadeSubStep() {
+    const body = $(root, '.substep-body');
+    if (!body.textContent?.trim()) return;
+    const ghost = body.cloneNode(true) as HTMLElement;
+    ghost.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
+    ghost.classList.remove('swapping');
+    ghost.classList.add('substep-ghost');
+    ghost.setAttribute('aria-hidden', 'true');
+    ghost.addEventListener('animationend', () => ghost.remove());
+    body.after(ghost);
+    replayClass(body, 'swapping');
+  }
+
   function showSubStep() {
     $<HTMLButtonElement>(root, '#back').disabled = prevPosition(steps, session) === null;
-    const last = isLast(steps, session);
-    const next = $(root, '#next');
-    next.textContent = last ? 'Finish' : 'Next';
-    next.classList.toggle('btn-primary', last);
+    $(root, '#next').textContent = isLast(steps, session) ? 'Finish' : 'Next';
 
     const current = plan[session.subIndex];
-    if (!current) return;
+    if (!current) {
+      if (!audio) setStepDone(true);
+      return;
+    }
+    crossfadeSubStep();
     $(root, '#sub-eyebrow').textContent = `Step ${session.subIndex + 1} of ${plan.length}`;
     $(root, '#sub-text').textContent = current.subStep.text;
     player?.setWindow(current.subStep.window);
@@ -259,6 +295,7 @@ export function renderGuided(root: HTMLElement): () => void {
     const row = $(root, '#timer-row');
     if (current.mode === 'untimed') {
       row.innerHTML = '<span class="muted">No timer for this step</span>';
+      setStepDone(true);
       return;
     }
     if (current.mode === 'reps') {
@@ -273,8 +310,8 @@ export function renderGuided(root: HTMLElement): () => void {
     function showFinished(finished: boolean) {
       if (finished && document.activeElement === toggle) restart.focus({ preventScroll: true });
       toggle.hidden = finished;
-      restart.classList.toggle('btn-primary', finished);
-      clock.classList.toggle('done', finished);
+      showClockDone(row, finished);
+      setStepDone(finished || current.seconds <= 0);
     }
 
     function reset() {
@@ -311,17 +348,18 @@ export function renderGuided(root: HTMLElement): () => void {
     row.innerHTML = `
       <div class="timer rep-count" id="reps" aria-live="polite"></div>
       ${countsHolds ? '' : '<button class="btn btn-primary timer-btn" id="rep-done">Done</button>'}
-      <button class="btn timer-btn" id="timer-restart">Restart</button>`;
+      ${restartButton}`;
     const counter = $(row, '#reps');
     const done = row.querySelector<HTMLButtonElement>('#rep-done');
     let count = 0;
 
     function draw() {
       const label = repLabel(count, target, countsHolds ? 'Hold' : 'Rep', current.subStep.repsPerPitch);
-      counter.innerHTML = `${label.lead ? `<small>${label.lead}</small> ` : ''}${label.shown} <small>${label.tail}</small>`;
       const complete = isComplete(count, target);
+      counter.innerHTML = `${label.lead ? `<small>${label.lead}</small> ` : ''}${label.shown} <small>${label.tail}</small>${complete ? doneMark : ''}`;
       counter.classList.toggle('done', complete);
       if (done) done.disabled = complete;
+      setStepDone(complete);
     }
 
     function add(delta: number) {
@@ -353,12 +391,17 @@ export function renderGuided(root: HTMLElement): () => void {
         <div class="muted" id="audio-status">${START_HINT}</div>
       </div>`;
     const row = $(root, '#timer-row');
-    row.innerHTML = timerControls(seconds, 'Play');
+    row.innerHTML = timerControls(seconds, '');
     const bar = $(demo, '#audio-progress');
     const status = $(demo, '#audio-status');
     const clock = $(row, '#clock');
     const toggle = $<HTMLButtonElement>(row, '#timer-toggle');
     const restart = $<HTMLButtonElement>(row, '#timer-restart');
+    const showToggle = (playing: boolean) => {
+      toggle.innerHTML = playing ? `${icons.pause}Pause` : `${icons.play}Play`;
+    };
+    showToggle(false);
+    setStepDone(false);
     const track = new Audio(src);
     track.preload = 'auto';
     audio = track;
@@ -372,26 +415,30 @@ export function renderGuided(root: HTMLElement): () => void {
     track.addEventListener('loadedmetadata', showTime);
     track.addEventListener('timeupdate', showTime);
     track.addEventListener('play', () => {
-      toggle.textContent = 'Pause';
+      showToggle(true);
       status.textContent = 'Playing';
-      clock.classList.remove('paused', 'done');
+      clock.classList.remove('paused');
+      showClockDone(row, false);
+      setStepDone(false);
     });
     track.addEventListener('pause', () => {
       if (track.ended) return;
       const started = track.currentTime > 0;
-      toggle.textContent = 'Play';
+      showToggle(false);
       status.textContent = started ? 'Paused' : START_HINT;
       clock.classList.toggle('paused', started);
     });
     track.addEventListener('ended', () => {
       buzz();
-      toggle.textContent = 'Play';
+      showToggle(false);
       status.textContent = 'Track finished. Tap Next when you are ready.';
-      clock.classList.add('done');
+      showClockDone(row, true);
+      setStepDone(true);
     });
     track.addEventListener('error', () => {
       toggle.disabled = true;
       restart.disabled = true;
+      setStepDone(true);
       status.textContent = 'Could not load the track. Tap Next to carry on.';
     });
 
@@ -408,7 +455,9 @@ export function renderGuided(root: HTMLElement): () => void {
     restart.addEventListener('click', () => {
       track.pause();
       track.currentTime = 0;
-      clock.classList.remove('paused', 'done');
+      clock.classList.remove('paused');
+      showClockDone(row, false);
+      setStepDone(false);
       status.textContent = START_HINT;
       showTime();
     });
