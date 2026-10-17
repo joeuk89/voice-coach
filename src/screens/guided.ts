@@ -62,9 +62,11 @@ export function renderGuided(root: HTMLElement): () => void {
 
       <section class="card demo" id="demo" ${def || isAudio ? '' : 'hidden'}></section>
 
-      <ul class="cues">
-        ${exercise.cues.map((c) => `<li>${esc(c)}</li>`).join('')}
-      </ul>
+      ${
+        exercise.subSteps.length
+          ? `<ul class="cues">${exercise.subSteps.map((sub) => `<li>${esc(sub.text)}</li>`).join('')}</ul>`
+          : ''
+      }
 
       <section class="card panel" id="panel" ${exercise.panel ? '' : 'hidden'}></section>
 

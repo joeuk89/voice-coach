@@ -14,18 +14,30 @@ export interface Link {
   url: string;
 }
 
+export interface SubStep {
+  text: string;
+  /** Share of the exercise duration relative to the other sub-steps. 0 means untimed. Default 1. */
+  weight?: number;
+  /** Fixed number of reps, for protocol-defined counts. */
+  reps?: number;
+  /** Seconds one rep takes; the rep count is derived from the time share. */
+  repSec?: number;
+  /** Fraction of the animation loop to play, [from, to). Default whole loop. */
+  window?: [number, number];
+}
+
 export interface Exercise {
   id: string;
   name: string;
   purpose: string;
-  cues: string[];
+  subSteps: SubStep[];
   tips?: string[];
   /** Seconds per routine. 0 leaves the exercise out of that routine. */
   duration: Record<RoutineId, number>;
   animation: AnimationId | null;
   /** 'audio' plays a bundled track instead of running a countdown. */
   kind?: 'timed' | 'audio';
-  /** Extra interactive panel under the cues. */
+  /** Extra interactive panel under the sub-steps. */
   panel?: 'sustain' | 'reading';
   audioSrc?: string;
   links: Link[];
