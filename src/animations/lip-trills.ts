@@ -28,7 +28,7 @@ const svg = `
     <path d="M199 83 q 9 17 0 34"/>
   </g>
 
-  ${rings(188, 100, 32, 'lt-rings')}
+  ${rings(214, 100, 32, 'lt-rings')}
 
   <text class="anim-label" x="60" y="172">AIR · on</text>
   ${airLane(178)}

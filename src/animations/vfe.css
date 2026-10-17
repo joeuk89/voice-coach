@@ -13,7 +13,7 @@
 .anim-vfe .vf-nub { fill: var(--line); }
 .anim-vfe .vf-hand {
   stroke: var(--voice); stroke-width: 2; stroke-linecap: round;
-  transform-box: view-box; transform-origin: 320px 62px;
+  transform-box: view-box; transform-origin: 320px 50px;
   animation: vf-hand 4s linear infinite;
 }
 
@@ -33,7 +33,7 @@
 .anim-vfe .vf-t-4 .pitch-dot { animation-name: vf-dot-4; }
 .anim-vfe .vf-cut { stroke: var(--surface); stroke-width: 5; }
 
-/* Finished steps stay behind the current one at 30% on the whole loop only; inside a window only the current step shows. */
+/* Finished steps stay behind the current one at 20% on the whole loop only; inside a window only the current step shows. */
 .anim-vfe .vf-ghost { fill: none; stroke: var(--voice); stroke-width: 3; stroke-linecap: round; animation: var(--cycle) step-end infinite; }
 .anim-vfe .vf-ghost-1 { animation-name: vf-ghost-1; }
 .anim-vfe .vf-ghost-2 { animation-name: vf-ghost-2; }
@@ -45,9 +45,9 @@
 @keyframes vf-show-2 { 0% { opacity: 0; } 25% { opacity: 1; } 45%, 100% { opacity: 0; } }
 @keyframes vf-show-3 { 0% { opacity: 0; } 45% { opacity: 1; } 65%, 100% { opacity: 0; } }
 @keyframes vf-show-4 { 0% { opacity: 0; } 65%, 100% { opacity: 1; } }
-@keyframes vf-ghost-1 { 0% { opacity: 0; } 25%, 100% { opacity: 0.3; } }
-@keyframes vf-ghost-2 { 0% { opacity: 0; } 45%, 100% { opacity: 0.3; } }
-@keyframes vf-ghost-3 { 0% { opacity: 0; } 65%, 100% { opacity: 0.3; } }
+@keyframes vf-ghost-1 { 0% { opacity: 0; } 25%, 100% { opacity: 0.2; } }
+@keyframes vf-ghost-2 { 0% { opacity: 0; } 45%, 100% { opacity: 0.2; } }
+@keyframes vf-ghost-3 { 0% { opacity: 0; } 65%, 100% { opacity: 0.2; } }
 @keyframes vf-pip-2 { 0% { fill: transparent; stroke: var(--muted); } 25%, 100% { fill: var(--fg); stroke: var(--fg); } }
 @keyframes vf-pip-3 { 0% { fill: transparent; stroke: var(--muted); } 45%, 100% { fill: var(--fg); stroke: var(--fg); } }
 @keyframes vf-pip-4 { 0% { fill: transparent; stroke: var(--muted); } 65%, 100% { fill: var(--fg); stroke: var(--fg); } }

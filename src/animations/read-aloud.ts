@@ -1,7 +1,7 @@
 import type { AnimationDef } from '../types';
 import './read-aloud.css';
 
-const base = 160;
+const base = 176;
 
 /** Peaks sit over the bold words: “say” at x 110, “stole” at 174, “money” at 258. `scale` shrinks every rise for pass 2. */
 function contour(scale: number): string {
@@ -34,7 +34,7 @@ const svg = `
     <circle class="pitch-dot ra-dot ra-dot-2" r="6" style="offset-path: path('${softContour}')"/>
   </g>
 
-  <text class="ra-text" x="36" y="206">I didn’t <tspan class="hot">say</tspan> he <tspan class="hot">stole</tspan> the <tspan class="hot">money</tspan>.</text>
+  <text class="ra-text" x="36" y="226">I didn’t <tspan class="hot">say</tspan> he <tspan class="hot">stole</tspan> the <tspan class="hot">money</tspan>.</text>
 </svg>`;
 
 export const readAloud: AnimationDef = {

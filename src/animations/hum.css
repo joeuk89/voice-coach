@@ -50,3 +50,32 @@
 @media (prefers-reduced-motion: reduce) {
   .anim-hum .hm-lower { animation-name: hm-lower-held; }
 }
+
+.anim-hum .hm-nose { fill: var(--surface-2); }
+.anim-hum .hm-t { animation: var(--cycle) step-end infinite; }
+.anim-hum .hm-t-1 { animation-name: hm-show-1; }
+.anim-hum .hm-t-2 { animation-name: hm-show-2; }
+.anim-hum .hm-t-3 { animation-name: hm-show-3; }
+.anim-hum .hm-t-4 { animation-name: hm-show-4; }
+.anim-hum .hm-t .pitch-line, .anim-hum .hm-t .pitch-dot { animation: var(--cycle) linear infinite; }
+.anim-hum .hm-t-1 .pitch-line { animation-name: hm-trace-1; }
+.anim-hum .hm-t-2 .pitch-line { animation-name: hm-trace-2; }
+.anim-hum .hm-t-3 .pitch-line { animation-name: hm-trace-3; }
+.anim-hum .hm-t-4 .pitch-line { animation-name: hm-trace-4; }
+.anim-hum .hm-t-1 .pitch-dot { animation-name: hm-dot-1; }
+.anim-hum .hm-t-2 .pitch-dot { animation-name: hm-dot-2; }
+.anim-hum .hm-t-3 .pitch-dot { animation-name: hm-dot-3; }
+.anim-hum .hm-t-4 .pitch-dot { animation-name: hm-dot-4; }
+
+/* Each phase's trace runs the full width of its window, so a lift sits where its suffix lights. */
+@keyframes hm-show-2 { 0% { opacity: 0; } 30% { opacity: 1; } 55%, 100% { opacity: 0; } }
+@keyframes hm-show-3 { 0% { opacity: 0; } 55% { opacity: 1; } 80%, 100% { opacity: 0; } }
+@keyframes hm-show-4 { 0% { opacity: 0; } 80%, 100% { opacity: 1; } }
+@keyframes hm-trace-1 { 0% { stroke-dashoffset: 1; } 30%, 100% { stroke-dashoffset: 0; } }
+@keyframes hm-trace-2 { 0%, 30% { stroke-dashoffset: 1; } 55%, 100% { stroke-dashoffset: 0; } }
+@keyframes hm-trace-3 { 0%, 55% { stroke-dashoffset: 1; } 80%, 100% { stroke-dashoffset: 0; } }
+@keyframes hm-trace-4 { 0%, 80% { stroke-dashoffset: 1; } 100% { stroke-dashoffset: 0; } }
+@keyframes hm-dot-1 { 0% { offset-distance: 0%; } 30%, 100% { offset-distance: 100%; } }
+@keyframes hm-dot-2 { 0%, 30% { offset-distance: 0%; } 55%, 100% { offset-distance: 100%; } }
+@keyframes hm-dot-3 { 0%, 55% { offset-distance: 0%; } 80%, 100% { offset-distance: 100%; } }
+@keyframes hm-dot-4 { 0%, 80% { offset-distance: 0%; } 100% { offset-distance: 100%; } }

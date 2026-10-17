@@ -32,7 +32,7 @@ const svg = `
   ${airStream('M56 97 L 256 97', 'st-air-on')}
   ${lip(30, 76, 'st-lip-upper')}
   ${lip(30, 102, 'st-lip-lower')}
-  ${rings(244, 97, 32, 'st-rings')}
+  ${rings(262, 97, 32, 'st-rings')}
 
   <text class="anim-label st-before-air" x="60" y="172">AIR · off</text>
   <text class="anim-label st-air-on" x="60" y="172">AIR · on</text>

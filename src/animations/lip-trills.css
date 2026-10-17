@@ -57,10 +57,10 @@
 @keyframes lt-phase-trill { 0% { opacity: 1; } 85.5%, 100% { opacity: 0; } }
 @keyframes lt-phase-open { 0% { opacity: 0; } 85.5%, 100% { opacity: 1; } }
 @keyframes lt-phase-buzz { 0% { opacity: 1; } 85.5%, 100% { opacity: 0; } }
-@keyframes lt-open-up { 0%, 85.5% { transform: translateY(0); } 88%, 95% { transform: translateY(-12px); } 99%, 100% { transform: translateY(0); } }
-@keyframes lt-open-down { 0%, 85.5% { transform: translateY(0); } 88%, 95% { transform: translateY(12px); } 99%, 100% { transform: translateY(0); } }
-@keyframes lt-ah { 0%, 87% { opacity: 0; } 88.5%, 94% { opacity: 1; } 96%, 100% { opacity: 0; } }
-@keyframes lt-phase-air { 0%, 85.5% { opacity: 1; } 88%, 95% { opacity: 0.3; } 99%, 100% { opacity: 1; } }
+@keyframes lt-open-up { 0%, 85.5% { transform: translateY(0); } 88%, 100% { transform: translateY(-12px); } }
+@keyframes lt-open-down { 0%, 85.5% { transform: translateY(0); } 88%, 100% { transform: translateY(12px); } }
+@keyframes lt-ah { 0%, 87% { opacity: 0; } 88.5%, 100% { opacity: 1; } }
+@keyframes lt-phase-air { 0%, 85.5% { opacity: 1; } 88%, 100% { opacity: 0.3; } }
 
 @media (prefers-reduced-motion: reduce) {
   .anim-lip-trills .lt-lip-upper,

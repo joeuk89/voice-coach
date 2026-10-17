@@ -2,15 +2,15 @@ import type { AnimationDef } from '../types';
 import { easyPitchY, pitchStrip, pitchTrace } from './parts';
 import './vfe.css';
 
-const top = 116;
-const bottom = 236;
+const top = 96;
+const bottom = 256;
 const easy = easyPitchY(top, bottom);
 
 const names = ['WARM UP', 'STRETCH', 'CONTRACT', 'ADDUCTION'];
 
 /** Adduction: five rising pitches, each held twice, drawn as a staircase whose treads are cut in two. */
 const pitchWidth = 284 / 5;
-const pitchYs = [222, 204, 186, 168, 150];
+const pitchYs = [242, 214, 186, 158, 130];
 const stairs =
   `M60 ${pitchYs[0]}` + pitchYs.map((y, i) => `${i ? ` V${y}` : ''} H${(60 + pitchWidth * (i + 1)).toFixed(1)}`).join('');
 const cuts = pitchYs
@@ -32,21 +32,21 @@ const svg = `
   ${names.map((name, i) => `<text class="anim-label vf-name vf-name-${i + 1}" x="106" y="30">${name}</text>`).join('')}
 
   <g class="vf-watch">
-    <circle class="body" cx="320" cy="62" r="18"/>
-    <rect class="vf-nub" x="317" y="38" width="6" height="6" rx="1"/>
-    <line class="vf-hand" x1="320" y1="62" x2="320" y2="48"/>
-    <text class="anim-label" x="320" y="98" text-anchor="middle">time it</text>
+    <circle class="body" cx="320" cy="50" r="18"/>
+    <rect class="vf-nub" x="317" y="26" width="6" height="6" rx="1"/>
+    <line class="vf-hand" x1="320" y1="50" x2="320" y2="36"/>
+    <text class="anim-label" x="320" y="86" text-anchor="middle">TIME IT</text>
   </g>
 
   ${pitchStrip({ top, bottom, className: 'vf-pitch', trace: false, dot: false })}
   <g class="vf-t vf-t-4">
-    <text class="anim-say" x="72" y="214">“ol”</text>
+    <text class="anim-say" x="72" y="232">“ol”</text>
     <path class="pitch-line" pathLength="1" d="${stairs}"/>
     ${cuts}
   </g>
   ${steps.map((d, i) => `<path class="vf-ghost vf-ghost-${i + 1}" d="${d}"/>`).join('')}
 
-  ${pitchTrace(steps[0]!, 'vf-t vf-t-1', `<text class="anim-say" x="64" y="182">“ee”</text>`)}
+  ${pitchTrace(steps[0]!, 'vf-t vf-t-1', `<text class="anim-say" x="64" y="${easy - 12}">“ee”</text>`)}
   ${pitchTrace(steps[1]!, 'vf-t vf-t-2')}
   ${pitchTrace(steps[2]!, 'vf-t vf-t-3')}
   <g class="vf-t vf-t-4"><circle class="pitch-dot" r="6" style="offset-path: path('${stairs}')"/></g>
