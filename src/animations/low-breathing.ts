@@ -2,34 +2,35 @@ import type { AnimationDef } from '../types';
 import { airStream } from './parts';
 import './low-breathing.css';
 
-const airIn = 'M186 32 C 164 32, 141 31, 140 40 C 139 49, 156 66, 156 88 C 156 106, 150 122, 126 146';
-const airOut = 'M126 146 C 150 122, 156 106, 156 88 C 156 66, 139 49, 140 40 C 141 31, 164 32, 186 32';
+const airIn = 'M193 50 C 178 47, 166 44, 154 44 C 138 44, 131 52, 131 64 L 131 175';
+const airOut = 'M131 175 L 131 64 C 131 52, 138 44, 154 44 C 166 44, 178 47, 193 50';
 
 const cells = Array.from({ length: 11 }, (_, i) => 30 + 25 * (i + 1));
 
 const svg = `
 <svg viewBox="0 0 360 290" aria-hidden="true">
-  <circle class="body lb-head" cx="110" cy="34" r="20"/>
-  <path class="body lb-nose" d="M127 27 L137 36 L127 41"/>
+  <rect class="body lb-neck" x="124" y="58" width="14" height="20" rx="4"/>
+  <circle class="body lb-head" cx="131" cy="44" r="20"/>
+  <path class="body lb-nose" d="M149 37 Q 168 44 149 51"/>
 
-  <rect class="body lb-chest" x="76" y="62" width="68" height="50" rx="18"/>
-  <text class="anim-label" x="176" y="91">CHEST · still</text>
+  <path class="body lb-belly" d="M88 120 H 140 C 162 120, 174 140, 174 163 C 174 188, 158 206, 132 206 H 106 Q 88 206, 88 188 Z"/>
+  <ellipse class="body lb-hand" cx="174" cy="163" rx="8" ry="20"/>
+  <text class="anim-label" x="197" y="168">BELLY · out</text>
 
-  <circle class="body lb-belly" cx="110" cy="160" r="42"/>
-  <text class="anim-label" x="176" y="164">BELLY · out</text>
-  <ellipse class="body lb-hand" cx="152" cy="160" rx="8" ry="20"/>
+  <path class="body lb-chest" d="M106 74 H 156 Q 174 74, 174 92 V 108 Q 174 126, 156 126 H 88 V 92 Q 88 74, 106 74 Z"/>
+  <text class="anim-label" x="197" y="104">CHEST · still</text>
 
   <g class="lb-in">${airStream(airIn)}</g>
   <g class="lb-out">
     ${airStream(airOut)}
-    <text class="lb-sss" x="192" y="36">sss</text>
+    <text class="lb-sss" x="199" y="55">sss</text>
   </g>
 
-  <text class="anim-label" x="30" y="226">IN · 4</text>
-  <text class="anim-label" x="130" y="226">OUT · “sss” · 8</text>
-  <rect class="lb-track" x="30" y="236" width="300" height="16" rx="4"/>
-  <rect class="lb-fill" x="30" y="236" width="300" height="16" rx="4"/>
-  ${cells.map((x) => `<line class="lb-sep ${x === 130 ? 'lb-sep-major' : ''}" x1="${x}" y1="234" x2="${x}" y2="254"/>`).join('')}
+  <text class="anim-label" x="30" y="230">IN · 4</text>
+  <text class="anim-label" x="130" y="230">OUT · “sss” · 8</text>
+  <rect class="lb-track" x="30" y="240" width="300" height="16" rx="4"/>
+  <rect class="lb-fill" x="30" y="240" width="300" height="16" rx="4"/>
+  ${cells.map((x) => `<line class="lb-sep ${x === 130 ? 'lb-sep-major' : ''}" x1="${x}" y1="238" x2="${x}" y2="258"/>`).join('')}
 </svg>`;
 
 export const lowBreathing: AnimationDef = {
