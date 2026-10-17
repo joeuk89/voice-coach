@@ -1,24 +1,37 @@
 import type { AnimationDef } from '../types';
-import { pitchStrip, rings } from './parts';
+import { pitchStrip, pitchTrace, rings } from './parts';
 import './sirens.css';
 
-const pitchPath = 'M120 226 C 160 226, 180 86, 230 86 C 280 86, 300 236, 336 236';
+const top = 60;
+const bottom = 250;
+/** The comfortable band sits this far inside HIGH and LOW; pass 2 goes past it by `overshoot`. */
+const bandInset = 14;
+const overshoot = 12;
+
+const sirenPath = (low: number, high: number) => `M120 ${low} C 170 ${low}, 182 ${high}, 230 ${high} C 278 ${high}, 290 ${low}, 340 ${low}`;
+const bandTop = top + bandInset;
+const bandBottom = bottom - bandInset;
 
 const svg = `
 <svg viewBox="0 0 360 290" aria-hidden="true">
-  <ellipse class="sr-mouth" cx="60" cy="160" rx="16" ry="22"/>
-  <text class="sr-oo" x="60" y="165" text-anchor="middle">oo</text>
-  ${rings(84, 160, 34)}
-  ${pitchStrip({ top: 90, bottom: 230, left: 110, path: pitchPath, className: 'sr-pitch' })}
-  <text class="anim-label sr-edge" x="340" y="80" text-anchor="end">just past comfortable</text>
+  <text class="anim-say" x="60" y="92" text-anchor="middle">“oo”</text>
+  <ellipse class="sr-mouth" cx="60" cy="128" rx="16" ry="22"/>
+  ${rings(84, 128, 32)}
+
+  <rect class="sr-band" x="110" y="${bandTop}" width="234" height="${bandBottom - bandTop}"/>
+  <line class="sr-band-edge" x1="110" y1="${bandTop}" x2="344" y2="${bandTop}"/>
+  <line class="sr-band-edge" x1="110" y1="${bandBottom}" x2="344" y2="${bandBottom}"/>
+  ${pitchStrip({ top, bottom, left: 110, className: 'sr-pitch', trace: false, dot: false })}
+  ${pitchTrace(sirenPath(bandBottom, bandTop), 'sr-pass-1')}
+  ${pitchTrace(sirenPath(bandBottom + overshoot, bandTop - overshoot), 'sr-pass-2')}
 </svg>`;
 
 export const sirens: AnimationDef = {
   id: 'sirens',
-  cycleSec: 8,
+  cycleSec: 16,
   svg,
   phases: [
-    { until: 0.5, caption: 'Hum or “oo”. Glide from the bottom of your range to the top, smooth like a distant siren.' },
+    { until: 0.5, caption: 'Hum or “oo”. Glide from the bottom of your range to the top and back, smooth like a distant siren.' },
     { until: 1, caption: 'Nudge gently past the comfortable edges on each pass.' },
   ],
 };

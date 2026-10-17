@@ -13,14 +13,30 @@ export function activeWindow(window: LoopWindow | null | undefined): LoopWindow 
 /** Keeps the clock this far inside each window edge, so a hard switch on the edge always reads as this window. */
 const EDGE_MS = 1;
 
-/** Loop time in ms after looping the window for `elapsedMs`, wrapping back to its start. */
+/** A window shorter than this plays slowed down so one pass still takes this long in real time. */
+export const MIN_PASS_MS = 4000;
+/** Each pass holds its final frame this long before cutting back to the window start. */
+export const END_HOLD_MS = 500;
+
+/** Real time one pass through a window of `spanMs` loop time takes, before the end hold. */
+export function passMs(spanMs: number): number {
+  return Math.max(spanMs, MIN_PASS_MS);
+}
+
+/**
+ * Loop time in ms after looping the window for `elapsedMs` of real time. Short windows are slowed to
+ * MIN_PASS_MS, each pass holds its last frame for END_HOLD_MS, then it wraps back to the start.
+ */
 export function windowTime([from, to]: LoopWindow, cycleMs: number, elapsedMs: number): number {
   const start = from * cycleMs;
   const span = (to - from) * cycleMs;
   if (span <= 0) return start;
   const edge = Math.min(EDGE_MS, span / 2);
-  const offset = ((elapsedMs % span) + span) % span;
-  return start + Math.min(Math.max(offset, edge), span - edge);
+  const pass = passMs(span);
+  const period = pass + END_HOLD_MS;
+  const offset = ((elapsedMs % period) + period) % period;
+  const played = (Math.min(offset, pass) * span) / pass;
+  return start + Math.min(Math.max(played, edge), span - edge);
 }
 
 /** How far through the window a loop time is, from 0 to 1. */

@@ -1,13 +1,23 @@
 .anim-sirens .sr-mouth {
-  fill: var(--body); stroke: var(--lip); stroke-width: 3;
-  transform-box: view-box; transform-origin: 60px 160px;
+  fill: var(--body); stroke: var(--lip); stroke-width: 2;
+  transform-box: view-box; transform-origin: 60px 128px;
   animation: sr-mouth var(--cycle) ease-in-out infinite;
 }
-.anim-sirens .sr-oo { fill: var(--muted); font: 12px var(--font); }
-.anim-sirens .sr-edge { opacity: 0.6; }
-.anim-sirens .sr-pitch .pitch-line { animation: anim-trail-full var(--cycle) linear infinite; }
-.anim-sirens .sr-pitch .pitch-dot {
-  offset-path: path('M120 226 C 160 226, 180 86, 230 86 C 280 86, 300 236, 336 236');
-  animation: anim-glide-full var(--cycle) linear infinite;
-}
-@keyframes sr-mouth { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
+.anim-sirens .sr-band { fill: color-mix(in srgb, var(--voice) 7%, transparent); }
+.anim-sirens .sr-band-edge { stroke: color-mix(in srgb, var(--fg) 30%, transparent); stroke-width: 2; stroke-dasharray: 3 5; }
+
+.anim-sirens .sr-pass-1 { animation: sr-show-1 var(--cycle) step-end infinite; }
+.anim-sirens .sr-pass-2 { animation: sr-show-2 var(--cycle) step-end infinite; }
+.anim-sirens .sr-pass-1 .pitch-line { animation: sr-trace-1 var(--cycle) linear infinite; }
+.anim-sirens .sr-pass-2 .pitch-line { animation: sr-trace-2 var(--cycle) linear infinite; }
+.anim-sirens .sr-pass-1 .pitch-dot { animation: sr-dot-1 var(--cycle) linear infinite; }
+.anim-sirens .sr-pass-2 .pitch-dot { animation: sr-dot-2 var(--cycle) linear infinite; }
+
+/* Pass 1 stays inside the comfortable band, pass 2 goes past it; each fills one half, matching the sub-step windows. */
+@keyframes sr-mouth { 0%, 50%, 100% { transform: scale(1); } 25% { transform: scale(1.2); } 75% { transform: scale(1.3); } }
+@keyframes sr-show-1 { 0% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes sr-show-2 { 0% { opacity: 0; } 50%, 100% { opacity: 1; } }
+@keyframes sr-trace-1 { 0% { stroke-dashoffset: 1; } 48%, 100% { stroke-dashoffset: 0; } }
+@keyframes sr-trace-2 { 0%, 50% { stroke-dashoffset: 1; } 98%, 100% { stroke-dashoffset: 0; } }
+@keyframes sr-dot-1 { 0% { offset-distance: 0%; } 48%, 100% { offset-distance: 100%; } }
+@keyframes sr-dot-2 { 0%, 50% { offset-distance: 0%; } 98%, 100% { offset-distance: 100%; } }

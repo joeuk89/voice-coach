@@ -1,37 +1,33 @@
 import type { AnimationDef } from '../types';
-import { rings } from './parts';
+import { lip, rings } from './parts';
 import './hum.css';
+
+/** Where a two-part sound word splits: the prefix ends here and the suffix that lights up starts here. */
+const split = 252;
 
 const svg = `
 <svg viewBox="0 0 360 290" aria-hidden="true">
-  <circle class="body" cx="110" cy="64" r="10"/>
-  <text class="anim-label" x="158" y="68">NOSE · buzz</text>
-  ${rings(122, 64, 16, 'hm-nose-rings')}
+  <line class="hm-airway" x1="80" y1="48" x2="80" y2="170"/>
 
-  <rect class="lip" x="70" y="112" width="80" height="16" rx="8"/>
-  <rect class="lip hm-lower" x="70" y="130" width="80" height="16" rx="8"/>
-  <text class="anim-label" x="204" y="134">LIPS · buzz</text>
-  ${rings(154, 129, 28, 'hm-lip-rings')}
-  <text class="hm-say hm-say-1" x="204" y="160">“mmm”</text>
-  <text class="hm-say hm-say-2" x="204" y="160">“mmm-ah”</text>
-  <text class="hm-say hm-say-3" x="204" y="160">“mmm-many”</text>
-  <text class="hm-say hm-say-4" x="204" y="160">short phrases</text>
-  <g class="hm-beats hm-beats-words">
-    <circle cx="212" cy="178" r="4"/><circle cx="224" cy="178" r="2.5"/>
-    <path d="M206 186 v4 h24 v-4"/>
-    <circle cx="250" cy="178" r="4"/><circle cx="262" cy="178" r="2.5"/>
-    <path d="M244 186 v4 h24 v-4"/>
-  </g>
-  <g class="hm-beats hm-beats-phrase">
-    <circle cx="210" cy="178" r="2.5"/><circle cx="222" cy="178" r="3.5"/><circle cx="234" cy="178" r="2"/>
-    <circle cx="246" cy="178" r="4"/><circle cx="258" cy="178" r="2.5"/><circle cx="270" cy="178" r="3"/>
-    <circle cx="282" cy="178" r="2"/>
-    <path d="M204 186 v4 h84 v-4"/>
-  </g>
+  <rect class="body" x="66" y="34" width="52" height="14" rx="7"/>
+  ${rings(122, 41, 18, 'hm-nose-rings')}
+  <text class="anim-label" x="152" y="46">NOSE · buzz</text>
 
-  <rect class="hm-throat" x="96" y="186" width="28" height="70" rx="14"/>
-  <text class="anim-label" x="134" y="218">THROAT · relaxed</text>
-  <text class="anim-label" x="134" y="236">no pressure here</text>
+  ${lip(80, 98)}
+  ${lip(80, 116, 'hm-lower')}
+  <text class="anim-say hm-ah-mouth" x="112" y="131" text-anchor="middle">“ah”</text>
+  ${rings(148, 115, 32, 'hm-lip-rings')}
+  <text class="anim-label" x="198" y="110">LIPS · buzz</text>
+
+  <text class="anim-say hm-show-1" x="198" y="138">“mmm”</text>
+  <text class="anim-say hm-prefix" x="${split}" y="138" text-anchor="end">“mmm-</text>
+  <text class="anim-say hm-ah" x="${split}" y="138">ah”</text>
+  <text class="anim-say hm-many" x="${split}" y="138">many”</text>
+  <text class="anim-say hm-money" x="${split}" y="138">money”</text>
+  <text class="anim-say hm-show-4" x="198" y="138">“many more”</text>
+
+  <rect class="hm-throat" x="66" y="170" width="28" height="92" rx="14"/>
+  <text class="anim-label" x="108" y="220">THROAT · relaxed</text>
 </svg>`;
 
 export const hum: AnimationDef = {

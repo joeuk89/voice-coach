@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { exercises } from '../exercises';
-import { activeWindow, animationTime, isInnerLoop, windowProgress, windowTime } from './window';
+import {
+  activeWindow,
+  animationTime,
+  END_HOLD_MS,
+  isInnerLoop,
+  MIN_PASS_MS,
+  passMs,
+  windowProgress,
+  windowTime,
+  type LoopWindow,
+} from './window';
 
 describe('activeWindow', () => {
   it('treats a missing window or the whole loop as no window', () => {
@@ -17,36 +27,62 @@ describe('activeWindow', () => {
 });
 
 describe('windowTime', () => {
-  const cycle = 10_000;
+  const cycle = 20_000;
 
   it('starts just inside the window start', () => {
-    expect(windowTime([0.2, 0.4], cycle, 0)).toBe(2001);
+    expect(windowTime([0.2, 0.4], cycle, 0)).toBe(4001);
   });
 
-  it('advances with real time inside the window', () => {
-    expect(windowTime([0.2, 0.4], cycle, 1500)).toBe(3500);
-  });
-
-  it('wraps back to the start at the window end', () => {
-    expect(windowTime([0.2, 0.4], cycle, 2000)).toBe(2001);
-    expect(windowTime([0.2, 0.4], cycle, 2500)).toBe(2500);
-    expect(windowTime([0.8, 1], cycle, 4100)).toBeCloseTo(8100);
+  it('advances with real time inside a window of 4 s or more', () => {
+    expect(windowTime([0.2, 0.4], cycle, 1500)).toBe(5500);
+    expect(windowTime([0, 0.5], cycle, 7000)).toBe(7000);
   });
 
   it('stops just inside the window end', () => {
-    expect(windowTime([0.2, 0.4], cycle, 1999.5)).toBe(3999);
+    expect(windowTime([0.2, 0.4], cycle, 3999.5)).toBe(7999);
+  });
+
+  it('holds the final frame for the end hold, then wraps back to the start', () => {
+    expect(windowTime([0.2, 0.4], cycle, 4000)).toBe(7999);
+    expect(windowTime([0.2, 0.4], cycle, 4000 + END_HOLD_MS - 1)).toBe(7999);
+    expect(windowTime([0.2, 0.4], cycle, 4000 + END_HOLD_MS)).toBe(4001);
+    expect(windowTime([0.2, 0.4], cycle, 4000 + END_HOLD_MS + 1000)).toBe(5000);
+  });
+
+  it('slows a window shorter than 4 s so one pass takes 4 s', () => {
+    const short: LoopWindow = [0, 0.05];
+    expect(windowTime(short, cycle, 2000)).toBe(500);
+    expect(windowTime(short, cycle, 3000)).toBe(750);
+    expect(windowTime(short, cycle, MIN_PASS_MS)).toBe(999);
+    expect(windowTime(short, cycle, MIN_PASS_MS + END_HOLD_MS + 2000)).toBe(500);
   });
 
   it('never leaves [from, to) over many window lengths', () => {
     for (let elapsed = 0; elapsed < 50_000; elapsed += 37) {
-      const t = windowTime([0.45, 0.65], cycle, elapsed);
-      expect(t).toBeGreaterThan(4500);
-      expect(t).toBeLessThan(6500);
+      const t = windowTime([0.45, 0.55], cycle, elapsed);
+      expect(t).toBeGreaterThan(9000);
+      expect(t).toBeLessThan(11_000);
     }
   });
 
   it('holds the start of an empty window', () => {
-    expect(windowTime([0.5, 0.5], cycle, 1234)).toBe(5000);
+    expect(windowTime([0.5, 0.5], cycle, 1234)).toBe(10_000);
+  });
+});
+
+describe('passMs', () => {
+  it('stretches short windows to the minimum and leaves longer ones at real speed', () => {
+    expect(passMs(1440)).toBe(MIN_PASS_MS);
+    expect(passMs(MIN_PASS_MS)).toBe(MIN_PASS_MS);
+    expect(passMs(8000)).toBe(8000);
+  });
+
+  it('keeps low breathing’s inhale window at its real 4 s pace', () => {
+    const low = exercises.find((e) => e.id === 'low-breathing')!;
+    const [from, to] = low.subSteps.find((s) => s.window)!.window!;
+    const cycleMs = 12_000;
+    expect(passMs((to - from) * cycleMs)).toBeCloseTo((to - from) * cycleMs);
+    expect(windowTime([from, to], cycleMs, 2000)).toBeCloseTo(2000);
   });
 });
 

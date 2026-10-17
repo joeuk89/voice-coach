@@ -1,41 +1,55 @@
 import type { AnimationDef } from '../types';
-import { pitchStrip } from './parts';
+import { easyPitchY, pitchStrip, pitchTrace } from './parts';
 import './vfe.css';
 
-/** One path per step, each with its own trace and dot. */
-const vfeSegments = [
-  'M40 170 L150 170',
-  'M158 230 C 170 230, 178 110, 198 110',
-  'M206 110 C 226 110, 234 230, 254 230',
-  'M262 230 L272 230 L272 215 L284 215 L284 200 L296 200 L296 185 L308 185 L308 170 L320 170',
+const top = 116;
+const bottom = 236;
+const easy = easyPitchY(top, bottom);
+
+const names = ['WARM UP', 'STRETCH', 'CONTRACT', 'ADDUCTION'];
+
+/** Adduction: five rising pitches, each held twice, drawn as a staircase whose treads are cut in two. */
+const pitchWidth = 284 / 5;
+const pitchYs = [222, 204, 186, 168, 150];
+const stairs =
+  `M60 ${pitchYs[0]}` + pitchYs.map((y, i) => `${i ? ` V${y}` : ''} H${(60 + pitchWidth * (i + 1)).toFixed(1)}`).join('');
+const cuts = pitchYs
+  .map((y, i) => {
+    const x = (60 + pitchWidth * (i + 0.5)).toFixed(1);
+    return `<line class="vf-cut" x1="${x}" y1="${y - 6}" x2="${x}" y2="${y + 6}"/>`;
+  })
+  .join('');
+
+const steps = [
+  `M60 ${easy} L344 ${easy}`,
+  `M60 ${bottom} C 160 ${bottom}, 240 ${top}, 344 ${top}`,
+  `M60 ${top} C 164 ${top}, 244 ${bottom}, 344 ${bottom}`,
 ];
 
 const svg = `
 <svg viewBox="0 0 360 290" aria-hidden="true">
-  <g class="vf-steps">
-    <text class="anim-label" x="20" y="30">1 WARM UP</text>
-    <text class="anim-label" x="100" y="30">2 STRETCH</text>
-    <text class="anim-label" x="184" y="30">3 CONTRACT</text>
-    <text class="anim-label" x="340" y="30" text-anchor="end">4 ADDUCT</text>
-  </g>
+  ${names.map((_, i) => `<circle class="vf-pip vf-pip-${i + 1}" cx="${24 + 14 * i}" cy="25" r="4.5"/>`).join('')}
+  ${names.map((name, i) => `<text class="anim-label vf-name vf-name-${i + 1}" x="86" y="30">${name}</text>`).join('')}
 
   <g class="vf-watch">
-    <circle class="body" cx="320" cy="72" r="18"/>
-    <rect class="vf-nub" x="317" y="48" width="6" height="6" rx="1"/>
-    <line class="vf-hand" x1="320" y1="72" x2="320" y2="58"/>
-    <text class="anim-label" x="320" y="108" text-anchor="middle">time it</text>
+    <circle class="body" cx="320" cy="62" r="18"/>
+    <rect class="vf-nub" x="317" y="38" width="6" height="6" rx="1"/>
+    <line class="vf-hand" x1="320" y1="62" x2="320" y2="48"/>
+    <text class="anim-label" x="320" y="98" text-anchor="middle">time it</text>
   </g>
 
-  ${pitchStrip({ top: 110, bottom: 230, left: 40, path: '', className: 'vf-pitch', trace: false, dot: false })}
-  ${vfeSegments
-    .map(
-      (d, i) => `<path class="pitch-line vf-seg vf-seg-${i + 1}" pathLength="1" d="${d}"/>
-  <g class="vf-show vf-show-${i + 1}"><circle class="pitch-dot vf-dot vf-dot-${i + 1}" r="6" style="offset-path: path('${d}')"/></g>`,
-    )
-    .join('')}
-  <text class="anim-label" x="48" y="148">“ee” as long</text>
-  <text class="anim-label" x="48" y="162">as you can</text>
-  <text class="anim-label" x="340" y="252" text-anchor="end">“ol” × 5 pitches</text>
+  ${pitchStrip({ top, bottom, className: 'vf-pitch', trace: false, dot: false })}
+  <g class="vf-t vf-t-4">
+    <text class="anim-say" x="72" y="214">“ol”</text>
+    <path class="pitch-line" pathLength="1" d="${stairs}"/>
+    ${cuts}
+  </g>
+  ${steps.map((d, i) => `<path class="vf-ghost vf-ghost-${i + 1}" d="${d}"/>`).join('')}
+
+  ${pitchTrace(steps[0]!, 'vf-t vf-t-1', `<text class="anim-say" x="64" y="182">“ee”</text>`)}
+  ${pitchTrace(steps[1]!, 'vf-t vf-t-2')}
+  ${pitchTrace(steps[2]!, 'vf-t vf-t-3')}
+  <g class="vf-t vf-t-4"><circle class="pitch-dot" r="6" style="offset-path: path('${stairs}')"/></g>
 </svg>`;
 
 export const vfe: AnimationDef = {

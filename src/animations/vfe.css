@@ -1,49 +1,67 @@
-.anim-vfe .vf-steps text { animation: var(--cycle) step-end infinite; }
-/* The four step names only fit across the card below the shared 13px label size. */
-.anim-vfe .vf-steps .anim-label { font-size: 11px; }
-.anim-vfe .vf-steps text:nth-child(1) { animation-name: vf-step1; }
-.anim-vfe .vf-steps text:nth-child(2) { animation-name: vf-step2; }
-.anim-vfe .vf-steps text:nth-child(3) { animation-name: vf-step3; }
-.anim-vfe .vf-steps text:nth-child(4) { animation-name: vf-step4; }
+.anim-vfe .vf-pip { fill: transparent; stroke: var(--muted); stroke-width: 2; animation: var(--cycle) step-end infinite; }
+.anim-vfe .vf-pip-1 { fill: var(--fg); stroke: var(--fg); }
+.anim-vfe .vf-pip-2 { animation-name: vf-pip-2; }
+.anim-vfe .vf-pip-3 { animation-name: vf-pip-3; }
+.anim-vfe .vf-pip-4 { animation-name: vf-pip-4; }
+.anim-vfe .vf-name { fill: var(--fg); animation: var(--cycle) step-end infinite; }
+.anim-vfe .vf-name-1 { animation-name: vf-show-1; }
+.anim-vfe .vf-name-2 { animation-name: vf-show-2; }
+.anim-vfe .vf-name-3 { animation-name: vf-show-3; }
+.anim-vfe .vf-name-4 { animation-name: vf-show-4; }
+
 .anim-vfe .vf-watch { animation: vf-watch var(--cycle) step-end infinite; }
 .anim-vfe .vf-nub { fill: var(--line); }
 .anim-vfe .vf-hand {
-  stroke: var(--voice); stroke-width: 2.5; stroke-linecap: round;
-  transform-box: view-box; transform-origin: 320px 72px;
+  stroke: var(--voice); stroke-width: 2; stroke-linecap: round;
+  transform-box: view-box; transform-origin: 320px 62px;
   animation: vf-hand 4s linear infinite;
 }
-.anim-vfe .vf-seg { animation: var(--cycle) linear infinite; }
-.anim-vfe .vf-seg-1 { animation-name: vf-seg-1; }
-.anim-vfe .vf-seg-2 { animation-name: vf-seg-2; }
-.anim-vfe .vf-seg-3 { animation-name: vf-seg-3; }
-.anim-vfe .vf-seg-4 { animation-name: vf-seg-4; }
-.anim-vfe .vf-dot { animation: var(--cycle) linear infinite; }
-.anim-vfe .vf-dot-1 { animation-name: vf-seg-1-dot; }
-.anim-vfe .vf-dot-2 { animation-name: vf-seg-2-dot; }
-.anim-vfe .vf-dot-3 { animation-name: vf-seg-3-dot; }
-.anim-vfe .vf-dot-4 { animation-name: vf-seg-4-dot; }
-.anim-vfe .vf-show { animation: var(--cycle) step-end infinite; }
-.anim-vfe .vf-show-1 { animation-name: vf-show1; }
-.anim-vfe .vf-show-2 { animation-name: vf-show2; }
-.anim-vfe .vf-show-3 { animation-name: vf-show3; }
-.anim-vfe .vf-show-4 { animation-name: vf-show4; }
+
+.anim-vfe .vf-t { animation: var(--cycle) step-end infinite; }
+.anim-vfe .vf-t-1 { animation-name: vf-show-1; }
+.anim-vfe .vf-t-2 { animation-name: vf-show-2; }
+.anim-vfe .vf-t-3 { animation-name: vf-show-3; }
+.anim-vfe .vf-t-4 { animation-name: vf-show-4; }
+.anim-vfe .vf-t .pitch-line, .anim-vfe .vf-t .pitch-dot { animation: var(--cycle) linear infinite; }
+.anim-vfe .vf-t-1 .pitch-line { animation-name: vf-trace-1; }
+.anim-vfe .vf-t-2 .pitch-line { animation-name: vf-trace-2; }
+.anim-vfe .vf-t-3 .pitch-line { animation-name: vf-trace-3; }
+.anim-vfe .vf-t-4 .pitch-line { animation-name: vf-trace-4; }
+.anim-vfe .vf-t-1 .pitch-dot { animation-name: vf-dot-1; }
+.anim-vfe .vf-t-2 .pitch-dot { animation-name: vf-dot-2; }
+.anim-vfe .vf-t-3 .pitch-dot { animation-name: vf-dot-3; }
+.anim-vfe .vf-t-4 .pitch-dot { animation-name: vf-dot-4; }
+.anim-vfe .vf-cut { stroke: var(--surface); stroke-width: 5; }
+
+/* Finished steps stay behind the current one at 30% on the whole loop only; inside a window only the current step shows. */
+.anim-vfe .vf-ghost { fill: none; stroke: var(--voice); stroke-width: 3; stroke-linecap: round; animation: var(--cycle) step-end infinite; }
+.anim-vfe .vf-ghost-1 { animation-name: vf-ghost-1; }
+.anim-vfe .vf-ghost-2 { animation-name: vf-ghost-2; }
+.anim-vfe .vf-ghost-3 { animation-name: vf-ghost-3; }
+.anim-vfe.anim-windowed .vf-ghost { visibility: hidden; }
 
 /* Phase boundaries match the sub-step windows in exercises.ts: 25%, 45%, 65%. */
-@keyframes vf-seg-1 { 0% { stroke-dashoffset: 1; } 25%, 100% { stroke-dashoffset: 0; } }
-@keyframes vf-seg-2 { 0%, 25% { stroke-dashoffset: 1; } 45%, 100% { stroke-dashoffset: 0; } }
-@keyframes vf-seg-3 { 0%, 45% { stroke-dashoffset: 1; } 65%, 100% { stroke-dashoffset: 0; } }
-@keyframes vf-seg-4 { 0%, 65% { stroke-dashoffset: 1; } 97%, 100% { stroke-dashoffset: 0; } }
-@keyframes vf-seg-1-dot { 0% { offset-distance: 0%; } 25%, 100% { offset-distance: 100%; } }
-@keyframes vf-seg-2-dot { 0%, 25% { offset-distance: 0%; } 45%, 100% { offset-distance: 100%; } }
-@keyframes vf-seg-3-dot { 0%, 45% { offset-distance: 0%; } 65%, 100% { offset-distance: 100%; } }
-@keyframes vf-seg-4-dot { 0%, 65% { offset-distance: 0%; } 97%, 100% { offset-distance: 100%; } }
-@keyframes vf-step1 { 0% { fill: var(--fg); } 25%, 100% { fill: var(--muted); } }
-@keyframes vf-step2 { 0% { fill: var(--muted); } 25% { fill: var(--fg); } 45%, 100% { fill: var(--muted); } }
-@keyframes vf-step3 { 0% { fill: var(--muted); } 45% { fill: var(--fg); } 65%, 100% { fill: var(--muted); } }
-@keyframes vf-step4 { 0% { fill: var(--muted); } 65%, 100% { fill: var(--fg); } }
-@keyframes vf-show1 { 0% { opacity: 1; } 25%, 100% { opacity: 0; } }
-@keyframes vf-show2 { 0% { opacity: 0; } 25% { opacity: 1; } 45%, 100% { opacity: 0; } }
-@keyframes vf-show3 { 0% { opacity: 0; } 45% { opacity: 1; } 65%, 100% { opacity: 0; } }
-@keyframes vf-show4 { 0% { opacity: 0; } 65%, 100% { opacity: 1; } }
+@keyframes vf-show-1 { 0% { opacity: 1; } 25%, 100% { opacity: 0; } }
+@keyframes vf-show-2 { 0% { opacity: 0; } 25% { opacity: 1; } 45%, 100% { opacity: 0; } }
+@keyframes vf-show-3 { 0% { opacity: 0; } 45% { opacity: 1; } 65%, 100% { opacity: 0; } }
+@keyframes vf-show-4 { 0% { opacity: 0; } 65%, 100% { opacity: 1; } }
+@keyframes vf-ghost-1 { 0% { opacity: 0; } 25%, 100% { opacity: 0.3; } }
+@keyframes vf-ghost-2 { 0% { opacity: 0; } 45%, 100% { opacity: 0.3; } }
+@keyframes vf-ghost-3 { 0% { opacity: 0; } 65%, 100% { opacity: 0.3; } }
+@keyframes vf-pip-2 { 0% { fill: transparent; stroke: var(--muted); } 25%, 100% { fill: var(--fg); stroke: var(--fg); } }
+@keyframes vf-pip-3 { 0% { fill: transparent; stroke: var(--muted); } 45%, 100% { fill: var(--fg); stroke: var(--fg); } }
+@keyframes vf-pip-4 { 0% { fill: transparent; stroke: var(--muted); } 65%, 100% { fill: var(--fg); stroke: var(--fg); } }
+@keyframes vf-trace-1 { 0% { stroke-dashoffset: 1; } 24%, 100% { stroke-dashoffset: 0; } }
+@keyframes vf-trace-2 { 0%, 25% { stroke-dashoffset: 1; } 44.2%, 100% { stroke-dashoffset: 0; } }
+@keyframes vf-trace-3 { 0%, 45% { stroke-dashoffset: 1; } 64.2%, 100% { stroke-dashoffset: 0; } }
+@keyframes vf-trace-4 { 0%, 65% { stroke-dashoffset: 1; } 98.6%, 100% { stroke-dashoffset: 0; } }
+@keyframes vf-dot-1 { 0% { offset-distance: 0%; } 24%, 100% { offset-distance: 100%; } }
+@keyframes vf-dot-2 { 0%, 25% { offset-distance: 0%; } 44.2%, 100% { offset-distance: 100%; } }
+@keyframes vf-dot-3 { 0%, 45% { offset-distance: 0%; } 64.2%, 100% { offset-distance: 100%; } }
+@keyframes vf-dot-4 { 0%, 65% { offset-distance: 0%; } 98.6%, 100% { offset-distance: 100%; } }
 @keyframes vf-watch { 0% { opacity: 1; } 25% { opacity: 0.3; } 65%, 100% { opacity: 1; } }
 @keyframes vf-hand { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-vfe .vf-hand { animation: none; }
+}

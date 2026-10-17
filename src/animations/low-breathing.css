@@ -6,7 +6,6 @@
 .anim-low-breathing .lb-hand { animation: lb-hand var(--cycle) infinite; }
 .anim-low-breathing .lb-in { animation: lb-phase-in var(--cycle) linear infinite; }
 .anim-low-breathing .lb-out { animation: lb-phase-out var(--cycle) linear infinite; }
-.anim-low-breathing .lb-sss { fill: var(--air); font: 600 13px var(--font); }
 .anim-low-breathing .lb-track { fill: var(--surface-2); }
 .anim-low-breathing .lb-fill {
   fill: var(--air); transform-box: view-box; transform-origin: 30px 0;

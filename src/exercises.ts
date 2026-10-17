@@ -77,8 +77,9 @@ export const exercises: Exercise[] = [
       {
         text: 'Hum or “oo”. Glide from the bottom of your range to the top and back, smooth like a distant siren.',
         weight: 2,
+        window: [0, 0.5],
       },
-      { text: 'Nudge gently past the comfortable edges on each pass.' },
+      { text: 'Nudge gently past the comfortable edges on each pass.', window: [0.5, 1] },
     ],
     duration: { short: 60, full: 120 },
     animation: 'sirens',

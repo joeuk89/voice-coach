@@ -3,55 +3,57 @@
 
 .anim-lip-trills .lt-buzz { animation: lt-phase-buzz var(--cycle) step-end infinite; }
 .anim-lip-trills .lt-buzz path {
-  fill: none; stroke: var(--air); stroke-width: 2; stroke-linecap: round;
-  animation: lt-flicker 0.14s steps(2) infinite;
+  fill: none; stroke: var(--air); stroke-width: 3; stroke-linecap: round;
+  animation: lt-flicker 0.3s ease-in-out infinite;
 }
-.anim-lip-trills .lt-buzz path:nth-child(2) { animation-delay: 0.07s; }
+.anim-lip-trills .lt-buzz path:nth-child(2) { animation-delay: 0.15s; }
 
 .anim-lip-trills .lt-air-phase { animation: lt-phase-air var(--cycle) linear infinite; }
-.anim-lip-trills .lt-air {
-  fill: none; stroke: url(#lt-air); stroke-width: 3; stroke-linecap: round;
-  stroke-dasharray: 6 10; animation: anim-flow 0.5s linear infinite;
-}
 
 .anim-lip-trills .lt-trill { animation: lt-phase-trill var(--cycle) step-end infinite; }
 .anim-lip-trills .lt-open { animation: lt-phase-open var(--cycle) step-end infinite; }
 .anim-lip-trills .lt-open-upper { animation: lt-open-up var(--cycle) ease-in-out infinite; }
 .anim-lip-trills .lt-open-lower { animation: lt-open-down var(--cycle) ease-in-out infinite; }
-.anim-lip-trills .lt-ah { fill: var(--voice); font: 600 18px var(--font); animation: lt-ah var(--cycle) linear infinite; }
-
-.anim-lip-trills .lt-rings { animation: lt-phase-voice var(--cycle) step-end infinite; }
-
-.anim-lip-trills .lt-pitch { animation: lt-phase-pitch var(--cycle) step-end infinite; }
-.anim-lip-trills .lt-pitch .pitch-line { animation: lt-trail var(--cycle) linear infinite; }
-.anim-lip-trills .lt-pitch .pitch-dot {
-  offset-path: path('M70 256 L150 256 C 180 256, 200 208, 230 208 C 260 208, 285 256, 320 256');
-  animation: lt-glide var(--cycle) linear infinite;
+.anim-lip-trills .lt-ah {
+  stroke: var(--surface); stroke-width: 4; stroke-linejoin: round; paint-order: stroke;
+  animation: lt-ah var(--cycle) linear infinite;
 }
 
+.anim-lip-trills .lt-rings, .anim-lip-trills .lt-voice-on { animation: lt-phase-voice var(--cycle) step-end infinite; }
+.anim-lip-trills .lt-voice-off { animation: lt-phase-silent var(--cycle) step-end infinite; }
+.anim-lip-trills .lt-brrr { animation: lt-phase-brrr var(--cycle) step-end infinite; }
 .anim-lip-trills .lt-say { animation: lt-phase-say var(--cycle) step-end infinite; }
-.anim-lip-trills .lt-word { font: 600 20px var(--font); }
-.anim-lip-trills .lt-word-brrr { fill: var(--voice); }
-.anim-lip-trills .lt-word-ah { fill: var(--voice); animation: lt-word-ah var(--cycle) linear infinite; }
+.anim-lip-trills .lt-say-ah { animation: lt-say-ah var(--cycle) step-end infinite; }
+
+.anim-lip-trills .lt-t-easy { animation: lt-show-easy var(--cycle) step-end infinite; }
+.anim-lip-trills .lt-t-glide { animation: lt-show-glide var(--cycle) step-end infinite; }
+.anim-lip-trills .lt-t-ah { animation: lt-phase-say var(--cycle) step-end infinite; }
+.anim-lip-trills .lt-t-easy .pitch-line { animation: lt-trace-easy var(--cycle) linear infinite; }
+.anim-lip-trills .lt-t-glide .pitch-line { animation: lt-trace-glide var(--cycle) linear infinite; }
+.anim-lip-trills .lt-t-ah .pitch-line { animation: lt-trace-ah var(--cycle) linear infinite; }
+.anim-lip-trills .lt-t-easy .pitch-dot { animation: lt-dot-easy var(--cycle) linear infinite; }
+.anim-lip-trills .lt-t-glide .pitch-dot { animation: lt-dot-glide var(--cycle) linear infinite; }
+.anim-lip-trills .lt-t-ah .pitch-dot { animation: lt-dot-ah var(--cycle) linear infinite; }
 
 @keyframes lt-buzz-up   { 0% { transform: translateY(-1.8px); } 50% { transform: translateY(1.4px); } 100% { transform: translateY(-1.8px); } }
 @keyframes lt-buzz-down { 0% { transform: translateY(1.8px); } 50% { transform: translateY(-1.4px); } 100% { transform: translateY(1.8px); } }
-@keyframes lt-flicker { 0% { opacity: 0.15; } 50% { opacity: 1; } 100% { opacity: 0.15; } }
+@keyframes lt-flicker { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
 /* Phase boundaries match the sub-step windows in exercises.ts: buzz to 20%, voice to 40%, glide to 80%, then “brrr-ah”. */
 @keyframes lt-phase-voice { 0% { opacity: 0; } 20%, 100% { opacity: 1; } }
-@keyframes lt-phase-pitch { 0% { opacity: 0; } 20% { opacity: 1; } 80%, 100% { opacity: 0; } }
-@keyframes lt-trail {
-  0%, 20% { stroke-dashoffset: 1; }
-  40% { stroke-dashoffset: 0.7141; }
-  79%, 100% { stroke-dashoffset: 0; }
-}
-@keyframes lt-glide {
-  0%, 20% { offset-distance: 0%; }
-  40% { offset-distance: 28.59%; }
-  79%, 100% { offset-distance: 100%; }
-}
+@keyframes lt-phase-silent { 0% { opacity: 1; } 20%, 100% { opacity: 0; } }
+@keyframes lt-phase-brrr { 0% { opacity: 0; } 20% { opacity: 1; } 80%, 100% { opacity: 0; } }
 @keyframes lt-phase-say { 0% { opacity: 0; } 80%, 100% { opacity: 1; } }
+@keyframes lt-say-ah { 0% { opacity: 0.3; } 85.5%, 100% { opacity: 1; } }
+@keyframes lt-show-easy { 0% { opacity: 0; } 20% { opacity: 1; } 40%, 100% { opacity: 0; } }
+@keyframes lt-show-glide { 0% { opacity: 0; } 40% { opacity: 1; } 80%, 100% { opacity: 0; } }
+@keyframes lt-trace-easy { 0%, 20% { stroke-dashoffset: 1; } 39.2%, 100% { stroke-dashoffset: 0; } }
+@keyframes lt-trace-glide { 0%, 40% { stroke-dashoffset: 1; } 78.4%, 100% { stroke-dashoffset: 0; } }
+@keyframes lt-trace-ah { 0%, 80% { stroke-dashoffset: 1; } 99.2%, 100% { stroke-dashoffset: 0; } }
+@keyframes lt-dot-easy { 0%, 20% { offset-distance: 0%; } 39.2%, 100% { offset-distance: 100%; } }
+@keyframes lt-dot-glide { 0%, 40% { offset-distance: 0%; } 78.4%, 100% { offset-distance: 100%; } }
+@keyframes lt-dot-ah { 0%, 80% { offset-distance: 0%; } 99.2%, 100% { offset-distance: 100%; } }
+
 @keyframes lt-phase-trill { 0% { opacity: 1; } 85.5%, 100% { opacity: 0; } }
 @keyframes lt-phase-open { 0% { opacity: 0; } 85.5%, 100% { opacity: 1; } }
 @keyframes lt-phase-buzz { 0% { opacity: 1; } 85.5%, 100% { opacity: 0; } }
@@ -59,12 +61,10 @@
 @keyframes lt-open-down { 0%, 85.5% { transform: translateY(0); } 88%, 95% { transform: translateY(12px); } 99%, 100% { transform: translateY(0); } }
 @keyframes lt-ah { 0%, 87% { opacity: 0; } 88.5%, 94% { opacity: 1; } 96%, 100% { opacity: 0; } }
 @keyframes lt-phase-air { 0%, 85.5% { opacity: 1; } 88%, 95% { opacity: 0.3; } 99%, 100% { opacity: 1; } }
-@keyframes lt-word-ah { 0%, 85% { opacity: 0.2; } 87%, 100% { opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
   .anim-lip-trills .lt-lip-upper,
   .anim-lip-trills .lt-lip-lower,
-  .anim-lip-trills .lt-buzz path,
-  .anim-lip-trills .lt-air { animation: none; }
-  .anim-lip-trills .lt-buzz path { opacity: 0.7; }
+  .anim-lip-trills .lt-buzz path { animation: none; }
+  .anim-lip-trills .lt-buzz path { opacity: 0.8; }
 }

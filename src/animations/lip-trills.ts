@@ -1,43 +1,49 @@
 import type { AnimationDef } from '../types';
-import { pitchStrip, rings } from './parts';
+import { airLane, airStream, easyPitchY, lip, pitchStrip, pitchTrace, rings } from './parts';
 import './lip-trills.css';
+
+const top = 216;
+const bottom = 268;
+const easy = easyPitchY(top, bottom);
+
+const easyPath = `M60 ${easy} L344 ${easy}`;
+const glidePath = `M60 ${bottom} C 130 ${bottom}, 150 ${top}, 202 ${top} C 254 ${top}, 274 ${bottom}, 344 ${bottom}`;
 
 const svg = `
 <svg viewBox="0 0 360 290" aria-hidden="true">
-  <defs>
-    <linearGradient id="lt-air" gradientUnits="userSpaceOnUse" x1="16" y1="0" x2="344" y2="0">
-      <stop offset="0" stop-color="var(--air)" stop-opacity="0.15"/>
-      <stop offset="0.2" stop-color="var(--air)" stop-opacity="0.9"/>
-      <stop offset="0.5" stop-color="var(--air)" stop-opacity="1"/>
-      <stop offset="1" stop-color="var(--air)" stop-opacity="0.05"/>
-    </linearGradient>
-  </defs>
-
-  <text class="anim-label" x="80" y="74">LIPS</text>
-  <g class="lt-air-phase"><path class="lt-air" d="M16 126 L 344 126"/></g>
+  <text class="anim-label" x="108" y="104" text-anchor="end">LIPS · loose</text>
+  <g class="lt-air-phase">${airStream('M130 100 L 300 100', 'lt-air')}</g>
   <g class="lt-trill">
-    <rect class="lip lt-lip-upper" x="80" y="104" width="100" height="18" rx="9"/>
-    <rect class="lip lt-lip-lower" x="80" y="130" width="100" height="18" rx="9"/>
+    ${lip(120, 80, 'lt-lip-upper')}
+    ${lip(120, 104, 'lt-lip-lower')}
   </g>
   <g class="lt-open">
-    <rect class="lip lt-open-upper" x="80" y="104" width="100" height="18" rx="9"/>
-    <rect class="lip lt-open-lower" x="80" y="130" width="100" height="18" rx="9"/>
-    <text class="lt-ah" x="130" y="132" text-anchor="middle">ah</text>
+    ${lip(120, 80, 'lt-open-upper')}
+    ${lip(120, 104, 'lt-open-lower')}
+    <text class="anim-say lt-ah" x="152" y="106" text-anchor="middle">“ah”</text>
   </g>
 
   <g class="lt-buzz">
-    <path d="M190 112 q 6 14 0 28"/>
-    <path d="M197 107 q 9 19 0 38"/>
+    <path d="M192 88 q 6 12 0 24"/>
+    <path d="M199 83 q 9 17 0 34"/>
   </g>
 
-  ${rings(184, 126, 36, 'lt-rings')}
+  ${rings(188, 100, 32, 'lt-rings')}
 
+  <text class="anim-label" x="60" y="172">AIR · on</text>
+  ${airLane(178)}
+
+  ${pitchStrip({ top, bottom, className: 'lt-pitch', trace: false, dot: false })}
+  <text class="anim-label lt-voice-off" x="60" y="206">VOICE · off</text>
+  <text class="anim-label lt-voice-on" x="60" y="206">VOICE · on</text>
+  <text class="anim-say lt-brrr" x="344" y="206" text-anchor="end">“brrr”</text>
   <g class="lt-say">
-    <text class="lt-word lt-word-brrr" x="178" y="240" text-anchor="end">“brrr</text>
-    <text class="lt-word lt-word-ah" x="178" y="240">-ah”</text>
+    <text class="anim-say" x="316" y="206" text-anchor="end">“brrr-</text>
+    <text class="anim-say lt-say-ah" x="316" y="206">ah”</text>
   </g>
-
-  ${pitchStrip({ top: 208, bottom: 256, path: 'M70 256 L150 256 C 180 256, 200 208, 230 208 C 260 208, 285 256, 320 256', className: 'lt-pitch' })}
+  ${pitchTrace(easyPath, 'lt-t-easy')}
+  ${pitchTrace(glidePath, 'lt-t-glide')}
+  ${pitchTrace(easyPath, 'lt-t-ah')}
 </svg>`;
 
 export const lipTrills: AnimationDef = {

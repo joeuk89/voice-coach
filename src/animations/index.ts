@@ -45,7 +45,7 @@ interface Part {
 /**
  * Renders the animation card. A window or scrub pauses the cycle-long animations and sets their
  * clocks each frame; inner loops keep their own rhythm. In a window the progress bar shows how far
- * through the window the loop is.
+ * through the window the loop is, and `.anim-windowed` lets a card hide whole-loop-only parts.
  */
 export function mountAnimation(container: HTMLElement, def: AnimationDef, { caption = true } = {}): AnimationPlayer {
   container.style.setProperty('--cycle', `${def.cycleSec}s`);
@@ -54,6 +54,7 @@ export function mountAnimation(container: HTMLElement, def: AnimationDef, { capt
     ${caption ? '<div class="anim-caption"></div>' : ''}
     <div class="anim-progress"><i></i></div>`;
 
+  const animEl = container.querySelector<HTMLElement>('.anim')!;
   const captionEl = container.querySelector<HTMLElement>('.anim-caption');
   // Without the Web Animations API the parts cannot be clocked, so every part plays its whole loop.
   const canDrive = typeof container.getAnimations === 'function';
@@ -127,6 +128,7 @@ export function mountAnimation(container: HTMLElement, def: AnimationDef, { capt
     setWindow(next) {
       scrubbing = false;
       loopWindow = canDrive ? activeWindow(next) : null;
+      animEl.classList.toggle('anim-windowed', loopWindow !== null);
       collectParts();
       if (loopWindow) {
         parts.forEach(({ animation, duration }) => {
@@ -146,6 +148,7 @@ export function mountAnimation(container: HTMLElement, def: AnimationDef, { capt
     },
     scrubTo(fraction) {
       scrubbing = true;
+      animEl.classList.remove('anim-windowed');
       collectParts();
       hold(fraction * cycleMs, true, fraction * cycleMs);
       showCaption();

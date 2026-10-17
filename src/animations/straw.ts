@@ -1,30 +1,48 @@
 import type { AnimationDef } from '../types';
-import { airStream, pitchStrip, rings } from './parts';
+import { airLane, airStream, easyPitchY, lip, pitchStrip, pitchTrace, rings } from './parts';
 import './straw.css';
 
-const pitchPath =
-  'M70 248 L140 248 C 165 248, 180 200, 205 200 C 230 200, 240 248, 262 248 C 270 238, 278 252, 288 242 C 296 234, 304 250, 314 240 C 320 236, 326 248, 334 242';
+const top = 216;
+const bottom = 268;
+const easy = easyPitchY(top, bottom);
+
+const humPath = `M60 ${easy} L344 ${easy}`;
+const sirenPath = `M60 ${bottom} C 130 ${bottom}, 150 ${top}, 202 ${top} C 254 ${top}, 274 ${bottom}, 344 ${bottom}`;
+const speakPath = [
+  `M60 ${easy}`,
+  'C 72 236, 84 236, 96 246',
+  'C 106 254, 116 254, 126 244',
+  'C 138 230, 152 230, 164 242',
+  'C 174 252, 186 256, 198 248',
+  'C 210 238, 222 236, 234 246',
+  'C 246 256, 258 252, 270 240',
+  'C 282 228, 296 230, 308 244',
+  'C 318 254, 332 258, 344 256',
+].join(' ');
+
+const voiceLabel = (state: string) => `<text class="anim-label" x="60" y="206">VOICE · ${state}</text>`;
 
 const svg = `
 <svg viewBox="0 0 360 290" aria-hidden="true">
-  <text class="anim-label" x="36" y="96">LIPS · sealed</text>
-  <text class="anim-label" x="130" y="112">STRAW</text>
+  <text class="anim-label st-before-air" x="30" y="62">LIPS · open</text>
+  <text class="anim-label st-air-on" x="30" y="62">LIPS · sealed</text>
+  <text class="anim-label" x="140" y="84">STRAW</text>
 
-  <rect class="st-straw" x="60" y="124" width="170" height="10" rx="3"/>
-  ${airStream('M64 129 L 226 129', 'st-air')}
-  ${airStream('M232 129 L 262 120', 'st-spray')}
-  ${airStream('M232 129 L 266 129', 'st-spray')}
-  ${airStream('M232 129 L 262 138', 'st-spray')}
+  <rect class="st-straw" x="50" y="92" width="190" height="10" rx="3"/>
+  ${airStream('M56 97 L 256 97', 'st-air-on')}
+  ${lip(30, 76, 'st-lip-upper')}
+  ${lip(30, 102, 'st-lip-lower')}
+  ${rings(244, 97, 32, 'st-rings')}
 
-  <rect class="lip" x="40" y="106" width="44" height="16" rx="8"/>
-  <rect class="lip" x="40" y="136" width="44" height="16" rx="8"/>
+  <text class="anim-label st-before-air" x="60" y="172">AIR · off</text>
+  <text class="anim-label st-air-on" x="60" y="172">AIR · on</text>
+  ${airLane(178, 'st-air-on')}
 
-  ${rings(236, 129, 30, 'st-rings')}
-
-  ${pitchStrip({ top: 200, bottom: 248, path: pitchPath, className: 'st-pitch' })}
-  <text class="anim-label st-hum" x="105" y="238" text-anchor="middle">hum</text>
-  <text class="anim-label st-siren" x="205" y="190" text-anchor="middle">siren</text>
-  <text class="anim-label st-speak" x="298" y="226" text-anchor="middle">speak · tune</text>
+  ${pitchStrip({ top, bottom, className: 'st-pitch', trace: false, dot: false })}
+  <g class="st-t-place">${voiceLabel('off')}</g>
+  ${pitchTrace(humPath, 'st-t-hum', voiceLabel('hum'))}
+  ${pitchTrace(sirenPath, 'st-t-siren', voiceLabel('siren'))}
+  ${pitchTrace(speakPath, 'st-t-speak', voiceLabel('speak'))}
 </svg>`;
 
 export const straw: AnimationDef = {
