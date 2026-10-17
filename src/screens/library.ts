@@ -72,7 +72,6 @@ function detailView(exercise: Exercise, settings: Settings, hasAnimation: boolea
             </div>
             <div class="lib-now" aria-live="polite">
               <div class="eyebrow" id="lib-now-step"></div>
-              <p id="lib-now-text"></p>
             </div>
           </div>`
         : ''
@@ -139,7 +138,6 @@ export function renderLibrary(root: HTMLElement): () => void {
   const player: AnimationPlayer = mountAnimation(root.querySelector<HTMLElement>('#demo')!, def, { caption: true });
   const now = root.querySelector<HTMLElement>('.lib-now');
   const nowStep = root.querySelector<HTMLElement>('#lib-now-step');
-  const nowText = root.querySelector<HTMLElement>('#lib-now-text');
 
   on(root, '.lib-chips .win-chip', 'click', (_ev, chip) => {
     const sub = chip.dataset['sub'];
@@ -148,7 +146,6 @@ export function renderLibrary(root: HTMLElement): () => void {
     player.setWindow(subStep?.window);
     now?.classList.toggle('shown', Boolean(subStep));
     if (nowStep) nowStep.textContent = subStep ? `Step ${Number(sub) + 1} of ${exercise.subSteps.length}` : '';
-    if (nowText) nowText.textContent = subStep?.text ?? '';
   });
 
   return () => player.stop();
