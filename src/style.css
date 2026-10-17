@@ -162,3 +162,15 @@ header { display: flex; flex-direction: column; gap: 4px; }
 .ex-name input { width: 22px; height: 22px; accent-color: var(--accent); }
 .stepper { display: flex; align-items: center; gap: 6px; }
 .stepper .mono { min-width: 3.2em; text-align: center; }
+
+/* Sustain panel */
+.sustain-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.sustain-head h2 { margin: 0; }
+.sustain-head span { font-size: 0.9rem; }
+.sustain-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 12px 0; }
+.sustain-clock { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; }
+.sustain-btn { min-width: 140px; }
+.sustain-btn.running { background: var(--voice); }
+.sustain-today { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 0.9rem; }
+.chip { background: var(--surface-2); border-radius: 999px; padding: 2px 10px; }
+.sustain-today .btn-small { min-height: 32px; font-size: 0.85rem; }

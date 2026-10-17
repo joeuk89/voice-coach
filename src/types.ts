@@ -25,6 +25,8 @@ export interface Exercise {
   animation: AnimationId | null;
   /** 'audio' plays a bundled track instead of running a countdown. */
   kind?: 'timed' | 'audio';
+  /** Extra interactive panel under the cues. */
+  panel?: 'sustain';
   audioSrc?: string;
   links: Link[];
 }

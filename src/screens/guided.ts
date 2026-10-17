@@ -1,4 +1,5 @@
 import { animationFor, mountAnimation } from '../animations';
+import { mountSustainPanel } from '../panels/sustain';
 import { playCue } from '../lib/audio';
 import { $, esc, formatClock, on } from '../lib/dom';
 import { buzz } from '../lib/haptics';
@@ -16,6 +17,7 @@ export function renderGuided(root: HTMLElement): () => void {
   keepAwake();
   let timer: Countdown | undefined;
   let stopAnimation: (() => void) | undefined;
+  let stopPanel: (() => void) | undefined;
   let audio: HTMLAudioElement | undefined;
 
   function teardownStep() {
@@ -23,6 +25,8 @@ export function renderGuided(root: HTMLElement): () => void {
     timer = undefined;
     stopAnimation?.();
     stopAnimation = undefined;
+    stopPanel?.();
+    stopPanel = undefined;
     audio?.pause();
     audio = undefined;
   }
@@ -61,6 +65,8 @@ export function renderGuided(root: HTMLElement): () => void {
         ${exercise.cues.map((c) => `<li>${esc(c)}</li>`).join('')}
       </ul>
 
+      <section class="card panel" id="panel" ${exercise.panel ? '' : 'hidden'}></section>
+
       <div class="timer-row">
         <div class="timer" id="clock" aria-live="off">${formatClock(step.seconds)}</div>
         <button class="btn btn-ghost" id="detail">More detail</button>
@@ -88,6 +94,7 @@ export function renderGuided(root: HTMLElement): () => void {
 
     const demo = $(root, '#demo');
     if (def) stopAnimation = mountAnimation(demo, def);
+    if (exercise.panel === 'sustain') stopPanel = mountSustainPanel($(root, '#panel'));
 
     const clock = $(root, '#clock');
     const toggle = $<HTMLButtonElement>(root, '#toggle');

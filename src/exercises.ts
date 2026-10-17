@@ -131,6 +131,7 @@ export const exercises: Exercise[] = [
     tips: ['Time the sustains. Longer over weeks means a stronger, more efficient voice.'],
     duration: { short: 0, full: 240 },
     animation: 'vfe',
+    panel: 'sustain',
     links: [
       { label: 'Step-by-step guide (Adult Speech Therapy Workbook)', url: 'https://theadultspeechtherapyworkbook.com/vocal-function-exercises/' },
       {
