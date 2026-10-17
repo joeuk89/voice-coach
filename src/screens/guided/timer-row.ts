@@ -7,6 +7,7 @@ import { createCountdown, type Countdown } from '../../lib/timer';
 import type { SustainPanel } from '../../panels/sustain';
 import { paceAt, type PaceMoment } from '../../state/pace';
 import type { PlannedSubStep } from '../../state/plan';
+import type { HoldPicture } from '../../types';
 import { isComplete, repLabel } from '../../state/reps';
 
 const DOUBLE_TAP_MS = 350;
@@ -160,7 +161,7 @@ export function mountReps(row: HTMLElement, planned: PlannedSubStep, hooks: RowH
 }
 
 /** Vocal function exercises: the sustain stopwatch is the step's control, and each recorded hold counts. */
-export function mountHoldCount(sustain: SustainPanel, planned: PlannedSubStep, hooks: RowHooks): StepRow {
+export function mountHoldCount(sustain: SustainPanel, planned: PlannedSubStep, hooks: RowHooks, picture?: HoldPicture): StepRow {
   const target = planned.reps!;
   const { row, note } = sustain;
   row.querySelector('#timer-reset')?.remove();
@@ -176,6 +177,7 @@ export function mountHoldCount(sustain: SustainPanel, planned: PlannedSubStep, h
     note.innerHTML = countMarkup(next, target, 'Hold', planned.subStep.repsPerPitch);
     row.classList.toggle('done', complete);
     showReset();
+    picture?.setCount(next);
     hooks.setDone(complete, complete);
   });
 
@@ -185,11 +187,12 @@ export function mountHoldCount(sustain: SustainPanel, planned: PlannedSubStep, h
     holds.reset();
   });
   return {
-    stop: () => undefined,
+    stop: () => picture?.stop(),
     hold: holds.add,
     holdRunning(running) {
       if (running) hooks.started();
       showReset();
+      picture?.setRunning(running);
     },
   };
 }

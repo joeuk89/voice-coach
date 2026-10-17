@@ -31,6 +31,8 @@
 
 .anim-caption { min-height: 4.4em; padding: 0 20px 14px; background: var(--surface); font-size: 0.95rem; }
 .anim-progress { height: 3px; background: color-mix(in srgb, var(--fg) 10%, transparent); }
+/* A parked loop has no progress to show while a hold picture follows the counter. */
+.anim-held .anim-progress { visibility: hidden; }
 .anim-progress i {
   display: block; height: 100%; background: var(--muted);
   transform-origin: left; animation: anim-progress var(--cycle, 10s) linear infinite;

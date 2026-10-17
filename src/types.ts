@@ -106,6 +106,15 @@ export interface Phase {
   caption: string;
 }
 
+/** A picture that follows recorded holds instead of the clock, for a hold-counted sub-step. */
+export interface HoldPicture {
+  /** Holds recorded so far. The picture moves on to the next hold, or back after an Undo. */
+  setCount(count: number): void;
+  /** A hold is running: the picture draws it until it stops. */
+  setRunning(running: boolean): void;
+  stop(): void;
+}
+
 export interface AnimationDef {
   id: AnimationId;
   cycleSec: number;
@@ -114,4 +123,14 @@ export interface AnimationDef {
   /** A tighter crop for the guided screen when a panel shares it, so the card shrinks without shrinking the labels. */
   compactViewBox?: string;
   phases: Phase[];
+  /**
+   * Mounts a hold-driven picture over the card for a sub-step with `repsPerPitch`: the player is
+   * parked at the start of the sub-step's `window` and the picture follows the hold counter.
+   */
+  holdPicture?: (container: HTMLElement, player: HoldPlayer, window: [number, number], repsPerPitch: number) => HoldPicture;
+}
+
+/** The part of the animation player a hold picture needs. */
+export interface HoldPlayer {
+  setWindow(window: [number, number] | null | undefined): void;
 }

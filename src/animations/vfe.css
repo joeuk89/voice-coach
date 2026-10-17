@@ -26,12 +26,22 @@
 .anim-vfe .vf-t-1 .pitch-line { animation-name: vf-trace-1; }
 .anim-vfe .vf-t-2 .pitch-line { animation-name: vf-trace-2; }
 .anim-vfe .vf-t-3 .pitch-line { animation-name: vf-trace-3; }
-.anim-vfe .vf-t-4 .pitch-line { animation-name: vf-trace-4; }
 .anim-vfe .vf-t-1 .pitch-dot { animation-name: vf-dot-1; }
 .anim-vfe .vf-t-2 .pitch-dot { animation-name: vf-dot-2; }
 .anim-vfe .vf-t-3 .pitch-dot { animation-name: vf-dot-3; }
-.anim-vfe .vf-t-4 .pitch-dot { animation-name: vf-dot-4; }
-.anim-vfe .vf-cut { stroke: var(--surface); stroke-width: 5; }
+
+/* Adduction on the free loop: each tread draws in its own slot, then its dot lifts off before the next starts. */
+.anim-vfe .vf-t-4 .vf-tread-dot { transform-box: view-box; }
+.anim-vfe .vf-t-4 .vf-tread-1 { animation-name: vf-tread-1; }
+.anim-vfe .vf-t-4 .vf-tread-2 { animation-name: vf-tread-2; }
+.anim-vfe .vf-t-4 .vf-tread-3 { animation-name: vf-tread-3; }
+.anim-vfe .vf-t-4 .vf-tread-4 { animation-name: vf-tread-4; }
+.anim-vfe .vf-t-4 .vf-tread-5 { animation-name: vf-tread-5; }
+.anim-vfe .vf-t-4 .vf-tread-dot-1 { animation-name: vf-tread-dot-1; }
+.anim-vfe .vf-t-4 .vf-tread-dot-2 { animation-name: vf-tread-dot-2; }
+.anim-vfe .vf-t-4 .vf-tread-dot-3 { animation-name: vf-tread-dot-3; }
+.anim-vfe .vf-t-4 .vf-tread-dot-4 { animation-name: vf-tread-dot-4; }
+.anim-vfe .vf-t-4 .vf-tread-dot-5 { animation-name: vf-tread-dot-5; }
 
 /* Finished steps stay behind the current one at 20% on the whole loop only; inside a window only the current step shows. */
 .anim-vfe .vf-ghost { fill: none; stroke: var(--voice); stroke-width: 3; stroke-linecap: round; animation: var(--cycle) step-end infinite; }
@@ -40,26 +50,69 @@
 .anim-vfe .vf-ghost-3 { animation-name: vf-ghost-3; }
 .anim-vfe.anim-windowed .vf-ghost { visibility: hidden; }
 
-/* Phase boundaries match the sub-step windows in exercises.ts: 25%, 45%, 65%. */
-@keyframes vf-show-1 { 0% { opacity: 1; } 25%, 100% { opacity: 0; } }
-@keyframes vf-show-2 { 0% { opacity: 0; } 25% { opacity: 1; } 45%, 100% { opacity: 0; } }
-@keyframes vf-show-3 { 0% { opacity: 0; } 45% { opacity: 1; } 65%, 100% { opacity: 0; } }
-@keyframes vf-show-4 { 0% { opacity: 0; } 65%, 100% { opacity: 1; } }
-@keyframes vf-ghost-1 { 0% { opacity: 0; } 25%, 100% { opacity: 0.2; } }
-@keyframes vf-ghost-2 { 0% { opacity: 0; } 45%, 100% { opacity: 0.2; } }
-@keyframes vf-ghost-3 { 0% { opacity: 0; } 65%, 100% { opacity: 0.2; } }
-@keyframes vf-pip-2 { 0% { fill: transparent; stroke: var(--muted); } 25%, 100% { fill: var(--fg); stroke: var(--fg); } }
-@keyframes vf-pip-3 { 0% { fill: transparent; stroke: var(--muted); } 45%, 100% { fill: var(--fg); stroke: var(--fg); } }
-@keyframes vf-pip-4 { 0% { fill: transparent; stroke: var(--muted); } 65%, 100% { fill: var(--fg); stroke: var(--fg); } }
-@keyframes vf-trace-1 { 0% { stroke-dashoffset: 1; } 24%, 100% { stroke-dashoffset: 0; } }
-@keyframes vf-trace-2 { 0%, 25% { stroke-dashoffset: 1; } 44.2%, 100% { stroke-dashoffset: 0; } }
-@keyframes vf-trace-3 { 0%, 45% { stroke-dashoffset: 1; } 64.2%, 100% { stroke-dashoffset: 0; } }
-@keyframes vf-trace-4 { 0%, 65% { stroke-dashoffset: 1; } 98.6%, 100% { stroke-dashoffset: 0; } }
-@keyframes vf-dot-1 { 0% { offset-distance: 0%; } 24%, 100% { offset-distance: 100%; } }
-@keyframes vf-dot-2 { 0%, 25% { offset-distance: 0%; } 44.2%, 100% { offset-distance: 100%; } }
-@keyframes vf-dot-3 { 0%, 45% { offset-distance: 0%; } 64.2%, 100% { offset-distance: 100%; } }
-@keyframes vf-dot-4 { 0%, 65% { offset-distance: 0%; } 98.6%, 100% { offset-distance: 100%; } }
-@keyframes vf-watch { 0% { opacity: 1; } 25% { opacity: 0.3; } 65%, 100% { opacity: 1; } }
+/* Hold-driven adduction on the guided screen: the live staircase replaces the looping one. */
+.anim-vfe.vf-held .vf-t-4, .anim-vfe.vf-held .vf-ghost { visibility: hidden; }
+.anim-vfe .vf-tread { stroke: color-mix(in srgb, var(--voice) 15%, transparent); stroke-width: 3; stroke-linecap: round; }
+.anim-vfe .vf-tread.current { stroke: color-mix(in srgb, var(--voice) 35%, transparent); }
+.anim-vfe .vf-seg {
+  fill: none; stroke: var(--voice); stroke-width: 3; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+}
+.anim-vfe .vf-live-dot { transform-box: view-box; transform-origin: 0 0; }
+
+/* Phase boundaries match the sub-step windows in exercises.ts: 20%, 36%, 52%. Adduction gives each tread 9.6%: 7% drawing, 2.6% lifted. */
+@keyframes vf-show-1 { 0% { opacity: 1; } 20%, 100% { opacity: 0; } }
+@keyframes vf-show-2 { 0% { opacity: 0; } 20% { opacity: 1; } 36%, 100% { opacity: 0; } }
+@keyframes vf-show-3 { 0% { opacity: 0; } 36% { opacity: 1; } 52%, 100% { opacity: 0; } }
+@keyframes vf-show-4 { 0% { opacity: 0; } 52%, 100% { opacity: 1; } }
+@keyframes vf-ghost-1 { 0% { opacity: 0; } 20%, 100% { opacity: 0.2; } }
+@keyframes vf-ghost-2 { 0% { opacity: 0; } 36%, 100% { opacity: 0.2; } }
+@keyframes vf-ghost-3 { 0% { opacity: 0; } 52%, 100% { opacity: 0.2; } }
+@keyframes vf-pip-2 { 0% { fill: transparent; stroke: var(--muted); } 20%, 100% { fill: var(--fg); stroke: var(--fg); } }
+@keyframes vf-pip-3 { 0% { fill: transparent; stroke: var(--muted); } 36%, 100% { fill: var(--fg); stroke: var(--fg); } }
+@keyframes vf-pip-4 { 0% { fill: transparent; stroke: var(--muted); } 52%, 100% { fill: var(--fg); stroke: var(--fg); } }
+@keyframes vf-trace-1 { 0% { stroke-dashoffset: 1; } 19.2%, 100% { stroke-dashoffset: 0; } }
+@keyframes vf-trace-2 { 0%, 20% { stroke-dashoffset: 1; } 35.4%, 100% { stroke-dashoffset: 0; } }
+@keyframes vf-trace-3 { 0%, 36% { stroke-dashoffset: 1; } 51.4%, 100% { stroke-dashoffset: 0; } }
+@keyframes vf-dot-1 { 0% { offset-distance: 0%; } 19.2%, 100% { offset-distance: 100%; } }
+@keyframes vf-dot-2 { 0%, 20% { offset-distance: 0%; } 35.4%, 100% { offset-distance: 100%; } }
+@keyframes vf-dot-3 { 0%, 36% { offset-distance: 0%; } 51.4%, 100% { offset-distance: 100%; } }
+@keyframes vf-tread-1 { 0%, 52% { stroke-dashoffset: 1; } 59%, 100% { stroke-dashoffset: 0; } }
+@keyframes vf-tread-2 { 0%, 61.6% { stroke-dashoffset: 1; } 68.6%, 100% { stroke-dashoffset: 0; } }
+@keyframes vf-tread-3 { 0%, 71.2% { stroke-dashoffset: 1; } 78.2%, 100% { stroke-dashoffset: 0; } }
+@keyframes vf-tread-4 { 0%, 80.8% { stroke-dashoffset: 1; } 87.8%, 100% { stroke-dashoffset: 0; } }
+@keyframes vf-tread-5 { 0%, 90.4% { stroke-dashoffset: 1; } 97.4%, 100% { stroke-dashoffset: 0; } }
+@keyframes vf-tread-dot-1 {
+  0%, 51.9% { offset-distance: 0%; opacity: 0; transform: none; }
+  52% { opacity: 1; }
+  59% { offset-distance: 100%; opacity: 1; transform: none; }
+  60.5%, 100% { offset-distance: 100%; opacity: 0; transform: translateY(-14px); }
+}
+@keyframes vf-tread-dot-2 {
+  0%, 61.5% { offset-distance: 0%; opacity: 0; transform: none; }
+  61.6% { opacity: 1; }
+  68.6% { offset-distance: 100%; opacity: 1; transform: none; }
+  70.1%, 100% { offset-distance: 100%; opacity: 0; transform: translateY(-14px); }
+}
+@keyframes vf-tread-dot-3 {
+  0%, 71.1% { offset-distance: 0%; opacity: 0; transform: none; }
+  71.2% { opacity: 1; }
+  78.2% { offset-distance: 100%; opacity: 1; transform: none; }
+  79.7%, 100% { offset-distance: 100%; opacity: 0; transform: translateY(-14px); }
+}
+@keyframes vf-tread-dot-4 {
+  0%, 80.7% { offset-distance: 0%; opacity: 0; transform: none; }
+  80.8% { opacity: 1; }
+  87.8% { offset-distance: 100%; opacity: 1; transform: none; }
+  89.3%, 100% { offset-distance: 100%; opacity: 0; transform: translateY(-14px); }
+}
+@keyframes vf-tread-dot-5 {
+  0%, 90.3% { offset-distance: 0%; opacity: 0; transform: none; }
+  90.4% { opacity: 1; }
+  97.4% { offset-distance: 100%; opacity: 1; transform: none; }
+  98.9%, 100% { offset-distance: 100%; opacity: 0; transform: translateY(-14px); }
+}
+@keyframes vf-watch { 0% { opacity: 1; } 20% { opacity: 0.3; } 52%, 100% { opacity: 1; } }
 @keyframes vf-hand { to { transform: rotate(360deg); } }
 
 @media (prefers-reduced-motion: reduce) {

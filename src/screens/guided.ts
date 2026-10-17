@@ -261,6 +261,14 @@ export function renderGuided(root: HTMLElement): () => void {
     showStepControl(current);
   }
 
+  /** A card that follows the hold counter, when the animation draws one for this sub-step. */
+  function holdPicture(current: PlannedSubStep) {
+    const def = animationFor(steps[session.index]!.exercise.animation);
+    const { window, repsPerPitch } = current.subStep;
+    if (!def?.holdPicture || !player || !window || !repsPerPitch) return undefined;
+    return def.holdPicture($(root, '#demo'), player, window, repsPerPitch);
+  }
+
   function showStepControl(current: PlannedSubStep) {
     stepRow?.stop();
     engaged = false;
@@ -269,7 +277,7 @@ export function renderGuided(root: HTMLElement): () => void {
     if (current.mode === 'untimed') stepRow = mountUntimed(row, hooks);
     else if (current.mode === 'timed') stepRow = mountTimed(row, current, hooks);
     else if (current.mode === 'paced') stepRow = mountPaced(row, current, hooks, player);
-    else if (sustain) stepRow = mountHoldCount(sustain, current, hooks);
+    else if (sustain) stepRow = mountHoldCount(sustain, current, hooks, holdPicture(current));
     else stepRow = mountReps(row, current, hooks);
   }
 
