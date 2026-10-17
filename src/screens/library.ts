@@ -82,7 +82,7 @@ function detailView(exercise: Exercise, settings: Settings, hasAnimation: boolea
       plan.length
         ? `<section class="card">
             <h2>Steps</h2>
-            <p class="muted lib-note">Times are shares of the Full routine, ${formatClock(full)}.</p>
+            ${plan.some((p) => p.mode === 'timed') ? `<p class="muted lib-note">Times are shares of the Full routine, ${formatClock(full)}.</p>` : ''}
             <ol class="lib-steps">
               ${plan
                 .map(

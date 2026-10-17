@@ -49,11 +49,20 @@ describe('planSubSteps', () => {
     expect(planSubSteps(fixture([{ text: '', repSec: 12 }]), 5)[0]).toMatchObject({ seconds: 5, reps: 1 });
   });
 
-  it('keeps fixed reps and still gives each a time share', () => {
-    const plan = planSubSteps(fixture([{ text: '', reps: 2 }, { text: '', reps: 10 }]), 120);
+  it('gives a fixed-rep sub-step no time share, so the timed sub-steps split the whole time', () => {
+    const plan = planSubSteps(fixture([{ text: '' }, { text: '', reps: 5 }, { text: '', reps: 10 }]), 120);
     expect(plan.map((p) => [p.mode, p.seconds, p.reps])).toEqual([
+      ['timed', 120, undefined],
+      ['reps', 0, 5],
+      ['reps', 0, 10],
+    ]);
+  });
+
+  it('gives a fixed-rep sub-step a time share when it sets a weight', () => {
+    const plan = planSubSteps(fixture([{ text: '' }, { text: '', weight: 1, reps: 2 }]), 120);
+    expect(plan.map((p) => [p.mode, p.seconds, p.reps])).toEqual([
+      ['timed', 60, undefined],
       ['reps', 60, 2],
-      ['reps', 60, 10],
     ]);
   });
 
@@ -108,14 +117,35 @@ describe('planSubSteps', () => {
     ]);
   });
 
-  it('fills every real exercise exactly, with at least 5 seconds per timed sub-step', () => {
+  it('counts hum steps 2 to 4 in fives and gives step 1 the whole time', () => {
+    for (const total of [120, 60]) {
+      expect(planSubSteps(byId('hum'), total).map((p) => [p.mode, p.seconds, p.reps])).toEqual([
+        ['timed', total, undefined],
+        ['reps', 0, 5],
+        ['reps', 0, 5],
+        ['reps', 0, 5],
+      ]);
+    }
+  });
+
+  it('leaves the vocal function exercises time unallocated, since every step is a fixed count', () => {
+    expect(planSubSteps(byId('vfe'), 240).map((p) => [p.mode, p.seconds, p.reps])).toEqual([
+      ['reps', 0, 2],
+      ['reps', 0, 2],
+      ['reps', 0, 2],
+      ['reps', 0, 10],
+    ]);
+  });
+
+  it('fills every real exercise exactly, with at least 5 seconds per sub-step that takes a share', () => {
+    const takesShare = (s: SubStep) => (s.weight ?? (s.reps === undefined ? 1 : 0)) > 0;
     for (const exercise of exercises) {
-      if (exercise.control === 'reps') continue;
+      if (exercise.control === 'reps' || !exercise.subSteps.some(takesShare)) continue;
       for (const total of Object.values(exercise.duration)) {
-        if (total === 0 || exercise.subSteps.length === 0) continue;
+        if (total === 0) continue;
         const plan = planSubSteps(exercise, total);
         expect(plan.reduce((sum, p) => sum + p.seconds, 0), exercise.id).toBe(total);
-        for (const p of plan.filter((p) => p.mode !== 'untimed')) expect(p.seconds, exercise.id).toBeGreaterThanOrEqual(5);
+        for (const p of plan.filter((p) => takesShare(p.subStep))) expect(p.seconds, exercise.id).toBeGreaterThanOrEqual(5);
       }
     }
   });

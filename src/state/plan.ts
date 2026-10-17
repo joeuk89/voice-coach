@@ -33,13 +33,13 @@ function splitUnits(weights: number[], units: number): number[] {
 
 /** `exerciseReps` is the routine's rep count for a reps exercise; counted sub-steps without a fixed count use it. */
 export function planSubSteps(exercise: Exercise, exerciseSeconds: number, exerciseReps?: number): PlannedSubStep[] {
-  const weights = exercise.subSteps.map((s) => s.weight ?? 1);
+  const weights = exercise.subSteps.map((s) => s.weight ?? (s.reps !== undefined ? 0 : 1));
   const units = splitUnits(weights, Math.floor(exerciseSeconds / UNIT_SEC));
   const routineReps = exercise.control === 'reps' ? exerciseReps : undefined;
 
   return exercise.subSteps.map((subStep, i) => {
     const seconds = units[i]! * UNIT_SEC;
-    if (weights[i]! <= 0) return { subStep, mode: 'untimed', seconds: 0 };
+    if (subStep.weight !== undefined && subStep.weight <= 0) return { subStep, mode: 'untimed', seconds: 0 };
     if (subStep.reps !== undefined) return { subStep, mode: 'reps', seconds, reps: subStep.reps };
     if (subStep.repSec !== undefined) {
       return { subStep, mode: 'reps', seconds, reps: routineReps ?? Math.max(1, Math.round(seconds / subStep.repSec)) };

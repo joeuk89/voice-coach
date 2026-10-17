@@ -113,9 +113,14 @@ export const exercises: Exercise[] = [
     purpose: 'Brings the buzz forward into the face and carries it into speech.',
     subSteps: [
       { text: '“Mmm” with lips closed. Feel the buzz in the lips and nose, not pressure in the throat.', window: [0, 0.3] },
-      { text: '“Mmm-ah”. Keep the buzz as the mouth opens.', window: [0.3, 0.55] },
-      { text: '“Mmm-many”, “mmm-money”. Same forward, easy feel.', window: [0.55, 0.8] },
-      { text: 'Short phrases with the same quality. This is the speaking voice now.', window: [0.8, 1] },
+      { text: '“Mmm-ah”. Keep the buzz as the mouth opens.', reps: 5, window: [0.3, 0.55] },
+      { text: '“Mmm-many”, “mmm-money”. Same forward, easy feel.', reps: 5, window: [0.55, 0.8] },
+      {
+        text: 'Short phrases with the same quality. This is the speaking voice now.',
+        reps: 5,
+        window: [0.8, 1],
+        examples: ['My mother', 'Many men', 'Move over', 'Morning melody', 'Mandy makes mince', 'Nine mean men'],
+      },
     ],
     duration: { short: 60, full: 120 },
     animation: 'hum',

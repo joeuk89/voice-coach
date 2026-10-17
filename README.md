@@ -49,7 +49,7 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
   - `'untimed'`: `duration` is only the time it usually takes, shown as "about N min". Settings can only switch it off.
 - `subSteps` are the ordered instructions shown on screen, each with a `text`. `tips` and `links` sit behind "More detail".
   - `weight` sets the sub-step's share of the duration relative to the others. It defaults to `1`; `0` means no timer.
-  - `reps` fixes a rep count, for protocols that set one. `repSec` is the length of one rep instead, and the count comes from the sub-step's time share. `reps` wins if both are set.
+  - `reps` fixes a rep count, for protocols that set one. A sub-step with a fixed `reps` and no `weight` takes no time share, so the timed sub-steps split the whole duration. Set a `weight` too if it should take a share. `repSec` is the length of one rep instead, and the count comes from the sub-step's time share. `reps` wins if both are set.
   - `repsPerPitch` makes the hold counter name the current pitch (adduction: two holds per pitch).
   - `window` is the `[from, to)` fraction of the animation loop to play during the sub-step. Leave it out to play the whole loop.
   - `examples` lists words or sounds to try during the sub-step. They show as chips under its text on the guided screen and in the Library.

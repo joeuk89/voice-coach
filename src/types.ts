@@ -16,9 +16,9 @@ export interface Link {
 
 export interface SubStep {
   text: string;
-  /** Share of the exercise duration relative to the other sub-steps. 0 means untimed. Default 1. */
+  /** Share of the exercise duration relative to the other sub-steps. 0 means untimed. Default 1, or 0 with a fixed `reps`. */
   weight?: number;
-  /** Fixed number of reps, for protocol-defined counts. */
+  /** Fixed number of reps, for protocol-defined counts. Takes no time share unless `weight` is set. */
   reps?: number;
   /** Seconds one rep takes; the rep count is derived from the time share. */
   repSec?: number;
