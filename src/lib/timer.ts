@@ -17,7 +17,7 @@ export function createCountdown(
   let running = false;
 
   function tick() {
-    const left = endAt - Date.now();
+    const left = endAt - performance.now();
     if (left <= 0) {
       remainingMs = 0;
       halt();
@@ -32,7 +32,7 @@ export function createCountdown(
   function halt() {
     if (!running) return;
     running = false;
-    remainingMs = Math.max(0, endAt - Date.now());
+    remainingMs = Math.max(0, endAt - performance.now());
     if (interval) clearInterval(interval);
     interval = undefined;
   }
@@ -41,7 +41,7 @@ export function createCountdown(
     start() {
       if (running || remainingMs <= 0) return;
       running = true;
-      endAt = Date.now() + remainingMs;
+      endAt = performance.now() + remainingMs;
       interval = setInterval(tick, 200);
       onTick(Math.ceil(remainingMs / 1000));
     },

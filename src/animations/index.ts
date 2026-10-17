@@ -55,7 +55,9 @@ export function mountAnimation(container: HTMLElement, def: AnimationDef, { capt
     <div class="anim-progress"><i></i></div>`;
 
   const captionEl = container.querySelector<HTMLElement>('.anim-caption');
-  const barClock = container.querySelector<HTMLElement>('.anim-progress i')!.getAnimations()[0];
+  // Without the Web Animations API the parts cannot be clocked, so every part plays its whole loop.
+  const canDrive = typeof container.getAnimations === 'function';
+  const barClock = canDrive ? container.querySelector<HTMLElement>('.anim-progress i')!.getAnimations()[0] : undefined;
   const cycleMs = def.cycleSec * 1000;
   let parts: Part[] = [];
   let loopWindow: LoopWindow | null = null;
@@ -66,6 +68,7 @@ export function mountAnimation(container: HTMLElement, def: AnimationDef, { capt
   let lastText = '';
 
   function collectParts() {
+    if (!canDrive) return;
     parts = container
       .getAnimations({ subtree: true })
       .filter((a) => a !== barClock)
@@ -123,7 +126,7 @@ export function mountAnimation(container: HTMLElement, def: AnimationDef, { capt
   return {
     setWindow(next) {
       scrubbing = false;
-      loopWindow = activeWindow(next);
+      loopWindow = canDrive ? activeWindow(next) : null;
       collectParts();
       if (loopWindow) {
         parts.forEach(({ animation, duration }) => {

@@ -14,8 +14,8 @@ export function formatClock(totalSec: number): string {
 }
 
 export function formatMinutes(totalSec: number): string {
-  const min = Math.round(totalSec / 60);
-  return min <= 1 ? '1 min' : `${min} min`;
+  if (totalSec <= 0) return '0 min';
+  return `${Math.max(1, Math.round(totalSec / 60))} min`;
 }
 
 export function $<T extends Element = HTMLElement>(root: ParentNode, selector: string): T {

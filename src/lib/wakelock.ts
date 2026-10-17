@@ -2,16 +2,25 @@ let sentinel: WakeLockSentinel | null = null;
 let wanted = false;
 
 async function request(): Promise<void> {
-  if (!wanted || !('wakeLock' in navigator)) return;
+  if (!wanted || sentinel || !('wakeLock' in navigator)) return;
   try {
-    sentinel = await navigator.wakeLock.request('screen');
+    const lock = await navigator.wakeLock.request('screen');
+    if (!wanted || sentinel) {
+      lock.release().catch(() => undefined);
+      return;
+    }
+    sentinel = lock;
+    // The browser releases the lock whenever the page is hidden.
+    lock.addEventListener('release', () => {
+      if (sentinel === lock) sentinel = null;
+    });
   } catch {
-    sentinel = null;
+    // Refused, for example in power-saving mode: the screen sleeps as normal.
   }
 }
 
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && wanted && !sentinel) void request();
+  if (document.visibilityState === 'visible') void request();
 });
 
 export function keepAwake(): void {

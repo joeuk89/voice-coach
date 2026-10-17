@@ -1,6 +1,6 @@
 import { exercises } from '../exercises';
 import type { Exercise, RoutineId, Settings } from '../types';
-import { read, write } from './storage';
+import { isFiniteNumber, isRecord, read, write } from './storage';
 
 const KEY = 'settings';
 
@@ -8,15 +8,24 @@ export function defaultSettings(): Settings {
   return { routine: 'full', disabled: [], durations: { short: {}, full: {} } };
 }
 
+function secondsById(value: unknown): Record<string, number> {
+  if (!isRecord(value)) return {};
+  return Object.fromEntries(
+    Object.entries(value).filter((entry): entry is [string, number] => isFiniteNumber(entry[1])),
+  );
+}
+
 export function loadSettings(): Settings {
-  const saved = read<Partial<Settings>>(KEY, {});
-  const base = defaultSettings();
+  const raw = read(KEY);
+  const saved = isRecord(raw) ? raw : {};
+  const durations = isRecord(saved['durations']) ? saved['durations'] : {};
+  const disabled = Array.isArray(saved['disabled']) ? saved['disabled'] : defaultSettings().disabled;
   return {
-    routine: saved.routine === 'short' ? 'short' : 'full',
-    disabled: Array.isArray(saved.disabled) ? saved.disabled : base.disabled,
+    routine: saved['routine'] === 'short' ? 'short' : 'full',
+    disabled: disabled.filter((id): id is string => typeof id === 'string'),
     durations: {
-      short: { ...saved.durations?.short },
-      full: { ...saved.durations?.full },
+      short: secondsById(durations['short']),
+      full: secondsById(durations['full']),
     },
   };
 }

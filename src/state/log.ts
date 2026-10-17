@@ -1,8 +1,9 @@
 import type { Feeling, LogEntry } from '../types';
-import { read, write } from './storage';
+import { isFiniteNumber, isRecord, read, write } from './storage';
 
 const KEY = 'log';
 const MAX_ENTRIES = 400;
+const FEELINGS: readonly Feeling[] = ['strong', 'ok', 'strained'];
 
 export function localDay(d = new Date()): string {
   const y = d.getFullYear();
@@ -11,23 +12,40 @@ export function localDay(d = new Date()): string {
   return `${y}-${m}-${day}`;
 }
 
-export function loadLog(): LogEntry[] {
-  const entries = read<LogEntry[]>(KEY, []);
-  return Array.isArray(entries) ? entries : [];
+function isFeeling(value: unknown): value is Feeling {
+  return FEELINGS.some((f) => f === value);
 }
 
-export function appendLog(entry: LogEntry): void {
+function toEntry(value: unknown): LogEntry | null {
+  if (!isRecord(value)) return null;
+  const { date, completedAt, routine, totalSec, feeling } = value;
+  if (typeof date !== 'string' || typeof completedAt !== 'string' || !isFiniteNumber(totalSec)) return null;
+  if (routine !== 'short' && routine !== 'full') return null;
+  const entry: LogEntry = { date, completedAt, routine, totalSec };
+  if (isFeeling(feeling)) entry.feeling = feeling;
+  return entry;
+}
+
+export function loadLog(): LogEntry[] {
+  const raw = read(KEY);
+  if (!Array.isArray(raw)) return [];
+  return raw.map(toEntry).filter((entry) => entry !== null);
+}
+
+/** False when the entry could not be saved. */
+export function appendLog(entry: LogEntry): boolean {
   const entries = loadLog();
   entries.push(entry);
-  write(KEY, entries.slice(-MAX_ENTRIES));
+  return write(KEY, entries.slice(-MAX_ENTRIES));
 }
 
-export function setLatestFeeling(feeling: Feeling): void {
+/** Sets the feeling on the entry completed at `completedAt`; false if there is none or saving failed. */
+export function setFeeling(completedAt: string, feeling: Feeling): boolean {
   const entries = loadLog();
-  const last = entries[entries.length - 1];
-  if (!last) return;
-  last.feeling = feeling;
-  write(KEY, entries);
+  const entry = entries.find((e) => e.completedAt === completedAt);
+  if (!entry) return false;
+  entry.feeling = feeling;
+  return write(KEY, entries);
 }
 
 export function lastEntry(): LogEntry | undefined {

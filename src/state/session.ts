@@ -11,13 +11,14 @@ export interface Session {
   index: number;
   subIndex: number;
   startedAt: number;
-  logged: boolean;
+  /** Set once the Done screen has written the log entry. */
+  logged: { completedAt: string; saved: boolean } | null;
 }
 
 let current: Session | null = null;
 
 export function startSession(routine: RoutineId, steps: Step[]): Session {
-  current = { routine, steps, index: 0, subIndex: 0, startedAt: Date.now(), logged: false };
+  current = { routine, steps, index: 0, subIndex: 0, startedAt: Date.now(), logged: null };
   return current;
 }
 

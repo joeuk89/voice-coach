@@ -8,9 +8,10 @@ export default defineConfig({
   },
   plugins: [
     VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['icons/icon.svg'],
+      registerType: 'prompt',
+      includeManifestIcons: false,
       manifest: {
+        id: '/voice-coach/',
         name: 'Voice Trainer',
         short_name: 'Voice',
         description: 'Daily vocal warmup, one exercise at a time.',

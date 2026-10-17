@@ -1,5 +1,5 @@
 import { esc, formatClock, on } from '../lib/dom';
-import { appendLog, localDay, setLatestFeeling } from '../state/log';
+import { appendLog, localDay, setFeeling } from '../state/log';
 import { endSession, getSession } from '../state/session';
 import type { Feeling } from '../types';
 
@@ -12,14 +12,11 @@ export function renderDone(root: HTMLElement): () => void {
 
   const totalSec = Math.round((Date.now() - session.startedAt) / 1000);
   if (!session.logged) {
-    session.logged = true;
-    appendLog({
-      date: localDay(),
-      completedAt: new Date().toISOString(),
-      routine: session.routine,
-      totalSec,
-    });
+    const completedAt = new Date().toISOString();
+    const saved = appendLog({ date: localDay(), completedAt, routine: session.routine, totalSec });
+    session.logged = { completedAt, saved };
   }
+  const { completedAt, saved } = session.logged;
 
   root.innerHTML = `
     <header class="done-head">
@@ -30,11 +27,15 @@ export function renderDone(root: HTMLElement): () => void {
 
     <section class="card">
       <h2>Voice felt</h2>
-      <div class="feeling-row">
-        <button class="btn feeling" data-feeling="strong">Strong</button>
-        <button class="btn feeling" data-feeling="ok">OK</button>
-        <button class="btn feeling" data-feeling="strained">Strained</button>
-      </div>
+      ${
+        saved
+          ? `<div class="feeling-row">
+              <button class="btn feeling" data-feeling="strong">Strong</button>
+              <button class="btn feeling" data-feeling="ok">OK</button>
+              <button class="btn feeling" data-feeling="strained">Strained</button>
+            </div>`
+          : '<p class="muted">The phone would not save this routine, so the feeling cannot be noted.</p>'
+      }
     </section>
 
     <a class="btn btn-primary" href="#/" id="home">Done</a>
@@ -42,7 +43,7 @@ export function renderDone(root: HTMLElement): () => void {
 
   on(root, '.feeling', 'click', (_ev, el) => {
     const feeling = el.dataset['feeling'] as Feeling;
-    setLatestFeeling(feeling);
+    if (!setFeeling(completedAt, feeling)) return;
     root.querySelectorAll('.feeling').forEach((b) => b.classList.toggle('selected', b === el));
   });
 

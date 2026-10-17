@@ -6,7 +6,7 @@ Live: https://joeuk89.github.io/voice-coach/
 
 ## Install on the phone
 
-Open the live URL in Chrome on Android, then choose "Add to Home screen" (or "Install app") from the menu. It opens full screen and works offline after the first load. New versions install themselves on the next open.
+Open the live URL in Chrome on Android, then choose "Add to Home screen" (or "Install app") from the menu. It opens full screen and works offline after the first load. New versions download in the background, and the app checks for one each time you come back to it. A new version takes over on Home or Settings, never during a routine.
 
 ## Run locally
 

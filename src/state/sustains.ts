@@ -1,5 +1,5 @@
 import { localDay } from './log';
-import { read, write } from './storage';
+import { isFiniteNumber, isRecord, read, write } from './storage';
 
 const KEY = 'sustains';
 const MAX_DAYS = 120;
@@ -8,16 +8,23 @@ const MAX_DAYS = 120;
 export type SustainLog = Record<string, number[]>;
 
 export function loadSustains(): SustainLog {
-  const log = read<SustainLog>(KEY, {});
-  return log && typeof log === 'object' ? log : {};
+  const raw = read(KEY);
+  if (!isRecord(raw)) return {};
+  const log: SustainLog = {};
+  for (const [day, holds] of Object.entries(raw)) {
+    const seconds = Array.isArray(holds) ? holds.filter(isFiniteNumber) : [];
+    if (seconds.length) log[day] = seconds;
+  }
+  return log;
 }
 
-export function recordSustain(seconds: number, day = localDay()): void {
+/** False when the hold could not be saved. */
+export function recordSustain(seconds: number, day = localDay()): boolean {
   const log = loadSustains();
   log[day] = [...(log[day] ?? []), Math.round(seconds * 10) / 10];
   const days = Object.keys(log).sort();
   for (const old of days.slice(0, Math.max(0, days.length - MAX_DAYS))) delete log[old];
-  write(KEY, log);
+  return write(KEY, log);
 }
 
 export function removeLastSustain(day = localDay()): void {

@@ -12,6 +12,7 @@ export function initAudio(): void {
 
 export function playCue(): void {
   if (!ctx) return;
+  if (ctx.state !== 'running') ctx.resume().catch(() => undefined);
   const t = ctx.currentTime + 0.02;
   tone(660, t, 0.18);
   tone(880, t + 0.22, 0.3);

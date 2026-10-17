@@ -10,7 +10,9 @@ function lastDoneLabel(): string {
   const last = lastEntry();
   if (!last) return 'Not done yet';
   const today = localDay();
-  const yesterday = localDay(new Date(Date.now() - 86_400_000));
+  const dayBefore = new Date();
+  dayBefore.setDate(dayBefore.getDate() - 1);
+  const yesterday = localDay(dayBefore);
   if (last.date === today) return 'Done today';
   if (last.date === yesterday) return 'Last done yesterday';
   const d = new Date(last.completedAt);

@@ -1,19 +1,29 @@
 const PREFIX = 'vt.';
 
-export function read<T>(key: string, fallback: T): T {
+/** The parsed value, or null when the key is missing, unreadable or not valid JSON. */
+export function read(key: string): unknown {
   try {
     const raw = localStorage.getItem(PREFIX + key);
-    if (raw === null) return fallback;
-    return JSON.parse(raw) as T;
+    return raw === null ? null : (JSON.parse(raw) as unknown);
   } catch {
-    return fallback;
+    return null;
   }
 }
 
-export function write(key: string, value: unknown): void {
+/** False when storage is full or blocked; the app keeps working for this session. */
+export function write(key: string, value: unknown): boolean {
   try {
     localStorage.setItem(PREFIX + key, JSON.stringify(value));
+    return true;
   } catch {
-    // Storage full or blocked: the app keeps working for this session.
+    return false;
   }
+}
+
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+export function isFiniteNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
 }

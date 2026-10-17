@@ -1,6 +1,6 @@
 import { animationFor, mountAnimation, type AnimationPlayer } from '../animations';
 import { mountReadingPanel } from '../panels/reading';
-import { mountSustainPanel } from '../panels/sustain';
+import { mountSustainPanel, type SustainPanel } from '../panels/sustain';
 import { playCue } from '../lib/audio';
 import { $, esc, formatClock, on } from '../lib/dom';
 import { buzz } from '../lib/haptics';
@@ -63,6 +63,7 @@ export function renderGuided(root: HTMLElement): () => void {
   let timer: Countdown | undefined;
   let player: AnimationPlayer | undefined;
   let stopPanel: (() => void) | undefined;
+  let sustain: SustainPanel | undefined;
   let onHold: ((delta: number) => void) | undefined;
   let audio: HTMLAudioElement | undefined;
 
@@ -73,12 +74,14 @@ export function renderGuided(root: HTMLElement): () => void {
     player = undefined;
     stopPanel?.();
     stopPanel = undefined;
+    sustain = undefined;
     onHold = undefined;
     audio?.pause();
     audio = undefined;
   }
 
   function goTo(pos: Position) {
+    if (pos.index === session.index && pos.subIndex === session.subIndex) return;
     const sameExercise = pos.index === session.index;
     session.index = pos.index;
     session.subIndex = pos.subIndex;
@@ -179,17 +182,17 @@ export function renderGuided(root: HTMLElement): () => void {
     const demo = $(root, '#demo');
     if (def) player = mountAnimation(demo, def, { caption: false });
     if (exercise.panel === 'sustain') {
-      stopPanel = mountSustainPanel($(root, '#panel'), {
+      sustain = mountSustainPanel($(root, '#panel'), {
         onRecord: () => onHold?.(1),
         onUndo: () => onHold?.(-1),
       });
+      stopPanel = sustain.stop;
     }
     if (exercise.panel === 'reading') stopPanel = mountReadingPanel($(root, '#panel'));
     if (isAudio && exercise.audioSrc) mountAudioStep(demo, exercise.audioSrc, step.seconds);
 
     on(root, '.substep', 'click', (_ev, el) => {
-      const subIndex = Number(el.dataset['sub']);
-      if (subIndex !== session.subIndex) goTo({ index: session.index, subIndex });
+      goTo({ index: session.index, subIndex: Number(el.dataset['sub']) });
     });
     on(root, '#back', 'click', () => {
       const pos = prevPosition(steps, session);
@@ -223,7 +226,6 @@ export function renderGuided(root: HTMLElement): () => void {
     on(root, '#stay', 'click', () => leave.close());
     on(root, '#leave-yes', 'click', () => {
       leave.close();
-      endSession();
       location.hash = '#/';
     });
     closeOnBackdrop(leave);
@@ -256,6 +258,7 @@ export function renderGuided(root: HTMLElement): () => void {
     timer?.stop();
     timer = undefined;
     onHold = undefined;
+    sustain?.resetStep();
     const row = $(root, '#timer-row');
     if (current.mode === 'untimed') {
       row.innerHTML = '<span class="muted">No timer for this step</span>';
@@ -328,6 +331,7 @@ export function renderGuided(root: HTMLElement): () => void {
     done?.addEventListener('click', () => add(1));
     $(row, '#timer-restart').addEventListener('click', () => {
       count = 0;
+      sustain?.resetStep();
       draw();
     });
     if (countsHolds) onHold = add;
@@ -345,6 +349,7 @@ export function renderGuided(root: HTMLElement): () => void {
     const status = $(demo, '#audio-status');
     const clock = $(row, '#clock');
     const toggle = $<HTMLButtonElement>(row, '#timer-toggle');
+    const restart = $<HTMLButtonElement>(row, '#timer-restart');
     const track = new Audio(src);
     track.preload = 'auto';
     audio = track;
@@ -376,6 +381,8 @@ export function renderGuided(root: HTMLElement): () => void {
       clock.classList.add('done');
     });
     track.addEventListener('error', () => {
+      toggle.disabled = true;
+      restart.disabled = true;
       status.textContent = 'Could not load the track. Tap Next to carry on.';
     });
 
@@ -385,11 +392,11 @@ export function renderGuided(root: HTMLElement): () => void {
         return;
       }
       track.play().catch((err: unknown) => {
-        if (err instanceof DOMException && err.name === 'AbortError') return;
+        if (track.error || (err instanceof DOMException && err.name === 'AbortError')) return;
         status.textContent = 'Playback blocked. Tap Play again.';
       });
     });
-    $(row, '#timer-restart').addEventListener('click', () => {
+    restart.addEventListener('click', () => {
       track.pause();
       track.currentTime = 0;
       clock.classList.remove('paused', 'done');
@@ -403,5 +410,6 @@ export function renderGuided(root: HTMLElement): () => void {
   return () => {
     teardownExercise();
     allowSleep();
+    if (location.hash !== '#/done') endSession();
   };
 }

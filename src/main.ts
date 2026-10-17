@@ -31,18 +31,53 @@ function routeFromHash(): Route {
   }
 }
 
+/** Taking an update reloads the page, which would throw away a routine in progress. */
+function isBusy(route: Route): boolean {
+  return route === 'guided' || route === 'done';
+}
+
+let updateWaiting = false;
+let reloadPending = false;
+
+const updateSW = registerSW({
+  immediate: true,
+  onNeedRefresh() {
+    updateWaiting = true;
+    applyUpdateIfIdle();
+  },
+  onNeedReload() {
+    if (isBusy(routeFromHash())) reloadPending = true;
+    else location.reload();
+  },
+  onRegisteredSW(_url, registration) {
+    if (!registration) return;
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') registration.update().catch(() => undefined);
+    });
+  },
+});
+
+function applyUpdateIfIdle() {
+  if (!updateWaiting || isBusy(routeFromHash())) return;
+  updateWaiting = false;
+  void updateSW(true);
+}
+
 let cleanup: (() => void) | undefined;
 
 function render() {
-  cleanup?.();
   const route = routeFromHash();
+  if (reloadPending && !isBusy(route)) {
+    location.reload();
+    return;
+  }
+  cleanup?.();
   app!.dataset['route'] = route;
   app!.innerHTML = '';
   cleanup = screens[route](app!);
   window.scrollTo(0, 0);
+  applyUpdateIfIdle();
 }
 
 window.addEventListener('hashchange', render);
 render();
-
-registerSW({ immediate: true });
