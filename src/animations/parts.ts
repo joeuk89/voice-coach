@@ -9,10 +9,12 @@ export interface PitchStripOptions {
   right?: number;
   /** Omit the single trace line; the caller draws its own segments. */
   trace?: boolean;
+  /** Omit the dot; the caller draws its own. */
+  dot?: boolean;
 }
 
 /** Two axis lines labelled HIGH/LOW, a pitch trace that reveals along pathLength, and a dot. */
-export function pitchStrip({ top, bottom, path, className = '', left = 60, right = 344, trace = true }: PitchStripOptions): string {
+export function pitchStrip({ top, bottom, path, className = '', left = 60, right = 344, trace = true, dot = true }: PitchStripOptions): string {
   return `
   <g class="pitch ${className}">
     <text class="anim-label" x="20" y="${top + 4}">HIGH</text>
@@ -20,7 +22,7 @@ export function pitchStrip({ top, bottom, path, className = '', left = 60, right
     <line class="pitch-axis" x1="${left}" y1="${top}" x2="${right}" y2="${top}"/>
     <line class="pitch-axis" x1="${left}" y1="${bottom}" x2="${right}" y2="${bottom}"/>
     ${trace ? `<path class="pitch-line" pathLength="1" d="${path}"/>` : ''}
-    <circle class="pitch-dot" r="6"/>
+    ${dot ? '<circle class="pitch-dot" r="6"/>' : ''}
   </g>`;
 }
 

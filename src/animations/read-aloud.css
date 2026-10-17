@@ -1,6 +1,6 @@
 .anim-read-aloud .ra-text { fill: var(--muted); font: 18px var(--font); }
 .anim-read-aloud .ra-text .hot { fill: var(--fg); font-weight: 600; }
-.anim-read-aloud .ra-pass { animation: var(--cycle) linear infinite; }
+.anim-read-aloud .ra-pass { animation: var(--cycle) step-end infinite; }
 .anim-read-aloud .ra-pass-1 { animation-name: ra-half-1; }
 .anim-read-aloud .ra-pass-2 { animation-name: ra-half-2; }
 .anim-read-aloud .ra-line {
@@ -19,27 +19,10 @@
   offset-path: path('M36 140 C 70 140, 100 91, 130 91 C 150 91, 155 140, 168 140 C 180 140, 185 98, 203 98 C 220 98, 230 140, 245 140 C 262 140, 272 84, 297 84 C 312 84, 318 118, 326 132');
   animation-name: ra-glide-2;
 }
-@keyframes ra-half-1 { 0%, 48% { opacity: 1; } 50%, 100% { opacity: 0; } }
-@keyframes ra-half-2 { 0%, 50% { opacity: 0; } 52%, 98% { opacity: 1; } 100% { opacity: 0; } }
-@keyframes ra-trail-1 {
-  0% { stroke-dashoffset: 1; opacity: 1; }
-  46% { stroke-dashoffset: 0; opacity: 1; }
-  48%, 100% { stroke-dashoffset: 0; opacity: 0; }
-}
-@keyframes ra-trail-2 {
-  0%, 50% { stroke-dashoffset: 1; opacity: 0; }
-  50.1% { stroke-dashoffset: 1; opacity: 1; }
-  96% { stroke-dashoffset: 0; opacity: 1; }
-  98%, 100% { stroke-dashoffset: 0; opacity: 0; }
-}
-@keyframes ra-glide-1 {
-  0% { offset-distance: 0%; opacity: 1; }
-  46% { offset-distance: 100%; opacity: 1; }
-  48%, 100% { offset-distance: 100%; opacity: 0; }
-}
-@keyframes ra-glide-2 {
-  0%, 50% { offset-distance: 0%; opacity: 0; }
-  50.1% { offset-distance: 0%; opacity: 1; }
-  96% { offset-distance: 100%; opacity: 1; }
-  98%, 100% { offset-distance: 100%; opacity: 0; }
-}
+/* Pass one fills the first half of the loop, pass two the second, matching the sub-step windows. */
+@keyframes ra-half-1 { 0% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes ra-half-2 { 0% { opacity: 0; } 50%, 100% { opacity: 1; } }
+@keyframes ra-trail-1 { 0% { stroke-dashoffset: 1; } 46%, 100% { stroke-dashoffset: 0; } }
+@keyframes ra-trail-2 { 0%, 50% { stroke-dashoffset: 1; } 96%, 100% { stroke-dashoffset: 0; } }
+@keyframes ra-glide-1 { 0% { offset-distance: 0%; } 46%, 100% { offset-distance: 100%; } }
+@keyframes ra-glide-2 { 0%, 50% { offset-distance: 0%; } 96%, 100% { offset-distance: 100%; } }

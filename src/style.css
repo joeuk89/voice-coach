@@ -239,3 +239,13 @@ header { display: flex; flex-direction: column; gap: 4px; }
 .passage strong { color: var(--accent); font-weight: 600; }
 .reading-hint { font-size: 0.9rem; }
 .panel .btn-ghost { margin-top: 6px; padding: 0; min-height: 44px; justify-content: flex-start; }
+
+/* Animation gallery */
+.win-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.win-chip {
+  appearance: none; border: 0; border-radius: 999px; padding: 6px 12px; min-height: 36px;
+  background: var(--surface-2); color: var(--fg); font: inherit; font-size: 0.8rem;
+}
+.win-chip b { color: var(--muted); }
+.win-chip[aria-pressed='true'] { background: var(--accent); color: var(--accent-text); }
+.win-chip[aria-pressed='true'] b { color: inherit; }

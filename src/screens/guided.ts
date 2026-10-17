@@ -1,4 +1,4 @@
-import { animationFor, mountAnimation } from '../animations';
+import { animationFor, mountAnimation, type AnimationPlayer } from '../animations';
 import { mountReadingPanel } from '../panels/reading';
 import { mountSustainPanel } from '../panels/sustain';
 import { playCue } from '../lib/audio';
@@ -61,7 +61,7 @@ export function renderGuided(root: HTMLElement): () => void {
   keepAwake();
   let plan: PlannedSubStep[] = [];
   let timer: Countdown | undefined;
-  let stopAnimation: (() => void) | undefined;
+  let player: AnimationPlayer | undefined;
   let stopPanel: (() => void) | undefined;
   let onHold: ((delta: number) => void) | undefined;
   let audio: HTMLAudioElement | undefined;
@@ -69,8 +69,8 @@ export function renderGuided(root: HTMLElement): () => void {
   function teardownExercise() {
     timer?.stop();
     timer = undefined;
-    stopAnimation?.();
-    stopAnimation = undefined;
+    player?.stop();
+    player = undefined;
     stopPanel?.();
     stopPanel = undefined;
     onHold = undefined;
@@ -177,7 +177,7 @@ export function renderGuided(root: HTMLElement): () => void {
     `;
 
     const demo = $(root, '#demo');
-    if (def) stopAnimation = mountAnimation(demo, def, { caption: false });
+    if (def) player = mountAnimation(demo, def, { caption: false });
     if (exercise.panel === 'sustain') {
       stopPanel = mountSustainPanel($(root, '#panel'), {
         onRecord: () => onHold?.(1),
@@ -242,6 +242,7 @@ export function renderGuided(root: HTMLElement): () => void {
     if (!current) return;
     $(root, '#sub-eyebrow').textContent = `Step ${session.subIndex + 1} of ${plan.length}`;
     $(root, '#sub-text').textContent = current.subStep.text;
+    player?.setWindow(current.subStep.window);
     root.querySelectorAll<HTMLElement>('.substep').forEach((row, i) => {
       const isCurrent = i === session.subIndex;
       row.classList.toggle('current', isCurrent);

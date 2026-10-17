@@ -13,10 +13,17 @@ const svg = `
     </linearGradient>
   </defs>
 
-  <text class="anim-label" x="80" y="88">LIPS</text>
-  <path class="lt-air" d="M16 126 L 344 126"/>
-  <rect class="lip lt-lip-upper" x="80" y="104" width="100" height="18" rx="9"/>
-  <rect class="lip lt-lip-lower" x="80" y="130" width="100" height="18" rx="9"/>
+  <text class="anim-label" x="80" y="74">LIPS</text>
+  <g class="lt-air-phase"><path class="lt-air" d="M16 126 L 344 126"/></g>
+  <g class="lt-trill">
+    <rect class="lip lt-lip-upper" x="80" y="104" width="100" height="18" rx="9"/>
+    <rect class="lip lt-lip-lower" x="80" y="130" width="100" height="18" rx="9"/>
+  </g>
+  <g class="lt-open">
+    <rect class="lip lt-open-upper" x="80" y="104" width="100" height="18" rx="9"/>
+    <rect class="lip lt-open-lower" x="80" y="130" width="100" height="18" rx="9"/>
+    <text class="lt-ah" x="130" y="132" text-anchor="middle">ah</text>
+  </g>
 
   <g class="lt-buzz">
     <path d="M190 112 q 6 14 0 28"/>
@@ -25,13 +32,9 @@ const svg = `
 
   ${rings(184, 126, 36, 'lt-rings')}
 
-  <g class="lt-tip">
-    <path class="lt-finger-outline" d="M18 54 L 64 100"/>
-    <path class="lt-finger" d="M18 54 L 64 100"/>
-    <path class="lt-finger-outline" d="M18 198 L 64 152"/>
-    <path class="lt-finger" d="M18 198 L 64 152"/>
-    <circle class="lt-press lt-press-a" cx="66" cy="100" r="9"/>
-    <circle class="lt-press lt-press-b" cx="66" cy="152" r="9"/>
+  <g class="lt-say">
+    <text class="lt-word lt-word-brrr" x="178" y="240" text-anchor="end">“brrr</text>
+    <text class="lt-word lt-word-ah" x="178" y="240">-ah”</text>
   </g>
 
   ${pitchStrip({ top: 208, bottom: 256, path: 'M70 256 L150 256 C 180 256, 200 208, 230 208 C 260 208, 285 256, 320 256', className: 'lt-pitch' })}
@@ -45,6 +48,6 @@ export const lipTrills: AnimationDef = {
     { until: 0.2, caption: 'Loose lips, not pursed. Blow gently until they buzz. No voice yet.' },
     { until: 0.4, caption: 'Add voice: “brrr” on one easy pitch.' },
     { until: 0.8, caption: 'Glide the buzz low to high and back down. Keep the air steady.' },
-    { until: 1, caption: 'Lips won’t go? Press your cheeks lightly with two fingertips.' },
+    { until: 1, caption: 'Add a vowel on the end: “brrr-ah”. Then a word.' },
   ],
 };

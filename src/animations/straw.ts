@@ -19,9 +19,12 @@ const svg = `
   <rect class="lip" x="40" y="106" width="44" height="16" rx="8"/>
   <rect class="lip" x="40" y="136" width="44" height="16" rx="8"/>
 
-  ${rings(236, 129, 30)}
+  ${rings(236, 129, 30, 'st-rings')}
 
   ${pitchStrip({ top: 200, bottom: 248, path: pitchPath, className: 'st-pitch' })}
+  <text class="anim-label st-hum" x="105" y="238" text-anchor="middle">hum</text>
+  <text class="anim-label st-siren" x="205" y="190" text-anchor="middle">siren</text>
+  <text class="anim-label st-speak" x="298" y="226" text-anchor="middle">speak · tune</text>
 </svg>`;
 
 export const straw: AnimationDef = {
@@ -29,7 +32,8 @@ export const straw: AnimationDef = {
   cycleSec: 12,
   svg,
   phases: [
-    { until: 0.3, caption: 'Gentle hum through the straw on an easy pitch. No air escaping around it.' },
+    { until: 0.12, caption: 'Straw between the lips, sealed. Air flows through it, none around it.' },
+    { until: 0.3, caption: 'Gentle hum through the straw on an easy pitch.' },
     { until: 0.7, caption: 'Slow siren through the straw: low to high to low. Never pushed.' },
     { until: 1, caption: 'Now “speak” a sentence or hum a tune through it.' },
   ],

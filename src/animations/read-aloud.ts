@@ -8,14 +8,17 @@ export const softContour =
 
 const svg = `
 <svg viewBox="0 0 360 290" aria-hidden="true">
-  <text class="anim-label ra-pass ra-pass-1" x="36" y="40">PASS 1 · OVER THE TOP</text>
-  <text class="anim-label ra-pass ra-pass-2" x="36" y="40">PASS 2 · 70 PERCENT</text>
-
   <line class="pitch-axis" x1="36" y1="140" x2="326" y2="140"/>
-  <path class="ra-line ra-line-1" pathLength="1" d="${bigContour}"/>
-  <path class="ra-line ra-line-2" pathLength="1" d="${softContour}"/>
-  <circle class="ra-dot ra-dot-1" r="6"/>
-  <circle class="ra-dot ra-dot-2" r="6"/>
+  <g class="ra-pass ra-pass-1">
+    <text class="anim-label" x="36" y="40">PASS 1 · OVER THE TOP</text>
+    <path class="ra-line ra-line-1" pathLength="1" d="${bigContour}"/>
+    <circle class="ra-dot ra-dot-1" r="6"/>
+  </g>
+  <g class="ra-pass ra-pass-2">
+    <text class="anim-label" x="36" y="40">PASS 2 · 70 PERCENT</text>
+    <path class="ra-line ra-line-2" pathLength="1" d="${softContour}"/>
+    <circle class="ra-dot ra-dot-2" r="6"/>
+  </g>
 
   <text class="ra-text" x="36" y="186">I didn’t <tspan class="hot">say</tspan> he <tspan class="hot">stole</tspan> the <tspan class="hot">money</tspan>.</text>
   <text class="anim-label" x="36" y="232">Bright words carry the pitch moves.</text>

@@ -35,8 +35,8 @@ export const exercises: Exercise[] = [
     name: 'Straw phonation',
     purpose: 'Back-pressure from the straw lets the vocal folds vibrate with the least effort.',
     subSteps: [
-      { text: 'Thin stirring straw between the lips. No air leaking around it.', weight: 0, window: [0, 0.3] },
-      { text: 'Hum gently through the straw on a comfortable pitch.', window: [0, 0.3] },
+      { text: 'Thin stirring straw between the lips. No air leaking around it.', weight: 0, window: [0, 0.12] },
+      { text: 'Hum gently through the straw on a comfortable pitch.', window: [0.12, 0.3] },
       { text: 'Slow sirens through the straw: low to high to low, smooth.', weight: 2, window: [0.3, 0.7] },
       { text: '“Speak” a sentence or hum a tune through it.', window: [0.7, 1] },
     ],
