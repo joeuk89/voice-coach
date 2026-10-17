@@ -9,16 +9,15 @@ export interface Session {
   routine: RoutineId;
   steps: Step[];
   index: number;
+  subIndex: number;
   startedAt: number;
-  /** Seconds spent on finished steps, including skipped time actually elapsed. */
-  elapsedSec: number;
   logged: boolean;
 }
 
 let current: Session | null = null;
 
 export function startSession(routine: RoutineId, steps: Step[]): Session {
-  current = { routine, steps, index: 0, startedAt: Date.now(), elapsedSec: 0, logged: false };
+  current = { routine, steps, index: 0, subIndex: 0, startedAt: Date.now(), logged: false };
   return current;
 }
 

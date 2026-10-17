@@ -1,0 +1,13 @@
+# Decisions log
+
+Judgment calls made while building, newest at the bottom. Each entry says what was decided, why, and what to look at if you disagree. Decisions Joe made in conversation are marked **agreed**; the rest were made unattended on his standing permission of 2026-10-17.
+
+## 2026-10-17
+
+- **Time split uses largest-remainder allocation in 5-second units**, not "leftover to the last timed step" as first agreed. The agreed rule could give a timed sub-step zero or negative seconds at short durations (hum at 0:30 gave 10, 10, 10, 0). Largest-remainder keeps shares summing exactly and never goes negative. Only lip trills (full) changed: 35 / 35 / 75 / 35. Shown to Joe before commit; **agreed**. See `src/state/plan.ts`.
+- **Weight 0 beats reps.** A sub-step with `weight: 0` is untimed even if it also sets `reps` or `repSec`. No exercise does both; the rule just keeps the planner total.
+- **Routine toggle lives in one helper** (`src/lib/routine-toggle.ts`) used by Home and Settings, instead of copying the markup, so the two screens cannot drift.
+- **Rep sub-steps behave as timed until Task 4**, including showing seconds in the sub-step list, so Task 3 ships a complete flow and Task 4 swaps in the counter.
+- **No audible output from test browsers overnight.** Joe sleeps with the Mac's speakers on. Every browser-driving agent patches `HTMLMediaElement.prototype.play` to mute and stubs `AudioContext` before touching the page, and never changes the Mac's system volume. Audio behaviour is otherwise verified by muted playback or by code reading.
+  - Incident: the Task 3 builder's walkthrough finished at about 01:44 UTC, before the rule reached it. It pressed Play on the track three times (about 2 to 3 s each) and triggered one timer-end beep. Nothing since has run without the mute patch.
+- **Guided screen details settled after the Task 3 critic pass** (all 27 bar items passed first time): on a sub-step change the step text scrolls into view if it was off screen; tapping the already-current list row does nothing (it used to reset a running timer); Next is a plain button and only "Finish" is primary, so Start / Pause is the one orange action during a step; in the Leave dialog Stay is primary and Leave plain. Browser Back mid-session goes Home without the confirm and a reload drops the session; both accepted under the agreed "no resume" rule. The jump sheet lets a routine be finished early and still logged; accepted, it is Joe's own log. Favicon path looks doubled in dev only (`/voice-coach/voice-coach/icons/icon.svg`); production output is correct; parked for the premium run.

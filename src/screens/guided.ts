@@ -6,22 +6,59 @@ import { $, esc, formatClock, on } from '../lib/dom';
 import { buzz } from '../lib/haptics';
 import { createCountdown, type Countdown } from '../lib/timer';
 import { allowSleep, keepAwake } from '../lib/wakelock';
-import { getSession, type Session, type Step } from '../state/session';
+import { planSubSteps, type PlannedSubStep } from '../state/plan';
+import { isLast, nextPosition, prevPosition, type Position } from '../state/position';
+import { endSession, getSession } from '../state/session';
+import type { Exercise } from '../types';
+
+const START_HINT = 'Tap Play to start the track.';
+
+function timerControls(seconds: number, startLabel: string): string {
+  return `
+    <div class="timer" id="clock" aria-live="off">${formatClock(seconds)}</div>
+    <button class="btn btn-primary timer-btn" id="timer-toggle">${startLabel}</button>
+    <button class="btn timer-btn" id="timer-restart">Restart</button>`;
+}
+
+function detailSheet(exercise: Exercise): string {
+  return `
+    <dialog class="sheet" id="sheet">
+      <h2>${esc(exercise.name)}</h2>
+      ${exercise.tips?.length ? `<h3>Tips</h3><ul>${exercise.tips.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
+      ${
+        exercise.links.length
+          ? `<h3>Reference</h3><ul class="links">${exercise.links
+              .map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a></li>`)
+              .join('')}</ul>`
+          : '<p class="muted">No reference links for this one.</p>'
+      }
+      <button class="btn" id="close-sheet">Close</button>
+    </dialog>`;
+}
+
+function closeOnBackdrop(dialog: HTMLDialogElement): void {
+  dialog.addEventListener('click', (ev) => {
+    if (ev.target === dialog) dialog.close();
+  });
+}
 
 export function renderGuided(root: HTMLElement): () => void {
-  const session = getSession();
-  if (!session) {
+  const found = getSession();
+  if (!found) {
     location.replace('#/');
     return () => undefined;
   }
+  const session = found;
+  const { steps } = session;
 
   keepAwake();
+  let plan: PlannedSubStep[] = [];
   let timer: Countdown | undefined;
   let stopAnimation: (() => void) | undefined;
   let stopPanel: (() => void) | undefined;
   let audio: HTMLAudioElement | undefined;
 
-  function teardownStep() {
+  function teardownExercise() {
     timer?.stop();
     timer = undefined;
     stopAnimation?.();
@@ -32,30 +69,37 @@ export function renderGuided(root: HTMLElement): () => void {
     audio = undefined;
   }
 
-  function finishStep(elapsed: number) {
-    session!.elapsedSec += elapsed;
-    teardownStep();
-  }
-
-  function goTo(index: number) {
-    if (index >= session!.steps.length) {
-      location.hash = '#/done';
+  function goTo(pos: Position) {
+    const sameExercise = pos.index === session.index;
+    session.index = pos.index;
+    session.subIndex = pos.subIndex;
+    if (sameExercise) {
+      showSubStep();
+      root.querySelector('.substep-now')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       return;
     }
-    session!.index = Math.max(0, index);
-    showStep(session!);
+    const focusedId = document.activeElement?.id;
+    showExercise();
+    window.scrollTo(0, 0);
+    if (focusedId === 'next' || focusedId === 'back') root.querySelector<HTMLElement>(`#${focusedId}`)?.focus({ preventScroll: true });
   }
 
-  function showStep(s: Session) {
-    const step = s.steps[s.index]!;
+  function showExercise() {
+    teardownExercise();
+    const step = steps[session.index]!;
     const { exercise } = step;
-    const total = s.steps.length;
     const isAudio = exercise.kind === 'audio';
     const def = animationFor(exercise.animation);
+    plan = planSubSteps(exercise, step.seconds);
 
     root.innerHTML = `
       <header class="step-head">
-        <div class="eyebrow">Exercise ${s.index + 1} of ${total} · ${formatClock(step.seconds)}</div>
+        <div class="step-top">
+          <a class="back-link" href="#/" id="home">‹ Home</a>
+          <button class="ex-picker eyebrow" id="exercises" aria-haspopup="dialog">
+            Exercise ${session.index + 1} of ${steps.length} · ${formatClock(step.seconds)} <span aria-hidden="true">▾</span>
+          </button>
+        </div>
         <h1>${esc(exercise.name)}</h1>
         <p class="muted">${esc(exercise.purpose)}</p>
       </header>
@@ -63,134 +107,246 @@ export function renderGuided(root: HTMLElement): () => void {
       <section class="card demo" id="demo" ${def || isAudio ? '' : 'hidden'}></section>
 
       ${
-        exercise.subSteps.length
-          ? `<ul class="cues">${exercise.subSteps.map((sub) => `<li>${esc(sub.text)}</li>`).join('')}</ul>`
+        plan.length
+          ? `<section class="substep-now" aria-live="polite">
+              <div class="eyebrow" id="sub-eyebrow"></div>
+              <p class="substep-text" id="sub-text"></p>
+            </section>`
           : ''
       }
 
+      <div class="timer-row" id="timer-row"></div>
+
       <section class="card panel" id="panel" ${exercise.panel ? '' : 'hidden'}></section>
 
-      <div class="timer-row">
-        <div class="timer" id="clock" aria-live="off">${formatClock(step.seconds)}</div>
-        <button class="btn btn-ghost" id="detail">More detail</button>
-      </div>
+      ${
+        plan.length
+          ? `<ol class="substeps">${plan
+              .map(
+                (p, i) => `<li><button class="row-btn substep" data-sub="${i}">
+                  <span>${esc(p.subStep.text)}</span>
+                  <span class="mono">${p.mode === 'untimed' ? '' : formatClock(p.seconds)}</span>
+                </button></li>`,
+              )
+              .join('')}</ol>`
+          : ''
+      }
 
-      <nav class="controls">
-        <button class="btn" id="back" ${s.index === 0 ? 'disabled' : ''}>Back</button>
-        <button class="btn btn-primary" id="toggle">Pause</button>
-        <button class="btn" id="skip">Skip</button>
+      <button class="btn btn-ghost" id="detail">More detail</button>
+
+      <nav class="step-nav">
+        <button class="btn" id="back">Back</button>
+        <button class="btn" id="next">Next</button>
       </nav>
 
-      <dialog class="sheet" id="sheet">
-        <h2>${esc(exercise.name)}</h2>
-        ${exercise.tips?.length ? `<h3>Tips</h3><ul>${exercise.tips.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
-        ${
-          exercise.links.length
-            ? `<h3>Reference</h3><ul class="links">${exercise.links
-                .map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a></li>`)
-                .join('')}</ul>`
-            : '<p class="muted">No reference links for this one.</p>'
-        }
-        <button class="btn" id="close-sheet">Close</button>
+      ${detailSheet(exercise)}
+
+      <dialog class="sheet" id="ex-sheet" aria-labelledby="ex-sheet-title">
+        <h2 id="ex-sheet-title">Exercises</h2>
+        <ol class="jump-list">
+          ${steps
+            .map((s, i) => {
+              const current = i === session.index;
+              return `<li><button class="row-btn jump ${current ? 'current' : ''}" data-jump="${i}" ${current ? 'aria-current="step"' : ''}>
+                <span>${i + 1}. ${esc(s.exercise.name)}</span>
+                <span class="mono">${formatClock(s.seconds)}</span>
+              </button></li>`;
+            })
+            .join('')}
+        </ol>
+        <button class="btn" id="close-ex-sheet">Close</button>
+      </dialog>
+
+      <dialog class="confirm" id="leave" aria-labelledby="leave-title">
+        <h2 id="leave-title">Leave the routine?</h2>
+        <p class="muted">It will not be marked as done today.</p>
+        <div class="confirm-actions">
+          <button class="btn btn-primary" id="stay">Stay</button>
+          <button class="btn" id="leave-yes">Leave</button>
+        </div>
       </dialog>
     `;
 
     const demo = $(root, '#demo');
-    if (def) stopAnimation = mountAnimation(demo, def);
+    if (def) stopAnimation = mountAnimation(demo, def, { caption: false });
     if (exercise.panel === 'sustain') stopPanel = mountSustainPanel($(root, '#panel'));
     if (exercise.panel === 'reading') stopPanel = mountReadingPanel($(root, '#panel'));
+    if (isAudio && exercise.audioSrc) mountAudioStep(demo, exercise.audioSrc, step.seconds);
 
-    const clock = $(root, '#clock');
-    const toggle = $<HTMLButtonElement>(root, '#toggle');
+    on(root, '.substep', 'click', (_ev, el) => {
+      const subIndex = Number(el.dataset['sub']);
+      if (subIndex !== session.subIndex) goTo({ index: session.index, subIndex });
+    });
+    on(root, '#back', 'click', () => {
+      const pos = prevPosition(steps, session);
+      if (pos) goTo(pos);
+    });
+    on(root, '#next', 'click', () => {
+      const pos = nextPosition(steps, session);
+      if (pos) goTo(pos);
+      else location.hash = '#/done';
+    });
 
-    if (isAudio && exercise.audioSrc) {
-      mountAudioStep(demo, exercise.audioSrc, step, clock, toggle);
-    } else {
+    const sheet = $<HTMLDialogElement>(root, '#sheet');
+    on(root, '#detail', 'click', () => sheet.showModal());
+    on(root, '#close-sheet', 'click', () => sheet.close());
+    closeOnBackdrop(sheet);
+
+    const exSheet = $<HTMLDialogElement>(root, '#ex-sheet');
+    on(root, '#exercises', 'click', () => exSheet.showModal());
+    on(root, '#close-ex-sheet', 'click', () => exSheet.close());
+    on(root, '.jump', 'click', (_ev, el) => {
+      exSheet.close();
+      goTo({ index: Number(el.dataset['jump']), subIndex: 0 });
+    });
+    closeOnBackdrop(exSheet);
+
+    const leave = $<HTMLDialogElement>(root, '#leave');
+    on(root, '#home', 'click', (ev) => {
+      ev.preventDefault();
+      leave.showModal();
+    });
+    on(root, '#stay', 'click', () => leave.close());
+    on(root, '#leave-yes', 'click', () => {
+      leave.close();
+      endSession();
+      location.hash = '#/';
+    });
+    closeOnBackdrop(leave);
+
+    showSubStep();
+  }
+
+  function showSubStep() {
+    $<HTMLButtonElement>(root, '#back').disabled = prevPosition(steps, session) === null;
+    const last = isLast(steps, session);
+    const next = $(root, '#next');
+    next.textContent = last ? 'Finish' : 'Next';
+    next.classList.toggle('btn-primary', last);
+
+    const current = plan[session.subIndex];
+    if (!current) return;
+    $(root, '#sub-eyebrow').textContent = `Step ${session.subIndex + 1} of ${plan.length}`;
+    $(root, '#sub-text').textContent = current.subStep.text;
+    root.querySelectorAll<HTMLElement>('.substep').forEach((row, i) => {
+      const isCurrent = i === session.subIndex;
+      row.classList.toggle('current', isCurrent);
+      if (isCurrent) row.setAttribute('aria-current', 'step');
+      else row.removeAttribute('aria-current');
+    });
+    showTimer(current);
+  }
+
+  function showTimer(current: PlannedSubStep) {
+    timer?.stop();
+    timer = undefined;
+    const row = $(root, '#timer-row');
+    if (current.mode === 'untimed') {
+      row.innerHTML = '<span class="muted">No timer for this step</span>';
+      return;
+    }
+    row.innerHTML = timerControls(current.seconds, 'Start');
+    const clock = $(row, '#clock');
+    const toggle = $<HTMLButtonElement>(row, '#timer-toggle');
+
+    function reset() {
+      timer?.stop();
+      clock.classList.remove('paused', 'done');
+      toggle.textContent = 'Start';
+      toggle.disabled = current.seconds <= 0;
       timer = createCountdown(
-        step.seconds,
+        current.seconds,
         (left) => {
           clock.textContent = formatClock(left);
         },
         () => {
           playCue();
           buzz();
-          finishStep(step.seconds);
-          goTo(s.index + 1);
+          toggle.textContent = 'Start';
+          toggle.disabled = true;
+          clock.classList.add('done');
         },
       );
-      timer.start();
-      toggle.addEventListener('click', () => {
-        const running = timer!.toggle();
-        toggle.textContent = running ? 'Pause' : 'Resume';
-        clock.classList.toggle('paused', !running);
-      });
     }
 
-    on(root, '#back', 'click', () => {
-      finishStep(timer?.elapsedSec ?? 0);
-      goTo(s.index - 1);
+    reset();
+    toggle.addEventListener('click', () => {
+      const running = timer!.toggle();
+      toggle.textContent = running ? 'Pause' : 'Resume';
+      clock.classList.toggle('paused', !running);
     });
-    on(root, '#skip', 'click', () => {
-      finishStep(timer?.elapsedSec ?? 0);
-      goTo(s.index + 1);
-    });
-
-    const sheet = $<HTMLDialogElement>(root, '#sheet');
-    on(root, '#detail', 'click', () => sheet.showModal());
-    on(root, '#close-sheet', 'click', () => sheet.close());
-    sheet.addEventListener('click', (ev) => {
-      if (ev.target === sheet) sheet.close();
-    });
+    $(row, '#timer-restart').addEventListener('click', reset);
   }
 
-  function mountAudioStep(demo: HTMLElement, src: string, step: Step, clock: HTMLElement, toggle: HTMLButtonElement) {
+  function mountAudioStep(demo: HTMLElement, src: string, seconds: number) {
     demo.innerHTML = `
       <div class="audio-step">
         <div class="audio-bar"><i id="audio-progress"></i></div>
-        <div class="muted" id="audio-status">Tap Play to start the track.</div>
+        <div class="muted" id="audio-status">${START_HINT}</div>
       </div>`;
+    const row = $(root, '#timer-row');
+    row.innerHTML = timerControls(seconds, 'Play');
     const bar = $(demo, '#audio-progress');
     const status = $(demo, '#audio-status');
-    audio = new Audio(src);
-    audio.preload = 'auto';
-    toggle.textContent = 'Play';
+    const clock = $(row, '#clock');
+    const toggle = $<HTMLButtonElement>(row, '#timer-toggle');
+    const track = new Audio(src);
+    track.preload = 'auto';
+    audio = track;
 
-    audio.addEventListener('timeupdate', () => {
-      if (!audio || !Number.isFinite(audio.duration)) return;
-      const left = audio.duration - audio.currentTime;
-      clock.textContent = formatClock(left);
-      bar.style.transform = `scaleX(${audio.currentTime / audio.duration})`;
-    });
-    audio.addEventListener('play', () => {
+    function showTime() {
+      if (!Number.isFinite(track.duration)) return;
+      clock.textContent = formatClock(track.duration - track.currentTime);
+      bar.style.transform = `scaleX(${track.currentTime / track.duration})`;
+    }
+
+    track.addEventListener('loadedmetadata', showTime);
+    track.addEventListener('timeupdate', showTime);
+    track.addEventListener('play', () => {
       toggle.textContent = 'Pause';
       status.textContent = 'Playing';
+      clock.classList.remove('paused', 'done');
     });
-    audio.addEventListener('pause', () => {
-      if (audio && !audio.ended) {
-        toggle.textContent = 'Play';
-        status.textContent = 'Paused';
-      }
+    track.addEventListener('pause', () => {
+      if (track.ended) return;
+      const started = track.currentTime > 0;
+      toggle.textContent = 'Play';
+      status.textContent = started ? 'Paused' : START_HINT;
+      clock.classList.toggle('paused', started);
     });
-    audio.addEventListener('ended', () => {
+    track.addEventListener('ended', () => {
       buzz();
-      finishStep(Math.round(audio?.duration ?? step.seconds));
-      goTo(session!.index + 1);
+      toggle.textContent = 'Play';
+      status.textContent = 'Track finished. Tap Next when you are ready.';
+      clock.classList.add('done');
     });
-    audio.addEventListener('error', () => {
-      status.textContent = 'Could not load the track. Skip to carry on.';
+    track.addEventListener('error', () => {
+      status.textContent = 'Could not load the track. Tap Next to carry on.';
     });
 
     toggle.addEventListener('click', () => {
-      if (!audio) return;
-      if (audio.paused) void audio.play().catch(() => (status.textContent = 'Playback blocked. Tap Play again.'));
-      else audio.pause();
+      if (!track.paused) {
+        track.pause();
+        return;
+      }
+      track.play().catch((err: unknown) => {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+        status.textContent = 'Playback blocked. Tap Play again.';
+      });
+    });
+    $(row, '#timer-restart').addEventListener('click', () => {
+      track.pause();
+      track.currentTime = 0;
+      clock.classList.remove('paused', 'done');
+      status.textContent = START_HINT;
+      showTime();
     });
   }
 
-  showStep(session);
+  showExercise();
 
   return () => {
-    teardownStep();
+    teardownExercise();
     allowSleep();
   };
 }

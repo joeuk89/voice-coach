@@ -31,13 +31,15 @@ export function captionAt(def: AnimationDef, progress: number): string {
  * Renders the animation card. The caption follows the loop by reading the
  * progress bar's own CSS animation clock, so it never drifts from the SVG.
  */
-export function mountAnimation(container: HTMLElement, def: AnimationDef): () => void {
+export function mountAnimation(container: HTMLElement, def: AnimationDef, { caption = true } = {}): () => void {
   container.style.setProperty('--cycle', `${def.cycleSec}s`);
   container.innerHTML = `
     <div class="anim anim-${def.id}">${def.svg}</div>
-    <div class="anim-caption"></div>
+    ${caption ? '<div class="anim-caption"></div>' : ''}
     <div class="anim-progress"><i></i></div>`;
-  const caption = container.querySelector<HTMLElement>('.anim-caption')!;
+  if (!caption) return () => undefined;
+
+  const captionEl = container.querySelector<HTMLElement>('.anim-caption')!;
   const bar = container.querySelector<HTMLElement>('.anim-progress i')!;
   const cycleMs = def.cycleSec * 1000;
   let raf = 0;
@@ -51,7 +53,7 @@ export function mountAnimation(container: HTMLElement, def: AnimationDef): () =>
     const text = captionAt(def, progress);
     if (text !== lastText) {
       lastText = text;
-      caption.textContent = text;
+      captionEl.textContent = text;
     }
     raf = requestAnimationFrame(frame);
   }

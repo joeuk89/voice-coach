@@ -10,13 +10,14 @@ export function renderDone(root: HTMLElement): () => void {
     return () => undefined;
   }
 
+  const totalSec = Math.round((Date.now() - session.startedAt) / 1000);
   if (!session.logged) {
     session.logged = true;
     appendLog({
       date: localDay(),
       completedAt: new Date().toISOString(),
       routine: session.routine,
-      totalSec: session.elapsedSec,
+      totalSec,
     });
   }
 
@@ -24,7 +25,7 @@ export function renderDone(root: HTMLElement): () => void {
     <header class="done-head">
       <div class="eyebrow">Routine complete</div>
       <h1>Nice work.</h1>
-      <p class="muted">${esc(formatClock(session.elapsedSec))} of practice.</p>
+      <p class="muted">${esc(formatClock(totalSec))} of practice.</p>
     </header>
 
     <section class="card">
