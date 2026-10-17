@@ -9,7 +9,7 @@ const top = 212;
 const bottom = 266;
 const left = 160;
 const easy = easyPitchY(top, bottom);
-const lift = easy - 10;
+const lift = easy - 5;
 
 /**
  * A flat trace on the easy pitch that lifts slightly while a suffix is sung. Each lift is a `[from, to]`
@@ -50,7 +50,7 @@ const svg = `
   <rect class="hm-throat" x="66" y="170" width="28" height="92" rx="14"/>
   <text class="anim-label" x="108" y="176">THROAT · relaxed</text>
 
-  <text class="anim-label" x="344" y="202" text-anchor="end">VOICE · easy</text>
+  <text class="anim-label" x="${left}" y="202">VOICE · easy</text>
   ${pitchStrip({ top, bottom, left, className: 'hm-pitch', trace: false, dot: false })}
   ${pitchTrace(voiceTrace([]), 'hm-t hm-t-1')}
   ${pitchTrace(voiceTrace([[3 / 25, 1]]), 'hm-t hm-t-2')}

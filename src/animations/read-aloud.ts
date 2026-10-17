@@ -41,6 +41,7 @@ export const readAloud: AnimationDef = {
   id: 'read-aloud',
   cycleSec: 10,
   svg,
+  compactViewBox: '0 16 360 226',
   phases: [
     { until: 0.5, caption: 'Read it once completely over the top. Exaggerate every rise and fall.' },
     { until: 1, caption: 'Read it again at 70 percent. Keep the movement, lose the parody.' },

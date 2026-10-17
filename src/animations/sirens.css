@@ -4,7 +4,6 @@
   animation: sr-mouth var(--cycle) ease-in-out infinite;
 }
 .anim-sirens .sr-band { fill: color-mix(in srgb, var(--voice) 7%, transparent); }
-.anim-sirens .sr-band-edge { stroke: color-mix(in srgb, var(--fg) 20%, transparent); stroke-width: 2; }
 
 .anim-sirens .sr-pass-1 { animation: sr-show-1 var(--cycle) step-end infinite; }
 .anim-sirens .sr-pass-2 { animation: sr-show-2 var(--cycle) step-end infinite; }

@@ -157,11 +157,9 @@ header > .back-link { align-self: flex-start; }
 
 #app[data-route='guided'] { padding-bottom: 0; gap: 12px; }
 .step-purpose { font-size: var(--fs-sm); }
-.demo.compact .anim svg { max-height: 250px; }
 .step-head h1 { font-size: min(var(--fs-xl), 7.5vw); }
 @media (max-height: 800px) {
   #app[data-route='guided'] { gap: 8px; }
-  .demo.compact .anim svg { max-height: 210px; }
 }
 .step-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .ex-picker {

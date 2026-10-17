@@ -19,8 +19,6 @@ const svg = `
   ${rings(84, 128, 32)}
 
   <rect class="sr-band" x="110" y="${bandTop}" width="234" height="${bandBottom - bandTop}"/>
-  <line class="sr-band-edge" x1="110" y1="${bandTop}" x2="344" y2="${bandTop}"/>
-  <line class="sr-band-edge" x1="110" y1="${bandBottom}" x2="344" y2="${bandBottom}"/>
   ${pitchStrip({ top, bottom, left: 110, className: 'sr-pitch', trace: false, dot: false })}
   ${pitchTrace(sirenPath(bandBottom, bandTop), 'sr-pass-1')}
   ${pitchTrace(sirenPath(bandBottom + overshoot, bandTop - overshoot), 'sr-pass-2')}

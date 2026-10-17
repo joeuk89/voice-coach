@@ -74,5 +74,7 @@ export interface AnimationDef {
   id: AnimationId;
   cycleSec: number;
   svg: string;
+  /** A tighter crop for the guided screen when a panel shares it, so the card shrinks without shrinking the labels. */
+  compactViewBox?: string;
   phases: Phase[];
 }

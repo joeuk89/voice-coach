@@ -117,6 +117,7 @@ export function renderGuided(root: HTMLElement): () => void {
     const demo = $(root, '#demo');
     if (def) player = mountAnimation(demo, def, { caption: false });
     demo.classList.toggle('compact', Boolean(exercise.panel));
+    if (exercise.panel && def?.compactViewBox) demo.querySelector('svg')?.setAttribute('viewBox', def.compactViewBox);
     if (exercise.panel === 'sustain') {
       sustain = mountSustainPanel($(root, '#panel'), {
         onRecord: () => stepRow?.hold?.(1),
