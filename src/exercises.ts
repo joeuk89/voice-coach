@@ -49,10 +49,19 @@ export const exercises: Exercise[] = [
     name: 'Lip trills',
     purpose: 'Loosens the lips and jaw and gets the voice going on gentle, steady airflow.',
     subSteps: [
-      { text: 'Loose lips, not pursed. Blow gently until they buzz. No voice yet.', window: [0, 0.2] },
-      { text: 'Add voice: “brrr” on one easy pitch.', window: [0.2, 0.4] },
-      { text: 'Glide low to high, then high to low.', weight: 2, window: [0.4, 0.8] },
-      { text: 'Add a vowel on the end: “brrr-ah”. Then a word.', window: [0.8, 1] },
+      { text: 'Loose lips, not pursed. Blow gently until they buzz. No voice yet.', window: [0, 0.18] },
+      { text: 'Add voice: “brrr” on one easy pitch.', window: [0.18, 0.36] },
+      { text: 'Glide low to high, then high to low.', weight: 2, window: [0.36, 0.7] },
+      {
+        text: 'Add a vowel on the end: “brrr-ah”.',
+        window: [0.7, 0.85],
+        examples: ['brrr-ah', 'brrr-ee', 'brrr-eye', 'brrr-ay', 'brrr-oar'],
+      },
+      {
+        text: 'Add a word on the end: “brrr-ine”.',
+        window: [0.85, 1],
+        examples: ['brrr-ine', 'brrr-awn', 'brrr-ain', 'brrr-ight', 'brrr-eeze', 'brrr-own', 'brrr-and', 'brrr-aid', 'brrr-oom', 'brrr-ush'],
+      },
     ],
     tips: ['Lips won’t trill? Press your cheeks lightly with two fingertips to take the weight off.'],
     duration: { short: 90, full: 180 },

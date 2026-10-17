@@ -1,7 +1,7 @@
 .anim-lip-trills .lt-lip-upper { animation: lt-buzz-up 0.1s linear infinite; }
 .anim-lip-trills .lt-lip-lower { animation: lt-buzz-down 0.1s linear infinite; }
 
-.anim-lip-trills .lt-buzz { animation: lt-phase-buzz var(--cycle) step-end infinite; }
+.anim-lip-trills .lt-buzz { animation: lt-phase-trill var(--cycle) step-end infinite; }
 .anim-lip-trills .lt-buzz path {
   fill: none; stroke: var(--air); stroke-width: 3; stroke-linecap: round;
   animation: lt-flicker 0.3s ease-in-out infinite;
@@ -14,53 +14,78 @@
 .anim-lip-trills .lt-open { animation: lt-phase-open var(--cycle) step-end infinite; }
 .anim-lip-trills .lt-open-upper { animation: lt-open-up var(--cycle) ease-in-out infinite; }
 .anim-lip-trills .lt-open-lower { animation: lt-open-down var(--cycle) ease-in-out infinite; }
-.anim-lip-trills .lt-ah {
-  stroke: var(--surface); stroke-width: 4; stroke-linejoin: round; paint-order: stroke;
-  animation: lt-ah var(--cycle) linear infinite;
-}
+.anim-lip-trills .lt-mouth { stroke: var(--surface); stroke-width: 4; stroke-linejoin: round; paint-order: stroke; }
+.anim-lip-trills .lt-ah { animation: lt-ah var(--cycle) linear infinite; }
+.anim-lip-trills .lt-ine { animation: lt-ine var(--cycle) linear infinite; }
 
 .anim-lip-trills .lt-rings, .anim-lip-trills .lt-voice-on { animation: lt-phase-voice var(--cycle) step-end infinite; }
 .anim-lip-trills .lt-voice-off { animation: lt-phase-silent var(--cycle) step-end infinite; }
 .anim-lip-trills .lt-brrr { animation: lt-phase-brrr var(--cycle) step-end infinite; }
 .anim-lip-trills .lt-say { animation: lt-phase-say var(--cycle) step-end infinite; }
 .anim-lip-trills .lt-say-ah { animation: lt-say-ah var(--cycle) step-end infinite; }
+.anim-lip-trills .lt-word { animation: lt-phase-word var(--cycle) step-end infinite; }
+.anim-lip-trills .lt-say-ine { animation: lt-say-ine var(--cycle) step-end infinite; }
 
 .anim-lip-trills .lt-t-easy { animation: lt-show-easy var(--cycle) step-end infinite; }
 .anim-lip-trills .lt-t-glide { animation: lt-show-glide var(--cycle) step-end infinite; }
 .anim-lip-trills .lt-t-ah { animation: lt-phase-say var(--cycle) step-end infinite; }
+.anim-lip-trills .lt-t-ine { animation: lt-phase-word var(--cycle) step-end infinite; }
 .anim-lip-trills .lt-t-easy .pitch-line { animation: lt-trace-easy var(--cycle) linear infinite; }
 .anim-lip-trills .lt-t-glide .pitch-line { animation: lt-trace-glide var(--cycle) linear infinite; }
 .anim-lip-trills .lt-t-ah .pitch-line { animation: lt-trace-ah var(--cycle) linear infinite; }
+.anim-lip-trills .lt-t-ine .pitch-line { animation: lt-trace-ine var(--cycle) linear infinite; }
 .anim-lip-trills .lt-t-easy .pitch-dot { animation: lt-dot-easy var(--cycle) linear infinite; }
 .anim-lip-trills .lt-t-glide .pitch-dot { animation: lt-dot-glide var(--cycle) linear infinite; }
 .anim-lip-trills .lt-t-ah .pitch-dot { animation: lt-dot-ah var(--cycle) linear infinite; }
+.anim-lip-trills .lt-t-ine .pitch-dot { animation: lt-dot-ine var(--cycle) linear infinite; }
 
 @keyframes lt-buzz-up   { 0% { transform: translateY(-1.8px); } 50% { transform: translateY(1.4px); } 100% { transform: translateY(-1.8px); } }
 @keyframes lt-buzz-down { 0% { transform: translateY(1.8px); } 50% { transform: translateY(-1.4px); } 100% { transform: translateY(1.8px); } }
 @keyframes lt-flicker { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-/* Phase boundaries match the sub-step windows in exercises.ts: buzz to 20%, voice to 40%, glide to 80%, then “brrr-ah”. */
-@keyframes lt-phase-voice { 0% { opacity: 0; } 20%, 100% { opacity: 1; } }
-@keyframes lt-phase-silent { 0% { opacity: 1; } 20%, 100% { opacity: 0; } }
-@keyframes lt-phase-brrr { 0% { opacity: 0; } 20% { opacity: 1; } 80%, 100% { opacity: 0; } }
-@keyframes lt-phase-say { 0% { opacity: 0; } 80%, 100% { opacity: 1; } }
-@keyframes lt-say-ah { 0% { opacity: 0.3; } 85.5%, 100% { opacity: 1; } }
-@keyframes lt-show-easy { 0% { opacity: 0; } 20% { opacity: 1; } 40%, 100% { opacity: 0; } }
-@keyframes lt-show-glide { 0% { opacity: 0; } 40% { opacity: 1; } 80%, 100% { opacity: 0; } }
-@keyframes lt-trace-easy { 0%, 20% { stroke-dashoffset: 1; } 39.2%, 100% { stroke-dashoffset: 0; } }
-@keyframes lt-trace-glide { 0%, 40% { stroke-dashoffset: 1; } 78.4%, 100% { stroke-dashoffset: 0; } }
-@keyframes lt-trace-ah { 0%, 80% { stroke-dashoffset: 1; } 99.2%, 100% { stroke-dashoffset: 0; } }
-@keyframes lt-dot-easy { 0%, 20% { offset-distance: 0%; } 39.2%, 100% { offset-distance: 100%; } }
-@keyframes lt-dot-glide { 0%, 40% { offset-distance: 0%; } 78.4%, 100% { offset-distance: 100%; } }
-@keyframes lt-dot-ah { 0%, 80% { offset-distance: 0%; } 99.2%, 100% { offset-distance: 100%; } }
+/* Phase boundaries match the sub-step windows in exercises.ts: buzz to 18%, voice to 36%, glide to 70%,
+   “brrr-ah” to 85%, then “brrr-ine”. Each trace finishes 96% of the way through its window. In the last two
+   phases the lips open 27.5% of the way in, and the step-end keyframes snap them shut on the 85% edge. */
+@keyframes lt-phase-voice { 0% { opacity: 0; } 18%, 100% { opacity: 1; } }
+@keyframes lt-phase-silent { 0% { opacity: 1; } 18%, 100% { opacity: 0; } }
+@keyframes lt-phase-brrr { 0% { opacity: 0; } 18% { opacity: 1; } 70%, 100% { opacity: 0; } }
+@keyframes lt-phase-say { 0% { opacity: 0; } 70% { opacity: 1; } 85%, 100% { opacity: 0; } }
+@keyframes lt-phase-word { 0% { opacity: 0; } 85%, 100% { opacity: 1; } }
+@keyframes lt-say-ah { 0% { opacity: 0.3; } 74.1%, 100% { opacity: 1; } }
+@keyframes lt-say-ine { 0% { opacity: 0.3; } 89.1%, 100% { opacity: 1; } }
+@keyframes lt-show-easy { 0% { opacity: 0; } 18% { opacity: 1; } 36%, 100% { opacity: 0; } }
+@keyframes lt-show-glide { 0% { opacity: 0; } 36% { opacity: 1; } 70%, 100% { opacity: 0; } }
+@keyframes lt-trace-easy { 0%, 18% { stroke-dashoffset: 1; } 35.3%, 100% { stroke-dashoffset: 0; } }
+@keyframes lt-trace-glide { 0%, 36% { stroke-dashoffset: 1; } 68.6%, 100% { stroke-dashoffset: 0; } }
+@keyframes lt-trace-ah { 0%, 70% { stroke-dashoffset: 1; } 84.4%, 100% { stroke-dashoffset: 0; } }
+@keyframes lt-trace-ine { 0%, 85% { stroke-dashoffset: 1; } 99.4%, 100% { stroke-dashoffset: 0; } }
+@keyframes lt-dot-easy { 0%, 18% { offset-distance: 0%; } 35.3%, 100% { offset-distance: 100%; } }
+@keyframes lt-dot-glide { 0%, 36% { offset-distance: 0%; } 68.6%, 100% { offset-distance: 100%; } }
+@keyframes lt-dot-ah { 0%, 70% { offset-distance: 0%; } 84.4%, 100% { offset-distance: 100%; } }
+@keyframes lt-dot-ine { 0%, 85% { offset-distance: 0%; } 99.4%, 100% { offset-distance: 100%; } }
 
-@keyframes lt-phase-trill { 0% { opacity: 1; } 85.5%, 100% { opacity: 0; } }
-@keyframes lt-phase-open { 0% { opacity: 0; } 85.5%, 100% { opacity: 1; } }
-@keyframes lt-phase-buzz { 0% { opacity: 1; } 85.5%, 100% { opacity: 0; } }
-@keyframes lt-open-up { 0%, 85.5% { transform: translateY(0); } 88%, 100% { transform: translateY(-12px); } }
-@keyframes lt-open-down { 0%, 85.5% { transform: translateY(0); } 88%, 100% { transform: translateY(12px); } }
-@keyframes lt-ah { 0%, 87% { opacity: 0; } 88.5%, 100% { opacity: 1; } }
-@keyframes lt-phase-air { 0%, 85.5% { opacity: 1; } 88%, 100% { opacity: 0.3; } }
+@keyframes lt-phase-trill { 0% { opacity: 1; } 74.1% { opacity: 0; } 85% { opacity: 1; } 89.1%, 100% { opacity: 0; } }
+@keyframes lt-phase-open { 0% { opacity: 0; } 74.1% { opacity: 1; } 85% { opacity: 0; } 89.1%, 100% { opacity: 1; } }
+@keyframes lt-open-up {
+  0%, 74.1% { transform: translateY(0); }
+  76% { transform: translateY(-12px); animation-timing-function: step-end; }
+  85%, 89.1% { transform: translateY(0); }
+  91%, 100% { transform: translateY(-12px); }
+}
+@keyframes lt-open-down {
+  0%, 74.1% { transform: translateY(0); }
+  76% { transform: translateY(12px); animation-timing-function: step-end; }
+  85%, 89.1% { transform: translateY(0); }
+  91%, 100% { transform: translateY(12px); }
+}
+@keyframes lt-ah { 0%, 75.3% { opacity: 0; } 76.4% { opacity: 1; animation-timing-function: step-end; } 85%, 100% { opacity: 0; } }
+@keyframes lt-ine { 0%, 90.3% { opacity: 0; } 91.4%, 100% { opacity: 1; } }
+@keyframes lt-phase-air {
+  0%, 74.1% { opacity: 1; }
+  76% { opacity: 0.3; animation-timing-function: step-end; }
+  85%, 89.1% { opacity: 1; }
+  91%, 100% { opacity: 0.3; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .anim-lip-trills .lt-lip-upper,

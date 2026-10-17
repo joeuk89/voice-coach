@@ -20,7 +20,8 @@ const svg = `
   <g class="lt-open">
     ${lip(120, 80, 'lt-open-upper')}
     ${lip(120, 104, 'lt-open-lower')}
-    <text class="anim-say lt-ah" x="152" y="106" text-anchor="middle">“ah”</text>
+    <text class="anim-say lt-mouth lt-ah" x="152" y="106" text-anchor="middle">“ah”</text>
+    <text class="anim-say lt-mouth lt-ine" x="152" y="106" text-anchor="middle">“ine”</text>
   </g>
 
   <g class="lt-buzz">
@@ -41,9 +42,14 @@ const svg = `
     <text class="anim-say" x="316" y="206" text-anchor="end">“brrr-</text>
     <text class="anim-say lt-say-ah" x="316" y="206">ah”</text>
   </g>
+  <g class="lt-word">
+    <text class="anim-say" x="313" y="206" text-anchor="end">“brrr-</text>
+    <text class="anim-say lt-say-ine" x="313" y="206">ine”</text>
+  </g>
   ${pitchTrace(easyPath, 'lt-t-easy')}
   ${pitchTrace(glidePath, 'lt-t-glide')}
   ${pitchTrace(easyPath, 'lt-t-ah')}
+  ${pitchTrace(easyPath, 'lt-t-ine')}
 </svg>`;
 
 export const lipTrills: AnimationDef = {
@@ -51,9 +57,10 @@ export const lipTrills: AnimationDef = {
   cycleSec: 10,
   svg,
   phases: [
-    { until: 0.2, caption: 'Loose lips, not pursed. Blow gently until they buzz. No voice yet.' },
-    { until: 0.4, caption: 'Add voice: “brrr” on one easy pitch.' },
-    { until: 0.8, caption: 'Glide low to high, then high to low.' },
-    { until: 1, caption: 'Add a vowel on the end: “brrr-ah”. Then a word.' },
+    { until: 0.18, caption: 'Loose lips, not pursed. Blow gently until they buzz. No voice yet.' },
+    { until: 0.36, caption: 'Add voice: “brrr” on one easy pitch.' },
+    { until: 0.7, caption: 'Glide low to high, then high to low.' },
+    { until: 0.85, caption: 'Add a vowel on the end: “brrr-ah”.' },
+    { until: 1, caption: 'Add a word on the end: “brrr-ine”.' },
   ],
 };
