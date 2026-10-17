@@ -22,6 +22,10 @@ npm run build
 npm run preview
 ```
 
+## Library
+
+Home links to the Library (`#/library`): every exercise with its animation, steps, tips and sources, without starting a routine. Tap a numbered chip to loop that step.
+
 ## Animation gallery
 
 `/gallery.html` (live: https://joeuk89.github.io/voice-coach/gallery.html) shows every animation on one page with a scrubber that pauses all loops at the same point. Double-tap the scrubber to resume.

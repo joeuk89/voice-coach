@@ -98,6 +98,8 @@ export function renderHome(root: HTMLElement): () => void {
         }
       </section>
 
+      <a class="back-link lib-link" href="#/library">Library${icons.chevronLeft}</a>
+
       <button class="btn ${doneToday ? '' : 'btn-primary btn-start'}" id="start" ${steps.length === 0 ? 'disabled' : ''}>${doneToday ? 'Go again' : 'Start'}</button>
 
       <section class="streak">

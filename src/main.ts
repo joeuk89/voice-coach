@@ -3,10 +3,12 @@ import { registerSW } from 'virtual:pwa-register';
 import { renderDone } from './screens/done';
 import { renderGuided } from './screens/guided';
 import { renderHome } from './screens/home';
+import { renderLibrary } from './screens/library';
+import { isLibraryHash } from './screens/library/helpers';
 import { renderSettings } from './screens/settings';
 import { playEntrance } from './lib/dom';
 
-type Route = 'home' | 'guided' | 'done' | 'settings';
+type Route = 'home' | 'guided' | 'done' | 'settings' | 'library';
 type Screen = (root: HTMLElement) => () => void;
 
 const screens: Record<Route, Screen> = {
@@ -14,6 +16,7 @@ const screens: Record<Route, Screen> = {
   guided: renderGuided,
   done: renderDone,
   settings: renderSettings,
+  library: renderLibrary,
 };
 
 const app = document.querySelector<HTMLDivElement>('#app');
@@ -28,6 +31,7 @@ const routes = new Map<string, Route>([
 ]);
 
 function routeFromHash(): Route {
+  if (isLibraryHash(location.hash)) return 'library';
   return routes.get(location.hash) ?? 'home';
 }
 
@@ -66,7 +70,7 @@ function applyUpdateIfIdle() {
 let cleanup: (() => void) | undefined;
 
 function render() {
-  if (!routes.has(location.hash)) {
+  if (!routes.has(location.hash) && !isLibraryHash(location.hash)) {
     location.replace('#/');
     return;
   }

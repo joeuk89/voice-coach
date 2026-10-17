@@ -481,4 +481,39 @@ header > .back-link { align-self: flex-start; }
 @media (prefers-reduced-motion: reduce) {
   .check-ring-circle, .check-ring-tick { animation-name: fade-in; }
   .switch-track, .switch-track::after { transition-property: background-color; }
+.lib-link { align-self: flex-start; margin: -10px 0; color: var(--fg); }
+.lib-link .icon, .lib-chevron .icon { transform: scaleX(-1); color: var(--muted); }
+.lib-list { list-style: none; margin: 0; padding: 6px; display: flex; flex-direction: column; gap: 2px; }
+.lib-row {
+  display: flex; align-items: center; gap: 12px; min-height: var(--tap);
+  padding: 10px 8px 10px 12px; border-radius: 12px; color: var(--fg); text-decoration: none;
+  transition: transform var(--t-fast) var(--ease), filter var(--t-fast) var(--ease), background-color var(--t) var(--ease);
+}
+.lib-row:active { transform: scale(var(--press-scale)); background: var(--surface-2); }
+.lib-row-text { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.lib-row-name { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.lib-row-purpose { font-size: var(--fs-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lib-row-dur { font-size: var(--fs-xs); }
+.lib-off {
+  font-size: var(--fs-xs); font-weight: 400; color: var(--muted);
+  border-radius: 999px; padding: 0 8px; box-shadow: var(--hairline);
+}
+.lib-track { display: flex; flex-direction: column; gap: 6px; }
+.lib-loop { display: flex; flex-direction: column; gap: 12px; margin-top: -8px; }
+.lib-chips { margin-top: 0; }
+.lib-chips .win-chip { min-height: var(--tap); min-width: var(--tap); font-size: var(--fs-sm); }
+.lib-now { display: flex; flex-direction: column; }
+.lib-now.shown { gap: 4px; }
+.lib-now p { font-size: var(--fs-md); font-weight: 500; text-wrap: pretty; }
+.lib-note { font-size: var(--fs-sm); margin-top: -4px; }
+.lib-steps { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; font-size: var(--fs-sm); }
+.lib-steps li { display: grid; grid-template-columns: 1.25em 1fr auto; gap: 10px; align-items: baseline; }
+.lib-num { color: var(--muted); }
+.lib-step-text { text-wrap: pretty; }
+.lib-bullets, .lib-links { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: var(--fs-sm); }
+.lib-links { list-style: none; padding: 0; }
+.lib-links a { overflow-wrap: anywhere; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lib-row:active { transform: none; opacity: var(--press-fade); }
 }
