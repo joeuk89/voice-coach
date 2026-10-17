@@ -6,7 +6,7 @@ import { icons } from '../lib/icons';
 import { planSubSteps } from '../state/plan';
 import { durationFor, isOn, loadSettings, repsFor } from '../state/settings';
 import type { Exercise, RoutineId, Settings } from '../types';
-import { libraryIdFromHash, playsIn, routineDurations, shareLabel } from './library/helpers';
+import { libraryIdFromHash, routineDurations, shareLabel } from './library/helpers';
 
 const chevronRight = `<span class="lib-chevron">${icons.chevronLeft}</span>`;
 
@@ -51,14 +51,6 @@ function detailView(exercise: Exercise, settings: Settings, hasAnimation: boolea
     </header>
 
     ${hasAnimation ? '<section class="card demo" id="demo"></section>' : ''}
-    ${
-      exercise.kind === 'audio'
-        ? `<section class="card lib-track">
-            <div class="eyebrow">Track · ${formatClock(full)}</div>
-            <p class="muted">${playsIn(isOn(exercise, settings, 'short'), isOn(exercise, settings, 'full'))}</p>
-          </section>`
-        : ''
-    }
 
     ${
       showChips

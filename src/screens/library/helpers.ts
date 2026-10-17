@@ -21,13 +21,6 @@ export function routineDurations(shortSec: number | undefined, fullSec: number |
   return 'Not in a routine';
 }
 
-export function playsIn(inShort: boolean, inFull: boolean): string {
-  if (inShort && inFull) return 'Plays in both routines.';
-  if (inFull) return 'Plays in the Full routine.';
-  if (inShort) return 'Plays in the Short routine.';
-  return 'Off in both routines. Turn it on in Settings.';
-}
-
 export function shareLabel(planned: PlannedSubStep): string {
   if (planned.mode === 'untimed') return 'untimed';
   if (planned.mode === 'reps' || planned.mode === 'paced') return `× ${planned.reps}`;

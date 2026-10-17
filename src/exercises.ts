@@ -1,6 +1,5 @@
 import type { Exercise } from './types';
 
-const AUDIO_BASE = import.meta.env.BASE_URL + 'audio/';
 
 /** The routine, in order. */
 export const exercises: Exercise[] = [
@@ -101,19 +100,6 @@ export const exercises: Exercise[] = [
       { label: 'Vinh Giang: siren at 0:54', url: 'https://www.youtube.com/watch?v=HT9_VxN8iSE&t=54s' },
       { label: 'Vinh Giang: how to make your voice sound deeper', url: 'https://vinhgiang.com/blog/how-to-make-your-voice-sound-deeper' },
     ],
-  },
-  {
-    id: 'roger-love',
-    name: 'Roger Love warmup',
-    purpose: 'The guided scales. Follow the track.',
-    subSteps: [],
-    tips: ['Press play and follow the guide vocal.', 'Stay easy. Never push for volume or range.'],
-    duration: { short: 836, full: 836 },
-    defaultOff: ['short'],
-    animation: null,
-    kind: 'audio',
-    audioSrc: AUDIO_BASE + 'roger-love-daily-warmup-male.mp3',
-    links: [],
   },
   {
     id: 'hum',

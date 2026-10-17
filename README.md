@@ -10,7 +10,7 @@ Open the live URL in Chrome on Android, then choose "Add to Home screen" (or "In
 
 ## How a routine works
 
-Pick Short or Full on Home and press Start. Each exercise walks through its steps one at a time: read the step, press Start when you are ready, and press Next when you are done. Nothing moves on by itself. Timed steps count down and stop at zero; counted steps show "Rep 3 of 8" or, on the vocal function exercises, count your holds from the stopwatch. Low breathing's second step is paced: Start runs a 3-second "Ready" count, then the picture and the row lead each breath, in for 4 and out for 8, with a short buzz at each switch, until the routine's breath count is done. Pause freezes the picture, and Resume replays the interrupted breath after a new lead-in. The step list and the "n of 8" picker let you jump anywhere. The Roger Love track plays in a small player: tap or drag its waveform to move through the track, or skip 10 s either way. Seeking never starts the track by itself. Finish opens the Done screen, which logs the day and asks how your voice felt.
+Pick Short or Full on Home and press Start. Each exercise walks through its steps one at a time: read the step, press Start when you are ready, and press Next when you are done. Nothing moves on by itself. Timed steps count down and stop at zero; counted steps show "Rep 3 of 8" or, on the vocal function exercises, count your holds from the stopwatch. Low breathing's second step is paced: Start runs a 3-second "Ready" count, then the picture and the row lead each breath, in for 4 and out for 8, with a short buzz at each switch, until the routine's breath count is done. Pause freezes the picture, and Resume replays the interrupted breath after a new lead-in. The step list and the "n of 8" picker let you jump anywhere. Finish opens the Done screen, which logs the day and asks how your voice felt.
 
 ## Run locally
 
@@ -47,7 +47,7 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
   - Timed: `duration` is seconds per routine (`short` and `full`), 30 or more. Settings sets the time.
   - `'reps'`: `reps` is the rep count per routine, `repSec` the seconds one rep takes, and `repNoun` what one rep is called ("breath"). It has no `duration`; its time is `reps × repSec`. Settings sets the count. Counted sub-steps without a fixed `reps` use it.
   - `'untimed'`: `duration` is only the time it usually takes, shown as "about N min". Settings can only switch it on or off.
-- `defaultOff` lists the routines the exercise starts switched off in (`['short']` for the track, the vocal function exercises and the read-aloud). Give it a real time or count for those routines too, for when Settings switches it on.
+- `defaultOff` lists the routines the exercise starts switched off in (`['short']` for the vocal function exercises and the read-aloud). Give it a real time or count for those routines too, for when Settings switches it on.
 - `subSteps` are the ordered instructions shown on screen, each with a `text`. `tips` and `links` sit behind "Tips and sources".
   - `weight` sets the sub-step's share of the duration relative to the others. It defaults to `1`; `0` means no timer.
   - `reps` fixes a rep count, for protocols that set one. A sub-step with a fixed `reps` and no `weight` takes no time share, so the timed sub-steps split the whole duration. Set a `weight` too if it should take a share. `repSec` is the length of one rep instead, and the count comes from the sub-step's time share. `reps` wins if both are set.
@@ -56,17 +56,12 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
   - `window` is the `[from, to)` fraction of the animation loop to play during the sub-step. Leave it out to play the whole loop.
   - `examples` lists words or sounds to try during the sub-step. They show as chips under its text on the guided screen and in the Library.
 - `animation` names an entry in `src/animations/index.ts`, or `null` for no animation.
-- `kind: 'audio'` with an `audioSrc` plays a bundled track from `public/audio/` instead of a countdown.
 
 Read-aloud passages live in `src/paragraphs.ts`, each a `text` and a `demo` line. Wrap a word in `*asterisks*` to show it bold where the pitch should rise, about one per clause and 8 to 12 per passage. The `demo` is the passage's opening clause, 4 to 8 words with 2 or 3 of them bold and marked as in the passage; the read-aloud card draws it with a pitch peak over each bold word. A test checks these counts and that the demo line fits the card.
 
-## Audio track
-
-The player draws each track's waveform from a `.peaks.json` file next to it in `public/audio/`. After adding or replacing a track, list it in `scripts/audio-peaks.mjs`, run `npm run peaks` (macOS only, as it decodes with `afconvert`) and commit the JSON. Without the file the player shows a flat bar and still seeks.
-
 ## Settings
 
-Settings shows one row per exercise for the routine picked at the top. Each row's switch turns the exercise on or off in that routine only, so an exercise can run in Short, Full, both or neither. No switch is ever disabled, and the switch is the only way to leave an exercise out. A timed row steps its time by 30 s, never below 0:30. A counted row steps its rep count by 1, never below 1, and shows about how long that takes. An untimed row shows only about how long it takes, and the track shows its fixed length. A row that is off shows only its name and switch. By default Short leaves out the track, the vocal function exercises and the read-aloud, and Full runs everything. Reset to defaults restores those routines and clears every time and count override.
+Settings shows one row per exercise for the routine picked at the top. Each row's switch turns the exercise on or off in that routine only, so an exercise can run in Short, Full, both or neither. No switch is ever disabled, and the switch is the only way to leave an exercise out. A timed row steps its time by 30 s, never below 0:30. A counted row steps its rep count by 1, never below 1, and shows about how long that takes. An untimed row shows only about how long it takes. A row that is off shows only its name and switch. By default Short leaves out the vocal function exercises and the read-aloud, and Full runs everything. Reset to defaults restores those routines and clears every time and count override.
 
 Settings (routine, the exercises switched off in each routine, time and rep count overrides), the completion log, the sustain log and whether the first-run note was seen are stored in `localStorage` under `vt.*` keys.
 

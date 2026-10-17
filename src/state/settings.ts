@@ -20,10 +20,17 @@ export function defaultSettings(): Settings {
   };
 }
 
+/** An id from a save is only kept while the exercise still exists. */
+function isExerciseId(id: string): boolean {
+  return exercises.some((e) => e.id === id);
+}
+
 function numbersById(value: unknown, min = -Infinity): Record<string, number> {
   if (!isRecord(value)) return {};
   return Object.fromEntries(
-    Object.entries(value).filter((entry): entry is [string, number] => isFiniteNumber(entry[1]) && entry[1] >= min),
+    Object.entries(value).filter(
+      (entry): entry is [string, number] => isExerciseId(entry[0]) && isFiniteNumber(entry[1]) && entry[1] >= min,
+    ),
   );
 }
 
@@ -33,7 +40,7 @@ function byRoutine(value: unknown, min?: number): Record<RoutineId, Record<strin
 }
 
 function strings(values: unknown[]): string[] {
-  return [...new Set(values.filter((id): id is string => typeof id === 'string'))];
+  return [...new Set(values.filter((id): id is string => typeof id === 'string' && isExerciseId(id)))];
 }
 
 /**
@@ -79,16 +86,19 @@ function loadDurations(value: unknown, disabled: Record<RoutineId, string[]>): R
   return durations;
 }
 
+/** Reads the save, and writes it back when loading changed it, so a migration or a dropped id happens once. */
 export function loadSettings(): Settings {
   const raw = read(KEY);
   const saved = isRecord(raw) ? raw : {};
   const disabled = loadDisabled(saved['disabled'], saved['durations']);
-  return {
+  const settings: Settings = {
     routine: saved['routine'] === 'short' ? 'short' : 'full',
     disabled,
     durations: loadDurations(saved['durations'], disabled),
     reps: byRoutine(saved['reps'], 1),
   };
+  if (raw !== undefined && raw !== null && JSON.stringify(raw) !== JSON.stringify(settings)) saveSettings(settings);
+  return settings;
 }
 
 export function resetSettings(settings: Settings): Settings {

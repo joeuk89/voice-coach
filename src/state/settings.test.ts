@@ -1,5 +1,6 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { exercises } from '../exercises';
+import type { Settings } from '../types';
 import { stubLocalStorage } from '../test/local-storage';
 import { defaultSettings, durationFor, isOn, loadSettings, planRoutine, repsFor, resetSettings, totalSeconds } from './settings';
 
@@ -65,9 +66,41 @@ describe('loadSettings', () => {
   });
 
   it('drops rep counts that are not finite numbers or are below 1', () => {
-    const settings = saved(JSON.stringify({ reps: { short: { a: 'x', b: 0, c: -2, d: 0.5, e: 1 }, full: [4] } }));
-    expect(settings.reps).toEqual({ short: { e: 1 }, full: {} });
+    const settings = saved(
+      JSON.stringify({ reps: { short: { hum: 'x', straw: 0, sirens: -2, vfe: 0.5, 'low-breathing': 1 }, full: [4] } }),
+    );
+    expect(settings.reps).toEqual({ short: { 'low-breathing': 1 }, full: {} });
     expect(saved('{"reps":7}').reps).toEqual({ short: {}, full: {} });
+  });
+
+  it('drops ids of exercises that no longer exist, in switches, times and counts', () => {
+    const settings = saved(
+      JSON.stringify({
+        disabled: { short: ['roger-love', 'hum'], full: ['roger-love'] },
+        durations: { short: { 'roger-love': 836 }, full: { hum: 90 } },
+        reps: { short: { 'roger-love': 3 }, full: {} },
+      }),
+    );
+    expect(settings.disabled).toEqual({ short: ['hum'], full: [] });
+    expect(settings.durations).toEqual({ short: {}, full: { hum: 90 } });
+    expect(settings.reps).toEqual({ short: {}, full: {} });
+  });
+
+  it('writes a save back once loading has changed it, and leaves a clean save alone', () => {
+    saved(JSON.stringify({ disabled: { short: ['roger-love'], full: [] } }));
+    const stored = JSON.parse(storage.getItem('vt.settings')!) as Settings;
+    expect(stored.disabled).toEqual({ short: [], full: [] });
+    expect(stored.durations).toEqual({ short: {}, full: {} });
+
+    const clean = defaultSettings();
+    storage.setItem('vt.settings', JSON.stringify(clean));
+    const setItem = vi.spyOn(storage, 'setItem');
+    expect(loadSettings()).toEqual(clean);
+    expect(setItem).not.toHaveBeenCalled();
+
+    storage.clear();
+    expect(loadSettings()).toEqual(clean);
+    expect(storage.getItem('vt.settings')).toBeNull();
   });
 
   it('ignores a disabled value that is neither a list nor a per-routine record', () => {
@@ -97,7 +130,7 @@ describe('loadSettings migration from older saves', () => {
     const settings = saved(JSON.stringify({ routine: 'short', disabled: [], durations: { short: { vfe: 60 }, full: {} } }));
     expect(isOn(byId('vfe'), settings, 'short')).toBe(true);
     expect(planRoutine(settings, 'short').find((s) => s.exercise.id === 'vfe')?.seconds).toBe(60);
-    expect(isOn(byId('roger-love'), settings, 'short')).toBe(false);
+    expect(isOn(byId('read-aloud'), settings, 'short')).toBe(false);
   });
 
   it('still turns a default-off exercise off when the old flat list has it, whatever its time', () => {
@@ -152,7 +185,7 @@ describe('exercise data', () => {
   });
 
   it('gives the default-off exercises the same time in Short as in Full', () => {
-    for (const id of ['roger-love', 'vfe', 'read-aloud']) {
+    for (const id of ['vfe', 'read-aloud']) {
       expect(durationFor(byId(id), defaultSettings(), 'short')).toBe(durationFor(byId(id), defaultSettings(), 'full'));
     }
   });
@@ -218,8 +251,8 @@ describe('planRoutine', () => {
 
   it('runs an exercise that is off by default in Short once it is switched on there', () => {
     const settings = defaultSettings();
-    settings.disabled.short = settings.disabled.short.filter((id) => id !== 'roger-love');
-    expect(planRoutine(settings, 'short').find((s) => s.exercise.id === 'roger-love')?.seconds).toBe(836);
+    settings.disabled.short = settings.disabled.short.filter((id) => id !== 'vfe');
+    expect(planRoutine(settings, 'short').find((s) => s.exercise.id === 'vfe')?.seconds).toBe(240);
   });
 
   it('is empty when every exercise is off in that routine', () => {

@@ -44,11 +44,8 @@ interface ExerciseBase {
   subSteps: SubStep[];
   tips?: string[];
   animation: AnimationId | null;
-  /** 'audio' plays a bundled track instead of running a countdown. */
-  kind?: 'audio';
   /** Extra interactive panel under the sub-steps. */
   panel?: 'sustain' | 'reading';
-  audioSrc?: string;
   links: Link[];
   /** Routines the exercise starts switched off in, until Settings turns it on. */
   defaultOff?: RoutineId[];

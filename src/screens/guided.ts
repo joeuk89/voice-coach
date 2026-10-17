@@ -9,7 +9,6 @@ import { exerciseState, finishStep, isStepFinished } from '../state/progress';
 import { endSession, getSession } from '../state/session';
 import { exampleChips } from '../lib/example-chips';
 import { icons } from '../lib/icons';
-import { mountAudioStep } from './guided/audio-step';
 import { detailSheet, exerciseSheet, leaveDialog, stepHeader, stepList } from './guided/markup';
 import { mountHoldCount, mountPaced, mountReps, mountTimed, mountUntimed, type RowHooks, type StepRow } from './guided/timer-row';
 
@@ -28,7 +27,6 @@ export function renderGuided(root: HTMLElement): () => void {
   let stopPanel: (() => void) | undefined;
   let sustain: SustainPanel | undefined;
   let stepRow: StepRow | undefined;
-  let audioStep: StepRow | undefined;
   /** Whether the user has started this sub-step's control since entering it. */
   let engaged = false;
   let stepDone = false;
@@ -50,8 +48,6 @@ export function renderGuided(root: HTMLElement): () => void {
     stopPanel?.();
     stopPanel = undefined;
     sustain = undefined;
-    audioStep?.stop();
-    audioStep = undefined;
   }
 
   function goTo(pos: Position) {
@@ -77,14 +73,13 @@ export function renderGuided(root: HTMLElement): () => void {
     teardownExercise();
     const step = steps[session.index]!;
     const { exercise } = step;
-    const isAudio = exercise.kind === 'audio';
     const def = animationFor(exercise.animation);
     plan = planSubSteps(exercise, step.seconds, step.reps);
 
     root.innerHTML = `
       ${stepHeader(steps, session.index)}
 
-      <section class="card demo" id="demo" ${def || isAudio ? '' : 'hidden'}></section>
+      <section class="card demo" id="demo" ${def ? '' : 'hidden'}></section>
 
       ${
         plan.length
@@ -97,7 +92,7 @@ export function renderGuided(root: HTMLElement): () => void {
           : ''
       }
 
-      <div class="timer-row" id="timer-row" ${isAudio || exercise.panel === 'sustain' ? 'hidden' : ''}></div>
+      <div class="timer-row" id="timer-row" ${exercise.panel === 'sustain' ? 'hidden' : ''}></div>
 
       <section class="${exercise.panel === 'sustain' ? 'hold-panel' : 'card panel'}" id="panel" ${exercise.panel ? '' : 'hidden'}></section>
 
@@ -135,10 +130,6 @@ export function renderGuided(root: HTMLElement): () => void {
       stopPanel = sustain.stop;
     }
     if (exercise.panel === 'reading') stopPanel = mountReadingPanel($(root, '#panel'), (passage) => showDemo(passage.demo));
-    if (isAudio && exercise.audioSrc) {
-      demo.classList.add('player-card');
-      audioStep = mountAudioStep(demo, exercise.audioSrc, step.seconds, hooks);
-    }
 
     bindNavigation();
     showSubStep();
@@ -242,7 +233,7 @@ export function renderGuided(root: HTMLElement): () => void {
     const current = plan[session.subIndex];
     showProgress();
     if (!current) {
-      if (!audioStep) setStepDone(true, false);
+      setStepDone(true, false);
       return;
     }
     crossfadeSubStep();

@@ -5,7 +5,7 @@ export interface Position {
 
 type Steps = readonly { exercise: { subSteps: readonly unknown[] } }[];
 
-/** An exercise with no sub-steps, like the audio track, still counts as one position. */
+/** An exercise with no sub-steps still counts as one position. */
 function positionsIn(steps: Steps, index: number): number {
   return Math.max(1, steps[index]?.exercise.subSteps.length ?? 0);
 }

@@ -27,7 +27,6 @@ function repsDetail(e: RepsExercise, reps: number, secs: number): string {
 
 function rowDetail(e: Exercise, settings: Settings): string {
   const secs = durationFor(e, settings);
-  if (e.kind === 'audio') return `<span class="ex-time muted">Fixed track · ${formatClock(secs)}</span>`;
   if (e.control === 'untimed') return `<span class="ex-time muted">About ${formatMinutes(secs)}</span>`;
   if (e.control === 'reps') return repsDetail(e, repsFor(e, settings), secs);
   return timedDetail(e, secs);

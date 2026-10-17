@@ -275,30 +275,6 @@ header > .back-link { align-self: flex-start; }
   pointer-events: none;
 }
 
-.player { padding: 18px; display: flex; flex-direction: column; gap: 8px; }
-.player-title { margin: 0 0 6px; font-size: var(--fs-md); }
-.scrub { position: relative; height: 48px; border-radius: 4px; }
-.scrub:has(.scrub-input:focus-visible) { outline: var(--focus-ring); outline-offset: 4px; }
-.wave { display: block; fill: var(--surface-3); }
-.wave-played { position: absolute; inset: 0; clip-path: inset(0 100% 0 0); }
-.wave-played .wave { fill: var(--voice); }
-.wave-head { position: absolute; top: -3px; bottom: -3px; left: 0; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--fg); pointer-events: none; }
-.scrub-input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; appearance: none; background: transparent; }
-.scrub-input:disabled { cursor: default; }
-/* A thumb as thin as the playhead, so the slider's value maps to the tapped point right up to the edges. */
-.scrub-input::-webkit-slider-thumb { appearance: none; width: 1px; height: 48px; }
-.scrub-input::-moz-range-thumb { width: 1px; height: 48px; border: 0; }
-.player-times { display: flex; justify-content: space-between; font-size: var(--fs-sm); color: var(--muted); }
-.player-controls { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 4px 0; }
-.player-row { display: flex; align-items: center; justify-content: center; gap: 20px; }
-.player-toggle { width: 72px; height: 72px; padding: 0; border-radius: 50%; }
-.player-icon { width: 28px; height: 28px; fill: currentColor; stroke-width: 2; }
-.player-skip { width: var(--control); padding: 0; border-radius: 50%; color: var(--fg); }
-.player-skip .icon { width: 32px; height: 32px; }
-.player-reset { font-size: var(--fs-sm); padding: 0 14px; gap: 6px; }
-.player-reset .icon { width: 18px; height: 18px; }
-.player-status { text-align: center; font-size: var(--fs-sm); }
-
 .sheet, .confirm {
   border: 0;
   background: var(--surface);
@@ -510,7 +486,6 @@ header > .back-link { align-self: flex-start; }
 .lib-row-name { font-weight: 600; display: flex; align-items: center; gap: 8px; }
 .lib-row-purpose { font-size: var(--fs-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .lib-row-dur { font-size: var(--fs-xs); }
-.lib-track { display: flex; flex-direction: column; gap: 6px; }
 .lib-loop { display: flex; flex-direction: column; gap: 12px; margin-top: -8px; }
 .lib-chips { margin-top: 0; }
 .lib-chips .win-chip { min-height: var(--tap); min-width: var(--tap); font-size: var(--fs-sm); }

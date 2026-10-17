@@ -35,10 +35,10 @@ describe('routineToggle', () => {
     const settings = defaultSettings();
     const minutes = (html: string, r: string) => html.match(new RegExp(`data-routine="${r}"[^>]*>\\s*\\w+ <small>([^<]*)`))![1];
     const before = routineToggle(settings, 'Routine');
-    settings.disabled.short = settings.disabled.short.filter((id) => id !== 'roger-love');
+    settings.disabled.short = settings.disabled.short.filter((id) => id !== 'vfe');
     const after = routineToggle(settings, 'Routine');
     expect(minutes(before, 'short')).toBe('6 min');
-    expect(minutes(after, 'short')).toBe('20 min');
+    expect(minutes(after, 'short')).toBe('10 min');
     expect(minutes(after, 'full')).toBe(minutes(before, 'full'));
   });
 });

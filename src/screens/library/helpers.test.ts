@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { exercises } from '../../exercises';
 import { planSubSteps } from '../../state/plan';
-import { isLibraryHash, libraryIdFromHash, playsIn, routineDurations, shareLabel } from './helpers';
+import { isLibraryHash, libraryIdFromHash, routineDurations, shareLabel } from './helpers';
 
 const byId = (id: string) => exercises.find((e) => e.id === id)!;
 
@@ -29,15 +29,6 @@ describe('routineDurations', () => {
     expect(routineDurations(undefined, 836)).toBe('Full only');
     expect(routineDurations(90, undefined)).toBe('Short only');
     expect(routineDurations(undefined, undefined)).toBe('Not in a routine');
-  });
-});
-
-describe('playsIn', () => {
-  it('names the routines the track is switched on in', () => {
-    expect(playsIn(true, true)).toBe('Plays in both routines.');
-    expect(playsIn(false, true)).toBe('Plays in the Full routine.');
-    expect(playsIn(true, false)).toBe('Plays in the Short routine.');
-    expect(playsIn(false, false)).toBe('Off in both routines. Turn it on in Settings.');
   });
 });
 
