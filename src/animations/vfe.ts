@@ -56,7 +56,7 @@ export const vfe: AnimationDef = {
   id: 'vfe',
   cycleSec: 16,
   svg,
-  compactViewBox: '0 12 360 254',
+  compactViewBox: '0 12 360 258',
   phases: [
     { until: 0.25, caption: 'Warm up: soft nasal “ee” on a comfortable mid pitch, as long as you can. Twice.' },
     { until: 0.45, caption: 'Stretch: glide low to high on “knoll”. Twice.' },
