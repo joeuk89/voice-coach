@@ -2,6 +2,8 @@ function icon(paths: string): string {
   return `<svg class="icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths}</svg>`;
 }
 
+const skipLabel = '<text x="10" y="13.6" text-anchor="middle" font-size="6.5" font-weight="700" fill="currentColor" stroke="none">10</text>';
+
 export const icons = {
   chevronLeft: icon('<path d="M12.5 4.5 7 10l5.5 5.5"/>'),
   chevronDown: icon('<path d="m5 7.5 5 5 5-5"/>'),
@@ -12,4 +14,6 @@ export const icons = {
   play: icon('<path d="M7 4.5v11l8.5-5.5z"/>'),
   pause: icon('<path d="M7.5 5v10M12.5 5v10"/>'),
   reset: icon('<path d="M3.5 10a6.5 6.5 0 1 0 1.9-4.6L3.5 7.3"/><path d="M3.5 3.8v3.5H7"/>'),
+  back10: icon(`<path d="M3.5 11a6.5 6.5 0 1 0 6.5-6.5"/><path d="M12.2 2.3 9.9 4.5l2.3 2.2"/>${skipLabel}`),
+  forward10: icon(`<path d="M16.5 11a6.5 6.5 0 1 1-6.5-6.5"/><path d="m7.8 2.3 2.3 2.2-2.3 2.2"/>${skipLabel}`),
 };

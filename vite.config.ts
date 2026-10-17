@@ -31,7 +31,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2,mp3}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2,mp3}', 'audio/*.peaks.json'],
         // The Roger Love track is ~10 MB; Workbox skips files over 2 MiB unless raised.
         maximumFileSizeToCacheInBytes: 16 * 1024 * 1024,
       },

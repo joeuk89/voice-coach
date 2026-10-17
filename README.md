@@ -10,7 +10,7 @@ Open the live URL in Chrome on Android, then choose "Add to Home screen" (or "In
 
 ## How a routine works
 
-Pick Short or Full on Home and press Start. Each exercise walks through its steps one at a time: read the step, press Start when you are ready, and press Next when you are done. Nothing moves on by itself. Timed steps count down and stop at zero; counted steps show "Rep 3 of 8" or, on the vocal function exercises, count your holds from the stopwatch. Low breathing's second step is paced: Start runs a 3-second "Ready" count, then the picture and the row lead each breath, in for 4 and out for 8, with a short buzz at each switch, until the routine's breath count is done. Pause freezes the picture, and Resume replays the interrupted breath after a new lead-in. The step list and the "n of 8" picker let you jump anywhere. Finish opens the Done screen, which logs the day and asks how your voice felt.
+Pick Short or Full on Home and press Start. Each exercise walks through its steps one at a time: read the step, press Start when you are ready, and press Next when you are done. Nothing moves on by itself. Timed steps count down and stop at zero; counted steps show "Rep 3 of 8" or, on the vocal function exercises, count your holds from the stopwatch. Low breathing's second step is paced: Start runs a 3-second "Ready" count, then the picture and the row lead each breath, in for 4 and out for 8, with a short buzz at each switch, until the routine's breath count is done. Pause freezes the picture, and Resume replays the interrupted breath after a new lead-in. The step list and the "n of 8" picker let you jump anywhere. The Roger Love track plays in a small player: tap or drag its waveform to move through the track, or skip 10 s either way. Seeking never starts the track by itself. Finish opens the Done screen, which logs the day and asks how your voice felt.
 
 ## Run locally
 
@@ -59,6 +59,10 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
 - `kind: 'audio'` with an `audioSrc` plays a bundled track from `public/audio/` instead of a countdown.
 
 Read-aloud passages live in `src/paragraphs.ts`, each a `text` and a `demo` line. Wrap a word in `*asterisks*` to show it bold where the pitch should rise, about one per clause and 8 to 12 per passage. The `demo` is the passage's opening clause, 4 to 8 words with 2 or 3 of them bold and marked as in the passage; the read-aloud card draws it with a pitch peak over each bold word. A test checks these counts and that the demo line fits the card.
+
+## Audio track
+
+The player draws each track's waveform from a `.peaks.json` file next to it in `public/audio/`. After adding or replacing a track, list it in `scripts/audio-peaks.mjs`, run `npm run peaks` (macOS only, as it decodes with `afconvert`) and commit the JSON. Without the file the player shows a flat bar and still seeks.
 
 ## Settings
 
