@@ -47,7 +47,7 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
   - Timed: `duration` is seconds per routine (`short` and `full`). `0` leaves the exercise out of that routine. Settings sets the time.
   - `'reps'`: `reps` is the rep count per routine, `repSec` the seconds one rep takes, and `repNoun` what one rep is called ("breath"). It has no `duration`; its time is `reps × repSec`. Settings sets the count. Counted sub-steps without a fixed `reps` use it.
   - `'untimed'`: `duration` is only the time it usually takes, shown as "about N min". Settings can only switch it off.
-- `subSteps` are the ordered instructions shown on screen, each with a `text`. `tips` and `links` sit behind "More detail".
+- `subSteps` are the ordered instructions shown on screen, each with a `text`. `tips` and `links` sit behind "Tips and sources".
   - `weight` sets the sub-step's share of the duration relative to the others. It defaults to `1`; `0` means no timer.
   - `reps` fixes a rep count, for protocols that set one. A sub-step with a fixed `reps` and no `weight` takes no time share, so the timed sub-steps split the whole duration. Set a `weight` too if it should take a share. `repSec` is the length of one rep instead, and the count comes from the sub-step's time share. `reps` wins if both are set.
   - `repsPerPitch` makes the hold counter name the current pitch (adduction: two holds per pitch).
@@ -57,6 +57,10 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
 - `kind: 'audio'` with an `audioSrc` plays a bundled track from `public/audio/` instead of a countdown.
 
 Read-aloud passages live in `src/paragraphs.ts`, each a `text` and a `demo` line. Wrap a word in `*asterisks*` to show it bold where the pitch should rise, about one per clause and 8 to 12 per passage. The `demo` is the passage's opening clause, 4 to 8 words with 2 or 3 of them bold and marked as in the passage; the read-aloud card draws it with a pitch peak over each bold word. A test checks these counts and that the demo line fits the card.
+
+## Settings
+
+Settings shows one row per exercise for the selected routine. The switch turns an exercise off in both routines. A timed row steps its time by 30 s, and 0:00 leaves it out of this routine only, with a lone "+" to add it back. A counted row steps its rep count by 1, never below 1, and shows about how long that takes. An untimed row shows only about how long it takes. A row the selected routine cannot run (the audio track and the read-aloud on Short) reads "Full only" with its switch disabled. Reset to defaults clears every time and count override and turns every exercise on.
 
 Settings (routine, enabled exercises, time and rep count overrides), the completion log, the sustain log and whether the first-run note was seen are stored in `localStorage` under `vt.*` keys.
 
