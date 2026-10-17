@@ -189,6 +189,8 @@ header > .back-link { align-self: flex-start; }
 .substep-body.swapping { animation: fade-in var(--t-swap) var(--ease) backwards; }
 .substep-ghost { animation: fade-out var(--t-swap) var(--ease) forwards; pointer-events: none; }
 .substep-text { font-size: var(--fs-lg); font-weight: 500; line-height: 1.35; text-wrap: pretty; }
+.examples { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 0; font-size: var(--fs-sm); }
+.examples .chip { padding: 3px 12px; }
 .timer-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; min-height: var(--control); }
 .timer-row[hidden] { display: none; }
 .timer-row > :first-child { margin-right: auto; }
@@ -511,6 +513,8 @@ header > .back-link { align-self: flex-start; }
 .lib-steps li { display: grid; grid-template-columns: 1.25em 1fr auto; gap: 10px; align-items: baseline; }
 .lib-num { color: var(--muted); }
 .lib-step-text { text-wrap: pretty; }
+.lib-step-text .examples { margin-top: 8px; font-size: var(--fs-xs); }
+.lib-step-text .chip { padding: 2px 10px; }
 .lib-bullets, .lib-links { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: var(--fs-sm); }
 .lib-links { list-style: none; padding: 0; }
 .lib-links a { overflow-wrap: anywhere; }

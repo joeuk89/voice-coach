@@ -52,6 +52,7 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
   - `reps` fixes a rep count, for protocols that set one. `repSec` is the length of one rep instead, and the count comes from the sub-step's time share. `reps` wins if both are set.
   - `repsPerPitch` makes the hold counter name the current pitch (adduction: two holds per pitch).
   - `window` is the `[from, to)` fraction of the animation loop to play during the sub-step. Leave it out to play the whole loop.
+  - `examples` lists words or sounds to try during the sub-step. They show as chips under its text on the guided screen and in the Library.
 - `animation` names an entry in `src/animations/index.ts`, or `null` for no animation.
 - `kind: 'audio'` with an `audioSrc` plays a bundled track from `public/audio/` instead of a countdown.
 

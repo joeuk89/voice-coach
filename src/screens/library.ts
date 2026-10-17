@@ -1,6 +1,7 @@
 import { animationFor, mountAnimation, type AnimationPlayer } from '../animations';
 import { exercises } from '../exercises';
 import { esc, formatClock, on } from '../lib/dom';
+import { exampleChips } from '../lib/example-chips';
 import { icons } from '../lib/icons';
 import { planSubSteps } from '../state/plan';
 import { defaultSettings, durationFor, loadSettings, repsFor } from '../state/settings';
@@ -87,7 +88,7 @@ function detailView(exercise: Exercise, settings: Settings, hasAnimation: boolea
                 .map(
                   (p, i) => `<li>
                     <span class="lib-num mono">${i + 1}</span>
-                    <span class="lib-step-text">${esc(p.subStep.text)}</span>
+                    <div class="lib-step-text">${esc(p.subStep.text)}${exampleChips(p.subStep.examples)}</div>
                     <span class="muted mono">${shareLabel(p)}</span>
                   </li>`,
                 )

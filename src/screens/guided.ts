@@ -7,6 +7,7 @@ import { planSubSteps, type PlannedSubStep } from '../state/plan';
 import { isLast, nextPosition, prevPosition, type Position } from '../state/position';
 import { exerciseState, finishStep, isStepFinished } from '../state/progress';
 import { endSession, getSession } from '../state/session';
+import { exampleChips } from '../lib/example-chips';
 import { icons } from '../lib/icons';
 import { mountAudioStep } from './guided/audio-step';
 import { detailSheet, exerciseSheet, leaveDialog, stepHeader, stepList } from './guided/markup';
@@ -240,6 +241,9 @@ export function renderGuided(root: HTMLElement): () => void {
     crossfadeSubStep();
     $(root, '#sub-eyebrow').textContent = `Step ${session.subIndex + 1} of ${plan.length}`;
     $(root, '#sub-text').textContent = current.subStep.text;
+    const body = $(root, '.substep-body');
+    body.querySelector('.examples')?.remove();
+    body.insertAdjacentHTML('beforeend', exampleChips(current.subStep.examples));
     player?.setWindow(current.subStep.window);
     root.querySelectorAll<HTMLElement>('.substep').forEach((row, i) => {
       const isCurrent = i === session.subIndex;

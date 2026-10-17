@@ -26,6 +26,8 @@ export interface SubStep {
   repsPerPitch?: number;
   /** Fraction of the animation loop to play, [from, to). Default whole loop. */
   window?: [number, number];
+  /** Words or sounds to try during the sub-step, shown as chips under its text. */
+  examples?: string[];
 }
 
 interface ExerciseBase {
