@@ -28,8 +28,8 @@ const steps = [
 
 const svg = `
 <svg viewBox="0 0 360 290" aria-hidden="true">
-  ${names.map((_, i) => `<circle class="vf-pip vf-pip-${i + 1}" cx="${24 + 14 * i}" cy="25" r="4.5"/>`).join('')}
-  ${names.map((name, i) => `<text class="anim-label vf-name vf-name-${i + 1}" x="86" y="30">${name}</text>`).join('')}
+  ${names.map((_, i) => `<circle class="vf-pip vf-pip-${i + 1}" cx="${26 + 20 * i}" cy="25" r="6"/>`).join('')}
+  ${names.map((name, i) => `<text class="anim-label vf-name vf-name-${i + 1}" x="106" y="30">${name}</text>`).join('')}
 
   <g class="vf-watch">
     <circle class="body" cx="320" cy="62" r="18"/>

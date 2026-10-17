@@ -24,7 +24,7 @@ const svg = `
   <text class="anim-say hm-ah" x="${split}" y="138">ah”</text>
   <text class="anim-say hm-many" x="${split}" y="138">many”</text>
   <text class="anim-say hm-money" x="${split}" y="138">money”</text>
-  <text class="anim-say hm-show-4" x="198" y="138">“many more”</text>
+  <text class="anim-say hm-morning" x="${split}" y="138">morning”</text>
 
   <rect class="hm-throat" x="66" y="170" width="28" height="92" rx="14"/>
   <text class="anim-label" x="108" y="220">THROAT · relaxed</text>
