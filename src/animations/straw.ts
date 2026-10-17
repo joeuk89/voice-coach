@@ -32,9 +32,9 @@ export const straw: AnimationDef = {
   cycleSec: 12,
   svg,
   phases: [
-    { until: 0.12, caption: 'Straw between the lips, sealed. Air flows through it, none around it.' },
-    { until: 0.3, caption: 'Gentle hum through the straw on an easy pitch.' },
-    { until: 0.7, caption: 'Slow siren through the straw: low to high to low. Never pushed.' },
-    { until: 1, caption: 'Now “speak” a sentence or hum a tune through it.' },
+    { until: 0.12, caption: 'Thin stirring straw between the lips. No air leaking around it.' },
+    { until: 0.3, caption: 'Hum gently through the straw on a comfortable pitch.' },
+    { until: 0.7, caption: 'Slow sirens through the straw: low to high to low, smooth.' },
+    { until: 1, caption: '“Speak” a sentence or hum a tune through it.' },
   ],
 };

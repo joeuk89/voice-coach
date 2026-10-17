@@ -3,7 +3,7 @@ import { pitchStrip } from './parts';
 import './vfe.css';
 
 /** One path per step, each with its own trace and dot. */
-export const vfeSegments = [
+const vfeSegments = [
   'M40 170 L150 170',
   'M158 230 C 170 230, 178 110, 198 110',
   'M206 110 C 226 110, 234 230, 254 230',
@@ -43,9 +43,9 @@ export const vfe: AnimationDef = {
   cycleSec: 16,
   svg,
   phases: [
-    { until: 0.25, caption: '1 Warm up: soft, nasal “ee” on a comfortable mid pitch, as long as you can. Time it.' },
-    { until: 0.45, caption: '2 Stretch: glide low to high on “knoll”, slow and smooth.' },
-    { until: 0.65, caption: '3 Contract: glide high to low on “knoll”.' },
-    { until: 1, caption: '4 Adduction: sustain “ol” softly on five rising pitches. Time each one.' },
+    { until: 0.25, caption: 'Warm up: soft nasal “ee” on a comfortable mid pitch, as long as you can. Twice.' },
+    { until: 0.45, caption: 'Stretch: glide low to high on “knoll”. Twice.' },
+    { until: 0.65, caption: 'Contract: glide high to low on “knoll”. Twice.' },
+    { until: 1, caption: 'Adduction: sustain “ol” softly on five successive pitches. Twice each.' },
   ],
 };

@@ -1,8 +1,7 @@
 import { exercises } from '../exercises';
-import { esc, formatClock, on } from '../lib/dom';
+import { esc, formatClock, on, redrawKeepingFocus } from '../lib/dom';
 import { defaultSettings, durationFor, loadSettings, saveSettings } from '../state/settings';
-import { routineToggle } from '../lib/routine-toggle';
-import type { RoutineId } from '../types';
+import { bindRoutineToggle, routineToggle } from '../lib/routine-toggle';
 
 const STEP_SEC = 30;
 
@@ -13,8 +12,8 @@ export function renderSettings(root: HTMLElement): () => void {
     const routine = settings.routine;
     root.innerHTML = `
       <header>
-        <a class="back-link" href="#/">‹ Home</a>
-        <h1>Settings</h1>
+        <a class="back-link" href="#/"><span aria-hidden="true">‹</span> Home</a>
+        <h1 tabindex="-1">Settings</h1>
       </header>
 
       <section class="card">
@@ -31,12 +30,15 @@ export function renderSettings(root: HTMLElement): () => void {
               const enabled = !settings.disabled.includes(e.id);
               const secs = durationFor(e, settings);
               const fixed = e.kind === 'audio';
+              const name = esc(e.name);
+              const step = (dir: 'dec' | 'inc', label: string, symbol: string) =>
+                `<button class="btn btn-small" data-${dir}="${e.id}" data-focus="${dir}-${e.id}" ${fixed ? 'disabled' : ''} aria-label="${label}, ${name}" aria-describedby="dur-${e.id}">${symbol}</button>`;
               return `<li class="${enabled ? '' : 'off'}">
-                <label class="ex-name"><input type="checkbox" data-id="${e.id}" ${enabled ? 'checked' : ''}> ${esc(e.name)}</label>
+                <label class="ex-name"><input type="checkbox" data-id="${e.id}" data-focus="on-${e.id}" ${enabled ? 'checked' : ''}> ${name}</label>
                 <div class="stepper">
-                  <button class="btn btn-small" data-dec="${e.id}" ${fixed ? 'disabled' : ''} aria-label="Shorter">−</button>
-                  <span class="mono">${formatClock(secs)}</span>
-                  <button class="btn btn-small" data-inc="${e.id}" ${fixed ? 'disabled' : ''} aria-label="Longer">+</button>
+                  ${step('dec', 'Shorter', '−')}
+                  <span class="mono" id="dur-${e.id}">${formatClock(secs)}</span>
+                  ${step('inc', 'Longer', '+')}
                 </div>
               </li>`;
             })
@@ -44,13 +46,10 @@ export function renderSettings(root: HTMLElement): () => void {
         </ul>
       </section>
 
-      <button class="btn btn-ghost" id="reset">Reset to defaults</button>
+      <button class="btn btn-ghost" id="reset" data-focus="reset">Reset to defaults</button>
     `;
 
-    on(root, '.seg', 'click', (_ev, el) => {
-      settings.routine = el.dataset['routine'] as RoutineId;
-      persist();
-    });
+    bindRoutineToggle(root, settings, persist);
     on(root, 'input[type=checkbox]', 'change', (_ev, el) => {
       const id = (el as HTMLInputElement).dataset['id']!;
       settings.disabled = (el as HTMLInputElement).checked ? settings.disabled.filter((d) => d !== id) : [...settings.disabled, id];
@@ -74,7 +73,7 @@ export function renderSettings(root: HTMLElement): () => void {
 
   function persist() {
     saveSettings(settings);
-    draw();
+    redrawKeepingFocus(root, draw);
   }
 
   draw();

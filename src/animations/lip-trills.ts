@@ -47,7 +47,7 @@ export const lipTrills: AnimationDef = {
   phases: [
     { until: 0.2, caption: 'Loose lips, not pursed. Blow gently until they buzz. No voice yet.' },
     { until: 0.4, caption: 'Add voice: “brrr” on one easy pitch.' },
-    { until: 0.8, caption: 'Glide the buzz low to high and back down. Keep the air steady.' },
+    { until: 0.8, caption: 'Glide low to high, then high to low.' },
     { until: 1, caption: 'Add a vowel on the end: “brrr-ah”. Then a word.' },
   ],
 };

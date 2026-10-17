@@ -2,16 +2,7 @@ import type { Exercise } from './types';
 
 const AUDIO_BASE = import.meta.env.BASE_URL + 'audio/';
 
-/**
- * The routine, in order. Edit freely:
- * - duration is seconds per routine; 0 leaves it out of that routine
- * - animation must match an id registered in animations/index.ts, or null
- * - subSteps run in order; each takes a share of the duration by weight (default 1, 0 is untimed)
- * - reps fixes a rep count; repSec derives one from the sub-step's time share
- * - repsPerPitch makes the rep counter show which pitch you are on
- * - window is the [from, to) fraction of the animation loop to play for that sub-step
- * - tips and links go behind "More detail"
- */
+/** The routine, in order. */
 export const exercises: Exercise[] = [
   {
     id: 'low-breathing',
@@ -173,7 +164,3 @@ export const exercises: Exercise[] = [
     links: [{ label: 'Vinh Giang: how to become more articulate', url: 'https://vinhgiang.com/blog/how-to-become-more-articulate' }],
   },
 ];
-
-export function exerciseById(id: string): Exercise | undefined {
-  return exercises.find((e) => e.id === id);
-}

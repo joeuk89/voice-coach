@@ -16,7 +16,7 @@ const shown = exercises.filter((e) => e.animation);
 const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = `
   <header>
-    <a class="back-link" href="./">‹ App</a>
+    <a class="back-link" href="./"><span aria-hidden="true">‹</span> App</a>
     <h1>Animations</h1>
     <label class="muted">Scrub <input id="scrub" type="range" min="0" max="100" value="0"> <span id="scrub-val">live</span></label>
   </header>

@@ -21,18 +21,18 @@ export function renderDone(root: HTMLElement): () => void {
   root.innerHTML = `
     <header class="done-head">
       <div class="eyebrow">Routine complete</div>
-      <h1>Nice work.</h1>
+      <h1 tabindex="-1">Nice work.</h1>
       <p class="muted">${esc(formatClock(totalSec))} of practice.</p>
     </header>
 
     <section class="card">
-      <h2>Voice felt</h2>
+      <h2 id="feeling-title">Voice felt</h2>
       ${
         saved
-          ? `<div class="feeling-row">
-              <button class="btn feeling" data-feeling="strong">Strong</button>
-              <button class="btn feeling" data-feeling="ok">OK</button>
-              <button class="btn feeling" data-feeling="strained">Strained</button>
+          ? `<div class="feeling-row" role="group" aria-labelledby="feeling-title">
+              <button class="btn feeling" data-feeling="strong" aria-pressed="false">Strong</button>
+              <button class="btn feeling" data-feeling="ok" aria-pressed="false">OK</button>
+              <button class="btn feeling" data-feeling="strained" aria-pressed="false">Strained</button>
             </div>`
           : '<p class="muted">The phone would not save this routine, so the feeling cannot be noted.</p>'
       }
@@ -44,7 +44,7 @@ export function renderDone(root: HTMLElement): () => void {
   on(root, '.feeling', 'click', (_ev, el) => {
     const feeling = el.dataset['feeling'] as Feeling;
     if (!setFeeling(completedAt, feeling)) return;
-    root.querySelectorAll('.feeling').forEach((b) => b.classList.toggle('selected', b === el));
+    root.querySelectorAll('.feeling').forEach((b) => b.setAttribute('aria-pressed', String(b === el)));
   });
 
   return () => {

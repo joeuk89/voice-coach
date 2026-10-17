@@ -23,7 +23,7 @@ export function animationFor(id: AnimationId | null): AnimationDef | undefined {
   return id ? registry[id] : undefined;
 }
 
-export function captionAt(def: AnimationDef, progress: number): string {
+function captionAt(def: AnimationDef, progress: number): string {
   const phase = def.phases.find((p) => progress < p.until) ?? def.phases[def.phases.length - 1];
   return phase?.caption ?? '';
 }

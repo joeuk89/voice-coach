@@ -42,11 +42,3 @@ export function rings(cx: number, cy: number, r: number, className = ''): string
 export function airStream(path: string, className = ''): string {
   return `<path class="air ${className}" d="${path}"/>`;
 }
-
-/** Two rose lip bars; the gap between them is where air or a straw passes. */
-export function lipBars(x: number, y: number, width: number, gap: number, className = ''): string {
-  const h = 16;
-  return `
-  <rect class="lip lip-upper ${className}" x="${x}" y="${y - gap / 2 - h}" width="${width}" height="${h}" rx="${h / 2}"/>
-  <rect class="lip lip-lower ${className}" x="${x}" y="${y + gap / 2}" width="${width}" height="${h}" rx="${h / 2}"/>`;
-}

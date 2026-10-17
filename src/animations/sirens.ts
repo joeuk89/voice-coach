@@ -18,7 +18,7 @@ export const sirens: AnimationDef = {
   cycleSec: 8,
   svg,
   phases: [
-    { until: 0.5, caption: 'Glide up smoothly from the bottom of your range, like a distant siren.' },
-    { until: 1, caption: 'And back down, unforced, all the way to the bottom.' },
+    { until: 0.5, caption: 'Hum or “oo”. Glide from the bottom of your range to the top, smooth like a distant siren.' },
+    { until: 1, caption: 'Nudge gently past the comfortable edges on each pass.' },
   ],
 };

@@ -3,7 +3,6 @@ export interface Countdown {
   pause(): void;
   toggle(): boolean;
   readonly running: boolean;
-  stop(): void;
 }
 
 export function createCountdown(
@@ -45,19 +44,14 @@ export function createCountdown(
       interval = setInterval(tick, 200);
       onTick(Math.ceil(remainingMs / 1000));
     },
-    pause() {
-      halt();
-    },
+    pause: halt,
     toggle() {
-      if (running) api.pause();
+      if (running) halt();
       else api.start();
       return running;
     },
     get running() {
       return running;
-    },
-    stop() {
-      halt();
     },
   };
   onTick(totalSec);

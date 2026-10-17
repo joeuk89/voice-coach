@@ -34,3 +34,13 @@ export function on<K extends keyof HTMLElementEventMap>(
     el.addEventListener(event, (ev) => handler(ev as HTMLElementEventMap[K], el));
   });
 }
+
+/** Runs `draw`, then refocuses the new element with the focused one's `data-focus` key, or the h1 if it is gone. */
+export function redrawKeepingFocus(root: ParentNode, draw: () => void): void {
+  const active = document.activeElement;
+  const key = active instanceof HTMLElement ? active.dataset['focus'] : undefined;
+  draw();
+  if (!key) return;
+  const target = root.querySelector<HTMLElement>(`[data-focus="${key}"]`) ?? root.querySelector<HTMLElement>('h1');
+  target?.focus({ preventScroll: true });
+}

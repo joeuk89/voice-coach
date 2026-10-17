@@ -76,6 +76,7 @@ function render() {
   app!.innerHTML = '';
   cleanup = screens[route](app!);
   window.scrollTo(0, 0);
+  app!.querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
   applyUpdateIfIdle();
 }
 

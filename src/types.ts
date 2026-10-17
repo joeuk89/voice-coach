@@ -38,7 +38,7 @@ export interface Exercise {
   duration: Record<RoutineId, number>;
   animation: AnimationId | null;
   /** 'audio' plays a bundled track instead of running a countdown. */
-  kind?: 'timed' | 'audio';
+  kind?: 'audio';
   /** Extra interactive panel under the sub-steps. */
   panel?: 'sustain' | 'reading';
   audioSrc?: string;

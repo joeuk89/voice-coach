@@ -39,9 +39,9 @@ export const hum: AnimationDef = {
   cycleSec: 12,
   svg,
   phases: [
-    { until: 0.3, caption: '“Mmm.” Lips closed. Feel the buzz at the lips and nose, nothing in the throat.' },
-    { until: 0.55, caption: '“Mmm-ah.” Open the mouth and keep the buzz forward.' },
-    { until: 0.8, caption: '“Mmm-many”, “mmm-money.” Same easy, forward feel.' },
-    { until: 1, caption: 'Short phrases now. This is your speaking voice.' },
+    { until: 0.3, caption: '“Mmm” with lips closed. Feel the buzz in the lips and nose, not pressure in the throat.' },
+    { until: 0.55, caption: '“Mmm-ah”. Keep the buzz as the mouth opens.' },
+    { until: 0.8, caption: '“Mmm-many”, “mmm-money”. Same forward, easy feel.' },
+    { until: 1, caption: 'Short phrases with the same quality. This is the speaking voice now.' },
   ],
 };

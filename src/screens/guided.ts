@@ -29,8 +29,8 @@ function listValue(planned: PlannedSubStep): string {
 
 function detailSheet(exercise: Exercise): string {
   return `
-    <dialog class="sheet" id="sheet">
-      <h2>${esc(exercise.name)}</h2>
+    <dialog class="sheet" id="sheet" aria-labelledby="sheet-title">
+      <h2 id="sheet-title">${esc(exercise.name)}</h2>
       ${exercise.tips?.length ? `<h3>Tips</h3><ul>${exercise.tips.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
       ${
         exercise.links.length
@@ -68,7 +68,7 @@ export function renderGuided(root: HTMLElement): () => void {
   let audio: HTMLAudioElement | undefined;
 
   function teardownExercise() {
-    timer?.stop();
+    timer?.pause();
     timer = undefined;
     player?.stop();
     player = undefined;
@@ -93,7 +93,8 @@ export function renderGuided(root: HTMLElement): () => void {
     const focusedId = document.activeElement?.id;
     showExercise();
     window.scrollTo(0, 0);
-    if (focusedId === 'next' || focusedId === 'back') root.querySelector<HTMLElement>(`#${focusedId}`)?.focus({ preventScroll: true });
+    const keep = focusedId === 'next' || focusedId === 'back' ? root.querySelector<HTMLElement>(`#${focusedId}`) : null;
+    (keep ?? $(root, 'h1')).focus({ preventScroll: true });
   }
 
   function showExercise() {
@@ -107,12 +108,12 @@ export function renderGuided(root: HTMLElement): () => void {
     root.innerHTML = `
       <header class="step-head">
         <div class="step-top">
-          <a class="back-link" href="#/" id="home">‹ Home</a>
+          <a class="back-link" href="#/" id="home"><span aria-hidden="true">‹</span> Home</a>
           <button class="ex-picker eyebrow" id="exercises" aria-haspopup="dialog">
             Exercise ${session.index + 1} of ${steps.length} · ${formatClock(step.seconds)} <span aria-hidden="true">▾</span>
           </button>
         </div>
-        <h1>${esc(exercise.name)}</h1>
+        <h1 tabindex="-1">${esc(exercise.name)}</h1>
         <p class="muted">${esc(exercise.purpose)}</p>
       </header>
 
@@ -255,7 +256,7 @@ export function renderGuided(root: HTMLElement): () => void {
   }
 
   function showTimer(current: PlannedSubStep) {
-    timer?.stop();
+    timer?.pause();
     timer = undefined;
     onHold = undefined;
     sustain?.resetStep();
@@ -273,7 +274,7 @@ export function renderGuided(root: HTMLElement): () => void {
     const toggle = $<HTMLButtonElement>(row, '#timer-toggle');
 
     function reset() {
-      timer?.stop();
+      timer?.pause();
       clock.classList.remove('paused', 'done');
       toggle.textContent = 'Start';
       toggle.disabled = current.seconds <= 0;

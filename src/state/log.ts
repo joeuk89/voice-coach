@@ -69,8 +69,6 @@ export function currentStreak(now = new Date()): number {
   return streak;
 }
 
-export function recentFeelings(count = 7): (Feeling | undefined)[] {
-  return loadLog()
-    .slice(-count)
-    .map((e) => e.feeling);
+export function recentEntries(count = 7): LogEntry[] {
+  return loadLog().slice(-count);
 }

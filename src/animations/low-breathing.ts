@@ -38,7 +38,7 @@ export const lowBreathing: AnimationDef = {
   cycleSec: 12,
   svg,
   phases: [
-    { until: 1 / 3, caption: 'In through the nose for 4. The belly rises under your hand. The chest stays still.' },
-    { until: 1, caption: 'Out on a steady “sss” for 8. Keep it even right to the end.' },
+    { until: 1 / 3, caption: 'In through the nose for 4. The belly hand moves, the chest hand stays still.' },
+    { until: 1, caption: 'Out on a steady “sss” for 8.' },
   ],
 };

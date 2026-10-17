@@ -1,10 +1,12 @@
-import { esc, formatMinutes, on } from '../lib/dom';
+import { esc, formatMinutes, on, redrawKeepingFocus } from '../lib/dom';
 import { initAudio } from '../lib/audio';
-import { currentStreak, lastEntry, localDay, recentFeelings } from '../state/log';
+import { currentStreak, lastEntry, localDay, recentEntries } from '../state/log';
 import { startSession } from '../state/session';
 import { loadSettings, planRoutine, saveSettings, totalSeconds } from '../state/settings';
-import { routineToggle } from '../lib/routine-toggle';
-import type { RoutineId } from '../types';
+import { bindRoutineToggle, routineToggle } from '../lib/routine-toggle';
+import type { Feeling, LogEntry } from '../types';
+
+const SHORT_DATE: Intl.DateTimeFormatOptions = { weekday: 'short', day: 'numeric', month: 'short' };
 
 function lastDoneLabel(): string {
   const last = lastEntry();
@@ -16,13 +18,20 @@ function lastDoneLabel(): string {
   if (last.date === today) return 'Done today';
   if (last.date === yesterday) return 'Last done yesterday';
   const d = new Date(last.completedAt);
-  return `Last done ${d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}`;
+  return `Last done ${d.toLocaleDateString(undefined, SHORT_DATE)}`;
+}
+
+const FEELING_NAMES: Record<Feeling, string> = { strong: 'strong', ok: 'OK', strained: 'strained' };
+
+function feelingLabel(entry: LogEntry): string {
+  const day = new Date(entry.completedAt).toLocaleDateString(undefined, SHORT_DATE);
+  return `${day}: ${entry.feeling ? FEELING_NAMES[entry.feeling] : 'no note'}`;
 }
 
 export function renderHome(root: HTMLElement): () => void {
   const settings = loadSettings();
   const streak = currentStreak();
-  const feelings = recentFeelings();
+  const recent = recentEntries();
 
   function draw() {
     const routine = settings.routine;
@@ -30,7 +39,7 @@ export function renderHome(root: HTMLElement): () => void {
     root.innerHTML = `
       <header class="home-head">
         <div class="eyebrow">${esc(new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' }))}</div>
-        <h1>Voice Trainer</h1>
+        <h1 tabindex="-1">Voice Trainer</h1>
       </header>
 
       ${routineToggle(settings, 'Routine')}
@@ -50,18 +59,22 @@ export function renderHome(root: HTMLElement): () => void {
       <section class="streak">
         <div><strong>${streak}</strong> day streak</div>
         <div class="muted">${esc(lastDoneLabel())}</div>
-        <div class="feelings" aria-label="How the voice felt on recent days">
-          ${feelings.map((f) => `<i class="dot ${f ?? 'none'}" title="${f ?? 'no note'}"></i>`).join('')}
-        </div>
+        <ol class="feelings" aria-label="How the voice felt on recent days">
+          ${recent
+            .map((e) => {
+              const label = esc(feelingLabel(e));
+              return `<li class="dot ${e.feeling ?? 'none'}" title="${label}"><span class="visually-hidden">${label}</span></li>`;
+            })
+            .join('')}
+        </ol>
       </section>
 
       <a class="btn btn-ghost" href="#/settings">Settings</a>
     `;
 
-    on(root, '.seg', 'click', (_ev, el) => {
-      settings.routine = el.dataset['routine'] as RoutineId;
+    bindRoutineToggle(root, settings, () => {
       saveSettings(settings);
-      draw();
+      redrawKeepingFocus(root, draw);
     });
     on(root, '#start', 'click', () => {
       initAudio();

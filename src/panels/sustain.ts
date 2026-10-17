@@ -42,7 +42,7 @@ export function mountSustainPanel(container: HTMLElement, events: SustainEvents 
         ${
           today.length
             ? `<span class="muted">Today:</span> ${today.map((s) => `<span class="chip mono">${esc(fmt(s))}</span>`).join('')}
-               ${stepHolds.length && !running ? '<button class="btn btn-ghost btn-small" id="sustain-undo" aria-label="Remove last">Undo</button>' : ''}`
+               ${stepHolds.length && !running ? '<button class="btn btn-ghost btn-small" id="sustain-undo" aria-label="Undo last hold">Undo</button>' : ''}`
             : '<span class="muted">Tap Start when the note begins, Stop when it ends.</span>'
         }
       </div>`;
