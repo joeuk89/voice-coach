@@ -36,11 +36,16 @@ function strings(values: unknown[]): string[] {
   return [...new Set(values.filter((id): id is string => typeof id === 'string'))];
 }
 
-/** Older saves kept one flat list, which switched an exercise off in both routines. */
-function loadDisabled(value: unknown): Record<RoutineId, string[]> {
+/**
+ * Older saves kept one flat list, which switched an exercise off in both routines. They left the
+ * default-off exercises out of Short with a time of 0, so one with a saved time there was added back.
+ */
+function loadDisabled(value: unknown, savedDurations: unknown): Record<RoutineId, string[]> {
   const defaults = defaultSettings().disabled;
   if (Array.isArray(value)) {
-    return { short: strings([...defaults.short, ...value]), full: strings([...defaults.full, ...value]) };
+    const times = byRoutine(savedDurations);
+    const stillOff = (r: RoutineId) => defaults[r].filter((id) => !((times[r][id] ?? 0) > 0));
+    return { short: strings([...stillOff('short'), ...value]), full: strings([...stillOff('full'), ...value]) };
   }
   const routines = isRecord(value) ? value : {};
   const list = (r: RoutineId) => {
@@ -77,7 +82,7 @@ function loadDurations(value: unknown, disabled: Record<RoutineId, string[]>): R
 export function loadSettings(): Settings {
   const raw = read(KEY);
   const saved = isRecord(raw) ? raw : {};
-  const disabled = loadDisabled(saved['disabled']);
+  const disabled = loadDisabled(saved['disabled'], saved['durations']);
   return {
     routine: saved['routine'] === 'short' ? 'short' : 'full',
     disabled,

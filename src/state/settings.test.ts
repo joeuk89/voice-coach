@@ -93,6 +93,19 @@ describe('loadSettings migration from older saves', () => {
     expect(disabled.full).toEqual(['hum']);
   });
 
+  it('keeps a default-off exercise on where the old save gave it a time', () => {
+    const settings = saved(JSON.stringify({ routine: 'short', disabled: [], durations: { short: { vfe: 60 }, full: {} } }));
+    expect(isOn(byId('vfe'), settings, 'short')).toBe(true);
+    expect(planRoutine(settings, 'short').find((s) => s.exercise.id === 'vfe')?.seconds).toBe(60);
+    expect(isOn(byId('roger-love'), settings, 'short')).toBe(false);
+  });
+
+  it('still turns a default-off exercise off when the old flat list has it, whatever its time', () => {
+    const settings = saved(JSON.stringify({ disabled: ['vfe'], durations: { short: { vfe: 60 }, full: {} } }));
+    expect(isOn(byId('vfe'), settings, 'short')).toBe(false);
+    expect(isOn(byId('vfe'), settings, 'full')).toBe(false);
+  });
+
   it('does not list an id twice when the old flat list repeats a default', () => {
     expect(saved('{"disabled":["vfe","vfe"]}').disabled.short).toEqual(defaultSettings().disabled.short);
   });
