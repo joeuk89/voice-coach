@@ -13,11 +13,9 @@ const svg = `
   <circle class="body lb-head" cx="131" cy="44" r="20"/>
   <path class="body lb-nose" d="M149 37 Q 168 44 149 51"/>
 
-  <path class="body lb-belly" d="M88 120 H 140 C 162 120, 174 140, 174 163 C 174 188, 158 206, 132 206 H 106 Q 88 206, 88 188 Z"/>
-  <ellipse class="body lb-hand" cx="174" cy="163" rx="8" ry="20"/>
+  <path class="body lb-belly" d="M96 120 H 148 C 171 120, 183.5 140, 183.5 163 C 183.5 188, 167 206, 140 206 H 114 Q 96 206, 96 188 Z"/>
 
-  <path class="body lb-chest" d="M106 74 H 156 Q 174 74, 174 92 V 108 Q 174 126, 156 126 H 88 V 92 Q 88 74, 106 74 Z"/>
-  <ellipse class="body" cx="174" cy="100" rx="8" ry="20"/>
+  <path class="body lb-chest" d="M114 74 H 148 Q 166 74, 166 92 V 108 Q 166 126, 148 126 H 96 V 92 Q 96 74, 114 74 Z"/>
   <text class="anim-label" x="197" y="104">CHEST · still</text>
 
   <g class="lb-in">
@@ -42,7 +40,7 @@ export const lowBreathing: AnimationDef = {
   cycleSec: 12,
   svg,
   phases: [
-    { until: 1 / 3, caption: 'In through the nose for 4. The belly hand moves, the chest hand stays still.' },
+    { until: 1 / 3, caption: 'In through the nose: the belly hand moves, the chest hand stays still.' },
     { until: 1, caption: 'Out on a steady “sss” for 8.' },
   ],
 };

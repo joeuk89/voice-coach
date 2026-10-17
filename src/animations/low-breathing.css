@@ -1,9 +1,9 @@
-/* The belly grows from its back-top corner so it swells forward, tucked under the chest. */
+/* The belly is drawn at its full breath, 25% wider than the chest, and rests at 0.8 so it matches the chest.
+   It grows from its back-top corner so it swells forward, tucked under the chest. */
 .anim-low-breathing .lb-belly {
-  transform-box: view-box; transform-origin: 88px 120px;
+  transform-box: view-box; transform-origin: 96px 120px; vector-effect: non-scaling-stroke;
   animation: lb-belly var(--cycle) infinite;
 }
-.anim-low-breathing .lb-hand { animation: lb-hand var(--cycle) infinite; }
 .anim-low-breathing .lb-in { animation: lb-phase-in var(--cycle) linear infinite; }
 .anim-low-breathing .lb-out { animation: lb-phase-out var(--cycle) linear infinite; }
 .anim-low-breathing .lb-track { fill: var(--surface-2); }
@@ -15,24 +15,14 @@
 .anim-low-breathing .lb-sep-major { stroke: var(--fg); stroke-width: 2; }
 
 @keyframes lb-belly {
-  0% { transform: scale(0.85, 0.94); animation-timing-function: ease-in-out; }
+  0% { transform: scale(0.8, 0.94); animation-timing-function: ease-in-out; }
   33.333% { transform: scale(1); animation-timing-function: ease-out; }
-  100% { transform: scale(0.85, 0.94); }
-}
-@keyframes lb-hand {
-  0% { transform: translate(-12.9px, -2.6px); animation-timing-function: ease-in-out; }
-  33.333% { transform: translate(0, 0); animation-timing-function: ease-out; }
-  100% { transform: translate(-12.9px, -2.6px); }
+  100% { transform: scale(0.8, 0.94); }
 }
 @keyframes lb-belly-calm {
-  0% { transform: scale(0.92, 0.97); animation-timing-function: ease-in-out; }
-  33.333% { transform: scale(1); animation-timing-function: ease-out; }
-  100% { transform: scale(0.92, 0.97); }
-}
-@keyframes lb-hand-calm {
-  0% { transform: translate(-6.9px, -1.3px); animation-timing-function: ease-in-out; }
-  33.333% { transform: translate(0, 0); animation-timing-function: ease-out; }
-  100% { transform: translate(-6.9px, -1.3px); }
+  0% { transform: scale(0.8, 0.94); animation-timing-function: ease-in-out; }
+  33.333% { transform: scale(0.9, 0.97); animation-timing-function: ease-out; }
+  100% { transform: scale(0.8, 0.94); }
 }
 @keyframes lb-phase-in { 0%, 33.332% { opacity: 1; } 33.333%, 100% { opacity: 0; } }
 @keyframes lb-phase-out { 0%, 33.332% { opacity: 0; } 33.333%, 100% { opacity: 1; } }
@@ -40,5 +30,4 @@
 
 @media (prefers-reduced-motion: reduce) {
   .anim-low-breathing .lb-belly { animation-name: lb-belly-calm; }
-  .anim-low-breathing .lb-hand { animation-name: lb-hand-calm; }
 }

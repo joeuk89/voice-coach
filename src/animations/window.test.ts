@@ -76,14 +76,6 @@ describe('passMs', () => {
     expect(passMs(MIN_PASS_MS)).toBe(MIN_PASS_MS);
     expect(passMs(8000)).toBe(8000);
   });
-
-  it('keeps low breathing’s inhale window at its real 4 s pace', () => {
-    const low = exercises.find((e) => e.id === 'low-breathing')!;
-    const [from, to] = low.subSteps.find((s) => s.window)!.window!;
-    const cycleMs = 12_000;
-    expect(passMs((to - from) * cycleMs)).toBeCloseTo((to - from) * cycleMs);
-    expect(windowTime([from, to], cycleMs, 2000)).toBeCloseTo(2000);
-  });
 });
 
 describe('windowProgress', () => {

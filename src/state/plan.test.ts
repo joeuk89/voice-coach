@@ -98,9 +98,14 @@ describe('planSubSteps', () => {
   });
 
   it('counts low breathing in the routine rep count', () => {
-    expect(planSubSteps(byId('low-breathing'), 96, 8).map((p) => p.reps)).toEqual([undefined, undefined, 8]);
-    expect(planSubSteps(byId('low-breathing'), 60, 5).map((p) => p.reps)).toEqual([undefined, undefined, 5]);
-    expect(planSubSteps(byId('low-breathing'), 60, 5)[1]!.seconds).toBeGreaterThanOrEqual(5);
+    expect(planSubSteps(byId('low-breathing'), 96, 8).map((p) => [p.mode, p.reps])).toEqual([
+      ['untimed', undefined],
+      ['reps', 8],
+    ]);
+    expect(planSubSteps(byId('low-breathing'), 60, 5).map((p) => [p.mode, p.reps])).toEqual([
+      ['untimed', undefined],
+      ['reps', 5],
+    ]);
   });
 
   it('fills every real exercise exactly, with at least 5 seconds per timed sub-step', () => {

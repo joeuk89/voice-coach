@@ -9,12 +9,11 @@ export const exercises: Exercise[] = [
     name: 'Low breathing',
     purpose: 'Puts the breath under the voice so the throat does not have to work.',
     subSteps: [
-      { text: 'One hand on your belly, one on your chest. Shoulders down.', weight: 0 },
       {
-        text: 'In through the nose for 4. The belly hand moves, the chest hand stays still. Let it fall out and try it a few times.',
-        window: [0, 1 / 3],
+        text: 'One hand on your belly, one on your chest. Shoulders down. In through the nose: the belly hand moves, the chest hand stays still.',
+        weight: 0,
       },
-      { text: 'Full cycle: in for 4, out on a steady “sss” for 8. Keep repeating.', weight: 3, repSec: 12 },
+      { text: 'In for 4, out on a steady “sss” for 8. Tap +1 after each breath.', repSec: 12 },
     ],
     tips: ['If your shoulders rise, the breath is high. Let them drop and start again.'],
     control: 'reps',
