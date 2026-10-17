@@ -1,5 +1,5 @@
 .anim-read-aloud .ra-text { fill: var(--muted); font: 18px var(--font); }
-.anim-read-aloud .ra-text .hot { fill: var(--fg); font-weight: 600; }
+.anim-read-aloud .ra-text .hot { fill: var(--voice); font-weight: 600; }
 .anim-read-aloud .ra-pass { animation: var(--cycle) step-end infinite; }
 .anim-read-aloud .ra-pass-1 { animation-name: ra-half-1; }
 .anim-read-aloud .ra-pass-2 { animation-name: ra-half-2; }

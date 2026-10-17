@@ -1,5 +1,6 @@
 import { $, esc } from '../lib/dom';
 import { buzz } from '../lib/haptics';
+import { icons } from '../lib/icons';
 import { localDay } from '../state/log';
 import { bestEver, previousBest, recordSustain, removeLastSustain, todaySustains } from '../state/sustains';
 
@@ -7,23 +8,44 @@ function fmt(sec: number): string {
   return `${sec.toFixed(1)} s`;
 }
 
-/** Header line: last time and best ever before today's first hold, then today's best and best ever. */
-export function sustainSummary(today: number[], previous: number, best: number): string {
-  if (best <= 0) return 'First time';
-  const first = today.length ? `Best today ${fmt(Math.max(...today))}` : previous ? `Last time ${fmt(previous)}` : '';
-  return [first, `Best ever ${fmt(best)}`].filter(Boolean).join(' · ');
+function clockMarkup(sec: number): string {
+  return `${sec.toFixed(1)}<small>s</small>`;
+}
+
+const MIN_HOLD_SEC = 0.5;
+const MAX_CHIPS = 8;
+export const TOO_SHORT = 'Too short to count (under 0.5 s)';
+
+/** Leads the Today line: today's holds follow it, or it stands alone before the first one. */
+export function summaryNote(today: readonly number[], previous: number, best: number): string {
+  if (best <= 0) return 'First time: tap Start hold as the note begins.';
+  if (today.length) return `Best ever ${fmt(best)} · Today`;
+  return previous > 0 ? `Last time ${fmt(previous)} · Best ever ${fmt(best)}` : `Best ever ${fmt(best)}`;
+}
+
+/** Newest first, capped, with how many older holds were left out. */
+export function recentHolds(today: readonly number[], max = MAX_CHIPS): { shown: number[]; more: number } {
+  const newest = today.slice().reverse();
+  return { shown: newest.slice(0, max), more: Math.max(0, newest.length - max) };
 }
 
 export interface SustainEvents {
   onRecord?: () => void;
   onUndo?: () => void;
+  onRunning?: (running: boolean) => void;
 }
 
 export interface SustainPanel {
-  /** Start a new sub-step: Undo forgets earlier holds, and a hold still running is logged but not reported. */
+  /** The hold row: stopwatch and Start hold, where the screen adds its Reset. */
+  readonly row: HTMLElement;
+  /** Where the screen shows its hold count, under the stopwatch. */
+  readonly note: HTMLElement;
+  /** Start a new sub-step: a running hold is discarded and Undo forgets earlier holds. */
   resetStep(): void;
   /** Whether Start hold carries the screen's primary style. */
   setPrimary(primary: boolean): void;
+  isRunning(): boolean;
+  focusToggle(): void;
   stop(): void;
 }
 
@@ -32,33 +54,46 @@ export function mountSustainPanel(container: HTMLElement, events: SustainEvents 
   let startedAt = 0;
   let interval: ReturnType<typeof setInterval> | undefined;
   let stepHolds: string[] = [];
-  let step = 0;
-  let holdStep = 0;
-  let primary = true;
+  let tooShort = false;
 
-  function draw() {
+  container.innerHTML = `
+    <div class="timer-row hold-row">
+      <div class="timer-readout">
+        <div class="timer hold-clock" id="sustain-clock" aria-live="off">${clockMarkup(0)}</div>
+        <span class="done-mark hold-check">${icons.check}</span>
+      </div>
+      <button class="btn btn-primary timer-btn hold-btn" id="sustain-toggle">Start hold</button>
+      <div class="timer-note"><span id="hold-note" aria-live="polite"></span><span id="undo-slot"></span></div>
+    </div>
+    <div class="sustain-today" id="sustain-today" aria-live="polite"></div>`;
+  const row = $(container, '.hold-row');
+  const clock = $(container, '#sustain-clock');
+  const button = $<HTMLButtonElement>(container, '#sustain-toggle');
+  const todayEl = $(container, '#sustain-today');
+  const undoSlot = $(container, '#undo-slot');
+
+  function drawToday() {
     const running = interval !== undefined;
     const today = todaySustains();
-    container.innerHTML = `
-      <div class="sustain-head">
-        <h2>Sustain timer</h2>
-        <span class="muted">${esc(sustainSummary(today, previousBest(), bestEver()))}</span>
-      </div>
-      <div class="sustain-row">
-        <div class="sustain-clock mono" id="sustain-clock">${fmt(running ? elapsed() : 0)}</div>
-        <button class="btn sustain-btn ${primary ? 'btn-primary' : ''} ${running ? 'running' : ''}" id="sustain-toggle">${running ? 'Stop' : 'Start hold'}</button>
-      </div>
-      <div class="sustain-today">
-        ${
-          today.length
-            ? `<span class="muted">Today:</span> ${today.map((s) => `<span class="chip mono">${esc(fmt(s))}</span>`).join('')}
-               ${stepHolds.length && !running ? '<button class="btn btn-ghost btn-small" id="sustain-undo" aria-label="Undo last hold">Undo</button>' : ''}`
-            : '<span class="muted">Tap Start when the note begins, Stop when it ends.</span>'
-        }
-      </div>`;
+    const { shown, more } = recentHolds(today);
+    todayEl.innerHTML = `
+      ${tooShort ? `<span class="muted hold-short">${TOO_SHORT}</span>` : ''}
+      <span class="muted">${esc(summaryNote(today, previousBest(), bestEver()))}</span>
+      ${shown.map((s) => `<span class="chip mono">${esc(fmt(s))}</span>`).join('')}
+      ${more ? `<span class="muted">+${more} more</span>` : ''}`;
+    undoSlot.innerHTML =
+      stepHolds.length && !running ? '<button class="btn btn-ghost btn-small" id="sustain-undo" aria-label="Undo last hold">Undo</button>' : '';
+    undoSlot.querySelector('#sustain-undo')?.addEventListener('click', undo);
+  }
 
-    $(container, '#sustain-toggle').addEventListener('click', toggle);
-    container.querySelector('#sustain-undo')?.addEventListener('click', undo);
+  function showRunning(running: boolean) {
+    button.textContent = running ? 'Stop' : 'Start hold';
+    row.classList.toggle('running', running);
+  }
+
+  function showTooShort(short: boolean) {
+    tooShort = short;
+    row.classList.toggle('short', short);
   }
 
   function elapsed() {
@@ -69,7 +104,8 @@ export function mountSustainPanel(container: HTMLElement, events: SustainEvents 
     const day = stepHolds.pop();
     if (day === undefined) return;
     removeLastSustain(day);
-    draw();
+    clock.innerHTML = clockMarkup(0);
+    drawToday();
     events.onUndo?.();
   }
 
@@ -78,43 +114,58 @@ export function mountSustainPanel(container: HTMLElement, events: SustainEvents 
       const held = elapsed();
       const day = localDay();
       stop();
-      const recorded = held >= 0.5 && recordSustain(held, day);
-      const counts = recorded && holdStep === step;
-      if (counts) stepHolds.push(day);
+      clock.innerHTML = clockMarkup(held);
+      showTooShort(held < MIN_HOLD_SEC);
+      const recorded = !tooShort && recordSustain(held, day);
+      if (recorded) stepHolds.push(day);
       buzz(40);
-      draw();
+      drawToday();
       // After buzz(40), so a listener's own buzz replaces the short one.
-      if (counts) events.onRecord?.();
+      if (recorded) events.onRecord?.();
       return;
     }
     startedAt = Date.now();
-    holdStep = step;
-    const button = $(container, '#sustain-toggle');
-    button.textContent = 'Stop';
-    button.classList.add('running');
-    container.querySelector('#sustain-undo')?.remove();
+    showTooShort(false);
+    showRunning(true);
+    clock.innerHTML = clockMarkup(0);
     interval = setInterval(() => {
-      const clock = container.querySelector('#sustain-clock');
-      if (clock) clock.textContent = fmt(elapsed());
+      clock.innerHTML = clockMarkup(elapsed());
     }, 100);
+    drawToday();
+    events.onRunning?.(true);
   }
 
   function stop() {
-    if (interval) clearInterval(interval);
+    if (!interval) return;
+    clearInterval(interval);
     interval = undefined;
+    showRunning(false);
+    events.onRunning?.(false);
   }
 
-  draw();
+  function discardHold() {
+    stop();
+    showTooShort(false);
+    clock.innerHTML = clockMarkup(0);
+    drawToday();
+  }
+
+  button.addEventListener('click', toggle);
+  drawToday();
   return {
+    row,
+    note: $(container, '#hold-note'),
     resetStep() {
-      step += 1;
-      if (!stepHolds.length) return;
+      discardHold();
       stepHolds = [];
-      draw();
+      drawToday();
     },
-    setPrimary(next) {
-      primary = next;
-      container.querySelector('#sustain-toggle')?.classList.toggle('btn-primary', next);
+    setPrimary(primary) {
+      button.classList.toggle('btn-primary', primary);
+    },
+    isRunning: () => interval !== undefined,
+    focusToggle() {
+      button.focus({ preventScroll: true });
     },
     stop,
   };

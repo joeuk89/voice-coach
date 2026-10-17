@@ -121,7 +121,7 @@ export const exercises: Exercise[] = [
   {
     id: 'vfe',
     name: 'Vocal function exercises',
-    purpose: 'Stemple’s four steps. Builds strength and efficiency; the sustain time is the progress metric.',
+    purpose: 'Four steps from voice therapy. Your longest hold shows progress.',
     subSteps: [
       {
         text: 'Warm up: soft nasal “ee” on a comfortable mid pitch, as long as you can. Twice.',

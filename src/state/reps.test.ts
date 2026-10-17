@@ -14,13 +14,13 @@ describe('repLabel', () => {
     expect(text(1, 2, 'Hold')).toBe('Hold 1 of 2');
   });
 
-  it('drops the noun once the target is reached', () => {
-    expect(text(8, 8, 'Rep')).toBe('8 of 8');
-    expect(text(2, 2, 'Hold')).toBe('2 of 2');
+  it('keeps the noun and drops the pitch once the target is reached', () => {
+    expect(text(8, 8, 'Rep')).toBe('Rep 8 of 8');
+    expect(text(2, 2, 'Hold')).toBe('Hold 2 of 2');
   });
 
   it('never shows more than the target', () => {
-    expect(text(3, 2, 'Hold')).toBe('2 of 2');
+    expect(text(3, 2, 'Hold')).toBe('Hold 2 of 2');
   });
 
   it('names the pitch, moving up one every repsPerPitch holds', () => {
@@ -32,12 +32,12 @@ describe('repLabel', () => {
       'Hold 8 of 10 · pitch 5',
       'Hold 9 of 10 · pitch 5',
     ]);
-    expect(text(10, 10, 'Hold', 2)).toBe('10 of 10');
+    expect(text(10, 10, 'Hold', 2)).toBe('Hold 10 of 10');
   });
 
   it('keeps the count separate from the words', () => {
     expect(repLabel(3, 10, 'Hold', 2)).toEqual({ lead: 'Hold', shown: 3, tail: 'of 10 · pitch 2' });
-    expect(repLabel(10, 10, 'Hold', 2)).toEqual({ lead: '', shown: 10, tail: 'of 10' });
+    expect(repLabel(10, 10, 'Hold', 2)).toEqual({ lead: 'Hold', shown: 10, tail: 'of 10' });
   });
 });
 

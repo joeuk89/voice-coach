@@ -1,4 +1,5 @@
 import type { Exercise, RoutineId } from '../types';
+import { createProgress, type RoutineProgress } from './progress';
 
 export interface Step {
   exercise: Exercise;
@@ -10,6 +11,7 @@ export interface Session {
   steps: Step[];
   index: number;
   subIndex: number;
+  progress: RoutineProgress;
   startedAt: number;
   /** Set once the Done screen has written the log entry. */
   logged: { completedAt: string; saved: boolean } | null;
@@ -18,7 +20,7 @@ export interface Session {
 let current: Session | null = null;
 
 export function startSession(routine: RoutineId, steps: Step[]): Session {
-  current = { routine, steps, index: 0, subIndex: 0, startedAt: Date.now(), logged: null };
+  current = { routine, steps, index: 0, subIndex: 0, progress: createProgress(), startedAt: Date.now(), logged: null };
   return current;
 }
 

@@ -35,12 +35,22 @@ function hold(seconds: number, between?: () => void) {
 const undoButton = () => container.querySelector<HTMLElement>('#sustain-undo');
 
 describe('mountSustainPanel', () => {
-  it('logs a hold that spans a step change without reporting it to the new step', () => {
+  it('discards a hold still running when the step changes', () => {
     const { panel, onRecord } = mount();
     hold(2, () => panel.resetStep());
-    expect(todaySustains()).toEqual([2]);
+    expect(todaySustains()).toEqual([]);
     expect(onRecord).not.toHaveBeenCalled();
     expect(undoButton()).toBeNull();
+  });
+
+  it('says a hold under half a second is too short and does not log it', () => {
+    const { onRecord } = mount();
+    hold(0.3);
+    expect(todaySustains()).toEqual([]);
+    expect(onRecord).not.toHaveBeenCalled();
+    expect(container.querySelector('#sustain-today')!.textContent).toContain('Too short to count (under 0.5 s)');
+    container.querySelector<HTMLElement>('#sustain-toggle')!.click();
+    expect(container.querySelector('#sustain-today')!.textContent).not.toContain('Too short');
   });
 
   it('reports a hold started and stopped on the same step, and offers Undo', () => {

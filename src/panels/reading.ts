@@ -17,13 +17,12 @@ export function mountReadingPanel(container: HTMLElement): () => void {
   function draw() {
     const text = paragraphs[index] ?? '';
     container.innerHTML = `
-      <div class="reading-head">
-        <h2>Read this</h2>
-        <span class="muted">${index + 1} of ${paragraphs.length}</span>
-      </div>
       <p class="passage">${renderPassage(text)}</p>
       <p class="muted reading-hint">Once over the top, then again at 70 percent.</p>
-      <button class="btn btn-ghost" id="next-passage">Another</button>`;
+      <div class="reading-foot">
+        <button class="btn btn-ghost" id="next-passage">New passage</button>
+        <span class="muted">${index + 1} of ${paragraphs.length}</span>
+      </div>`;
     $(container, '#next-passage').addEventListener('click', () => {
       index = (index + 1) % paragraphs.length;
       draw();
