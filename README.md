@@ -44,9 +44,10 @@ Every push to `main` builds the app and publishes it to GitHub Pages via `.githu
 Everything about the routine lives in `src/exercises.ts`, one object per exercise, in the order they run.
 
 - `control` says what Settings can change. Leave it out for a timed exercise.
-  - Timed: `duration` is seconds per routine (`short` and `full`). `0` leaves the exercise out of that routine. Settings sets the time.
+  - Timed: `duration` is seconds per routine (`short` and `full`), 30 or more. Settings sets the time.
   - `'reps'`: `reps` is the rep count per routine, `repSec` the seconds one rep takes, and `repNoun` what one rep is called ("breath"). It has no `duration`; its time is `reps × repSec`. Settings sets the count. Counted sub-steps without a fixed `reps` use it.
-  - `'untimed'`: `duration` is only the time it usually takes, shown as "about N min". Settings can only switch it off.
+  - `'untimed'`: `duration` is only the time it usually takes, shown as "about N min". Settings can only switch it on or off.
+- `defaultOff` lists the routines the exercise starts switched off in (`['short']` for the track, the vocal function exercises and the read-aloud). Give it a real time or count for those routines too, for when Settings switches it on.
 - `subSteps` are the ordered instructions shown on screen, each with a `text`. `tips` and `links` sit behind "Tips and sources".
   - `weight` sets the sub-step's share of the duration relative to the others. It defaults to `1`; `0` means no timer.
   - `reps` fixes a rep count, for protocols that set one. A sub-step with a fixed `reps` and no `weight` takes no time share, so the timed sub-steps split the whole duration. Set a `weight` too if it should take a share. `repSec` is the length of one rep instead, and the count comes from the sub-step's time share. `reps` wins if both are set.
@@ -60,9 +61,9 @@ Read-aloud passages live in `src/paragraphs.ts`, each a `text` and a `demo` line
 
 ## Settings
 
-Settings shows one row per exercise for the selected routine. The switch turns an exercise off in both routines. A timed row steps its time by 30 s, and 0:00 leaves it out of this routine only, with a lone "+" to add it back. A counted row steps its rep count by 1, never below 1, and shows about how long that takes. An untimed row shows only about how long it takes. A row the selected routine cannot run (the audio track and the read-aloud on Short) reads "Full only" with its switch disabled. Reset to defaults clears every time and count override and turns every exercise on.
+Settings shows one row per exercise for the routine picked at the top. Each row's switch turns the exercise on or off in that routine only, so an exercise can run in Short, Full, both or neither. No switch is ever disabled, and the switch is the only way to leave an exercise out. A timed row steps its time by 30 s, never below 0:30. A counted row steps its rep count by 1, never below 1, and shows about how long that takes. An untimed row shows only about how long it takes, and the track shows its fixed length. A row that is off shows only its name and switch. By default Short leaves out the track, the vocal function exercises and the read-aloud, and Full runs everything. Reset to defaults restores those routines and clears every time and count override.
 
-Settings (routine, enabled exercises, time and rep count overrides), the completion log, the sustain log and whether the first-run note was seen are stored in `localStorage` under `vt.*` keys.
+Settings (routine, the exercises switched off in each routine, time and rep count overrides), the completion log, the sustain log and whether the first-run note was seen are stored in `localStorage` under `vt.*` keys.
 
 ## Add an animation
 

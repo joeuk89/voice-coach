@@ -43,12 +43,14 @@ interface ExerciseBase {
   panel?: 'sustain' | 'reading';
   audioSrc?: string;
   links: Link[];
+  /** Routines the exercise starts switched off in, until Settings turns it on. */
+  defaultOff?: RoutineId[];
 }
 
 /** Runs for a set time that Settings can change. */
 export interface TimedExercise extends ExerciseBase {
   control?: 'timed';
-  /** Seconds per routine. 0 leaves the exercise out of that routine. */
+  /** Seconds per routine, 30 or more. */
   duration: Record<RoutineId, number>;
 }
 
@@ -61,7 +63,7 @@ export interface UntimedExercise extends ExerciseBase {
 /** Counted in reps that Settings can change; its time is reps × `repSec`. */
 export interface RepsExercise extends ExerciseBase {
   control: 'reps';
-  /** Reps per routine. 0 leaves the exercise out of that routine. */
+  /** Reps per routine, 1 or more. */
   reps: Record<RoutineId, number>;
   repSec: number;
   /** What one rep is called, singular ("breath"); Settings adds an "s" for more than one. */
@@ -85,7 +87,8 @@ export interface LogEntry {
 
 export interface Settings {
   routine: RoutineId;
-  disabled: string[];
+  /** Ids of the exercises switched off in each routine. */
+  disabled: Record<RoutineId, string[]>;
   durations: Record<RoutineId, Record<string, number>>;
   reps: Record<RoutineId, Record<string, number>>;
 }

@@ -4,11 +4,15 @@ import { esc, formatClock, on } from '../lib/dom';
 import { exampleChips } from '../lib/example-chips';
 import { icons } from '../lib/icons';
 import { planSubSteps } from '../state/plan';
-import { defaultSettings, durationFor, loadSettings, repsFor } from '../state/settings';
-import type { Exercise, Settings } from '../types';
-import { libraryIdFromHash, routineDurations, shareLabel } from './library/helpers';
+import { durationFor, isOn, loadSettings, repsFor } from '../state/settings';
+import type { Exercise, RoutineId, Settings } from '../types';
+import { libraryIdFromHash, playsIn, routineDurations, shareLabel } from './library/helpers';
 
 const chevronRight = `<span class="lib-chevron">${icons.chevronLeft}</span>`;
+
+function secondsIfOn(exercise: Exercise, settings: Settings, routine: RoutineId): number | undefined {
+  return isOn(exercise, settings, routine) ? durationFor(exercise, settings, routine) : undefined;
+}
 
 function listView(settings: Settings): string {
   return `
@@ -21,11 +25,10 @@ function listView(settings: Settings): string {
     <ol class="card lib-list">
       ${exercises
         .map((e) => {
-          const off = settings.disabled.includes(e.id);
-          const durations = routineDurations(durationFor(e, settings, 'short'), durationFor(e, settings, 'full'));
+          const durations = routineDurations(secondsIfOn(e, settings, 'short'), secondsIfOn(e, settings, 'full'));
           return `<li><a class="lib-row" href="#/library/${esc(e.id)}">
             <span class="lib-row-text">
-              <span class="lib-row-name">${esc(e.name)}${off ? ' <span class="lib-off">off</span>' : ''}</span>
+              <span class="lib-row-name">${esc(e.name)}</span>
               <span class="lib-row-purpose muted">${esc(e.purpose)}</span>
               <span class="lib-row-dur muted mono">${durations}</span>
             </span>
@@ -36,13 +39,8 @@ function listView(settings: Settings): string {
     </ol>`;
 }
 
-/** The Full routine time the step shares are taken from; the default when Settings leaves the exercise out. */
-function fullSeconds(exercise: Exercise, settings: Settings): number {
-  return durationFor(exercise, settings, 'full') || durationFor(exercise, defaultSettings(), 'full');
-}
-
 function detailView(exercise: Exercise, settings: Settings, hasAnimation: boolean): string {
-  const full = fullSeconds(exercise, settings);
+  const full = durationFor(exercise, settings, 'full');
   const plan = planSubSteps(exercise, full, repsFor(exercise, settings, 'full'));
   const showChips = hasAnimation && plan.length > 0;
   return `
@@ -57,7 +55,7 @@ function detailView(exercise: Exercise, settings: Settings, hasAnimation: boolea
       exercise.kind === 'audio'
         ? `<section class="card lib-track">
             <div class="eyebrow">Track · ${formatClock(full)}</div>
-            <p class="muted">Plays in the Full routine.</p>
+            <p class="muted">${playsIn(isOn(exercise, settings, 'short'), isOn(exercise, settings, 'full'))}</p>
           </section>`
         : ''
     }

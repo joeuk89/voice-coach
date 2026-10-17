@@ -1,14 +1,13 @@
 import { $, closeOnBackdrop, esc, formatClock, formatMinutes, formatPractice, on, redrawKeepingFocus } from '../lib/dom';
 import { initAudio } from '../lib/audio';
-import { exercises } from '../exercises';
 import { currentStreak, lastEntry, loadLog, localDay, parseDay, todayEntry } from '../state/log';
 import { markOnboarded, needsOnboarding } from '../state/onboarding';
 import { startSession } from '../state/session';
-import { durationFor, loadSettings, planRoutine, saveSettings, totalSeconds } from '../state/settings';
+import { loadSettings, planRoutine, saveSettings, totalSeconds } from '../state/settings';
 import { bindRoutineToggle, routineToggle } from '../lib/routine-toggle';
 import { dayStrip } from '../lib/day-strip';
 import { icons } from '../lib/icons';
-import type { Feeling, LogEntry, Settings } from '../types';
+import type { Feeling, LogEntry } from '../types';
 
 const SHORT_DATE: Intl.DateTimeFormatOptions = { weekday: 'short', day: 'numeric', month: 'short' };
 const FEELING_NAMES: Record<Feeling, string> = { strong: 'strong', ok: 'OK', strained: 'strained' };
@@ -36,13 +35,6 @@ function exerciseCount(n: number): string {
 function streakLine(streak: number, hasLog: boolean): string {
   if (!hasLog) return 'Your first day starts here';
   return streak ? `<strong>${streak}</strong> day streak` : 'Start a new streak today';
-}
-
-function emptyRoutineHint(settings: Settings): string {
-  const canTurnOn = exercises.some((e) => settings.disabled.includes(e.id) && durationFor(e, settings) > 0);
-  return canTurnOn
-    ? 'All exercises are off. Turn some on in Settings.'
-    : 'Every exercise is at 0:00 in this routine. Give some time in Settings.';
 }
 
 function doneTodayCard(entry: LogEntry, log: LogEntry[]): string {
@@ -94,7 +86,7 @@ export function renderHome(root: HTMLElement): () => void {
             ? `<ol class="routine-list">
                 ${steps.map((s) => `<li><span>${esc(s.exercise.name)}</span><span class="muted mono">${formatClock(s.seconds)}</span></li>`).join('')}
               </ol>`
-            : `<p class="muted routine-empty">${emptyRoutineHint(settings)}</p>`
+            : `<p class="muted routine-empty">Every exercise is off in this routine. Turn some on in Settings.</p>`
         }
       </section>
 
