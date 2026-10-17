@@ -99,7 +99,8 @@ export interface Phase {
 export interface AnimationDef {
   id: AnimationId;
   cycleSec: number;
-  svg: string;
+  /** Inline SVG, or a function that builds it from an input such as a passage's demo line. */
+  svg: string | ((input?: string) => string);
   /** A tighter crop for the guided screen when a panel shares it, so the card shrinks without shrinking the labels. */
   compactViewBox?: string;
   phases: Phase[];

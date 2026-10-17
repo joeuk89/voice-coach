@@ -56,13 +56,13 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
 - `animation` names an entry in `src/animations/index.ts`, or `null` for no animation.
 - `kind: 'audio'` with an `audioSrc` plays a bundled track from `public/audio/` instead of a countdown.
 
-Read-aloud passages live in `src/paragraphs.ts`; wrap a word in `*asterisks*` to show it bold.
+Read-aloud passages live in `src/paragraphs.ts`, each a `text` and a `demo` line. Wrap a word in `*asterisks*` to show it bold where the pitch should rise, about one per clause and 8 to 12 per passage. The `demo` is the passage's opening clause, 4 to 8 words with 2 or 3 of them bold and marked as in the passage; the read-aloud card draws it with a pitch peak over each bold word. A test checks these counts and that the demo line fits the card.
 
 Settings (routine, enabled exercises, time and rep count overrides), the completion log, the sustain log and whether the first-run note was seen are stored in `localStorage` under `vt.*` keys.
 
 ## Add an animation
 
-Create `src/animations/<id>.ts` exporting an `AnimationDef` (loop length, inline SVG, and caption phases as fractions of the loop) with a matching `<id>.css` scoped under `.anim-<id>`, then register it in `src/animations/index.ts`. Shared pieces (pitch strip, air flow, sound rings, lips) live in `parts.ts` and `shared.css`. Colour rules: amber is air, blue is voice and pitch, rose is lips. Phase switches are hard cuts on the window edges; the player slows windows shorter than 4 s and holds the last frame for half a second. An optional `compactViewBox` crops the card on the guided screen when a panel sits under it.
+Create `src/animations/<id>.ts` exporting an `AnimationDef` (loop length, inline SVG, and caption phases as fractions of the loop) with a matching `<id>.css` scoped under `.anim-<id>`, then register it in `src/animations/index.ts`. `svg` can also be a function that builds the SVG from an input string; `mountAnimation` passes it the `input` option, and the function picks a default when there is none. Read-aloud uses this: the guided screen passes the current passage's demo line and remounts the card on "New passage". Shared pieces (pitch strip, air flow, sound rings, lips) live in `parts.ts` and `shared.css`. Colour rules: amber is air, blue is voice and pitch, rose is lips. Phase switches are hard cuts on the window edges; the player slows windows shorter than 4 s and holds the last frame for half a second. An optional `compactViewBox` crops the card on the guided screen when a panel sits under it.
 
 ## Decisions
 

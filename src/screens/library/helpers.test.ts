@@ -35,7 +35,8 @@ describe('routineDurations', () => {
 describe('shareLabel', () => {
   it('labels timed, rep and untimed sub-steps', () => {
     expect(planSubSteps(byId('low-breathing'), 96, 8).map(shareLabel)).toEqual(['untimed', '× 8']);
-    expect(planSubSteps(byId('read-aloud'), 120).map(shareLabel)).toEqual(['1:00', '1:00', 'untimed']);
+    expect(planSubSteps(byId('straw'), 180).map(shareLabel)).toEqual(['untimed', '0:35', '1:15', '0:35', '0:35']);
+    expect(planSubSteps(byId('read-aloud'), 120).map(shareLabel)).toEqual(['untimed', 'untimed']);
     expect(planSubSteps(byId('vfe'), 240).map(shareLabel)).toEqual(['× 2', '× 2', '× 2', '× 10']);
   });
 });

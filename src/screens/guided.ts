@@ -116,9 +116,16 @@ export function renderGuided(root: HTMLElement): () => void {
     `;
 
     const demo = $(root, '#demo');
-    if (def) player = mountAnimation(demo, def, { caption: false });
     demo.classList.toggle('compact', Boolean(exercise.panel));
-    if (exercise.panel && def?.compactViewBox) demo.querySelector('svg')?.setAttribute('viewBox', def.compactViewBox);
+    const showDemo = (input?: string) => {
+      if (!def) return;
+      player?.stop();
+      player = mountAnimation(demo, def, { caption: false, input });
+      if (exercise.panel && def.compactViewBox) demo.querySelector('svg')?.setAttribute('viewBox', def.compactViewBox);
+      player.setWindow(plan[session.subIndex]?.subStep.window);
+    };
+    // The reading panel picks the passage, and the card draws that passage's demo line.
+    if (exercise.panel !== 'reading') showDemo();
     if (exercise.panel === 'sustain') {
       sustain = mountSustainPanel($(root, '#panel'), {
         onRecord: () => stepRow?.hold?.(1),
@@ -127,7 +134,7 @@ export function renderGuided(root: HTMLElement): () => void {
       });
       stopPanel = sustain.stop;
     }
-    if (exercise.panel === 'reading') stopPanel = mountReadingPanel($(root, '#panel'));
+    if (exercise.panel === 'reading') stopPanel = mountReadingPanel($(root, '#panel'), (passage) => showDemo(passage.demo));
     if (isAudio && exercise.audioSrc) {
       demo.classList.add('player-card');
       audioStep = mountAudioStep(demo, exercise.audioSrc, step.seconds, hooks);

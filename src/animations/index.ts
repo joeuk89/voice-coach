@@ -47,10 +47,15 @@ interface Part {
  * clocks each frame; inner loops keep their own rhythm. In a window the progress bar shows how far
  * through the window the loop is, and `.anim-windowed` lets a card hide whole-loop-only parts.
  */
-export function mountAnimation(container: HTMLElement, def: AnimationDef, { caption = true } = {}): AnimationPlayer {
+export function mountAnimation(
+  container: HTMLElement,
+  def: AnimationDef,
+  { caption = true, input }: { caption?: boolean; input?: string } = {},
+): AnimationPlayer {
+  const svg = typeof def.svg === 'function' ? def.svg(input) : def.svg;
   container.style.setProperty('--cycle', `${def.cycleSec}s`);
   container.innerHTML = `
-    <div class="anim anim-${def.id}">${def.svg}</div>
+    <div class="anim anim-${def.id}">${svg}</div>
     ${caption ? '<div class="anim-caption"></div>' : ''}
     <div class="anim-progress"><i></i></div>`;
 

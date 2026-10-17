@@ -167,9 +167,8 @@ export const exercises: Exercise[] = [
     name: 'Pitch-variety read-aloud',
     purpose: 'Breaks the monotone habit by over-practising movement, then dialling it back.',
     subSteps: [
-      { text: 'Read it once completely over the top. Exaggerate every rise and fall.', window: [0, 0.5] },
-      { text: 'Read it again at 70 percent. Keep the movement, lose the parody.', window: [0.5, 1] },
-      { text: 'Notice which words carry the pitch moves. Those are the ones that land.', weight: 0 },
+      { text: 'Read it once completely over the top. Exaggerate every rise and fall.', weight: 0, window: [0, 0.5] },
+      { text: 'Read it again at 70 percent. Keep the movement, lose the parody.', weight: 0, window: [0.5, 1] },
     ],
     control: 'untimed',
     duration: { short: 0, full: 120 },
