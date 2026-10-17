@@ -14,6 +14,11 @@ export interface Link {
   url: string;
 }
 
+export interface Pace {
+  inSec: number;
+  outSec: number;
+}
+
 export interface SubStep {
   text: string;
   /** Share of the exercise duration relative to the other sub-steps. 0 means untimed. Default 1, or 0 with a fixed `reps`. */
@@ -22,6 +27,8 @@ export interface SubStep {
   reps?: number;
   /** Seconds one rep takes; the rep count is derived from the time share. */
   repSec?: number;
+  /** Breathe in and out for these seconds while the app paces each breath. Takes no time share unless `weight` is set. */
+  pace?: Pace;
   /** Reps sung on each pitch before moving up; the rep counter then names the current pitch. */
   repsPerPitch?: number;
   /** Fraction of the animation loop to play, [from, to). Default whole loop. */
