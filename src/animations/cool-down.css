@@ -1,0 +1,69 @@
+.anim-cool-down .cd-straw { fill: var(--surface-2); stroke: var(--line); stroke-width: 2; }
+.anim-cool-down .cd-say { font-size: 14px; }
+.anim-cool-down .cd-lane { opacity: 0.55; }
+/* Gentle air: fainter and half the speed of the straw card's flow. */
+.anim-cool-down .cd-air { opacity: 0.6; }
+.anim-cool-down .cd-air .air { animation-duration: 1s; }
+.anim-cool-down .cd-speak-rings { opacity: 0.8; }
+
+.anim-cool-down .cd-p1 { animation: cd-p1 var(--cycle) step-end infinite; }
+.anim-cool-down .cd-p2 { animation: cd-p2 var(--cycle) step-end infinite; }
+.anim-cool-down .cd-lip-upper { animation: cd-rest-upper var(--cycle) step-end infinite; }
+.anim-cool-down .cd-lip-lower { animation: cd-rest-lower var(--cycle) step-end infinite; }
+.anim-cool-down .cd-fade { animation: cd-fade var(--cycle) step-end infinite; }
+
+/* Each slide is drawn softer than the last: fainter and thinner. */
+.anim-cool-down .cd-soft-2 { opacity: 0.72; }
+.anim-cool-down .cd-soft-2 .pitch-line { stroke-width: 2.5; }
+.anim-cool-down .cd-soft-3 { opacity: 0.5; }
+.anim-cool-down .cd-soft-3 .pitch-line { stroke-width: 2; }
+
+.anim-cool-down .cd-t { animation: var(--cycle) step-end infinite; }
+.anim-cool-down .cd-t-1 { animation-name: cd-show-1; }
+.anim-cool-down .cd-t-2 { animation-name: cd-show-2; }
+.anim-cool-down .cd-t-3 { animation-name: cd-show-3; }
+.anim-cool-down .cd-t-everyday { animation-name: cd-p2; }
+.anim-cool-down .cd-t .pitch-line, .anim-cool-down .cd-t .pitch-dot { animation: var(--cycle) linear infinite; }
+.anim-cool-down .cd-t-1 .pitch-line { animation-name: cd-trace-1; }
+.anim-cool-down .cd-t-2 .pitch-line { animation-name: cd-trace-2; }
+.anim-cool-down .cd-t-3 .pitch-line { animation-name: cd-trace-3; }
+.anim-cool-down .cd-t-everyday .pitch-line { animation-name: cd-trace-everyday; }
+.anim-cool-down .cd-t-1 .pitch-dot { animation-name: cd-dot-1; }
+.anim-cool-down .cd-t-2 .pitch-dot { animation-name: cd-dot-2; }
+.anim-cool-down .cd-t-3 .pitch-dot { animation-name: cd-dot-3; }
+.anim-cool-down .cd-t-everyday .pitch-dot { animation-name: cd-dot-everyday; }
+
+/* Phase boundaries match the sub-step windows in exercises.ts: slides to 75%, then the everyday sentence.
+   The three slides take a quarter of the loop each and stay on screen until the cut, so each one reads
+   against the last; the sound rings and “mmm” step down with them. Each trace finishes 96% of the way
+   through its share and holds; a slide's dot leaves as the next slide starts. */
+@keyframes cd-p1 { 0% { opacity: 1; } 75%, 100% { opacity: 0; } }
+@keyframes cd-p2 { 0% { opacity: 0; } 75%, 100% { opacity: 1; } }
+@keyframes cd-rest-upper { 0% { transform: translateY(0); } 75%, 100% { transform: translateY(4px); } }
+@keyframes cd-rest-lower { 0% { transform: translateY(0); } 75%, 100% { transform: translateY(-4px); } }
+@keyframes cd-fade { 0% { opacity: 1; } 25% { opacity: 0.72; } 50% { opacity: 0.5; } 75%, 100% { opacity: 0; } }
+
+@keyframes cd-show-1 { 0% { opacity: 1; } 75%, 100% { opacity: 0; } }
+@keyframes cd-show-2 { 0% { opacity: 0; } 25% { opacity: 1; } 75%, 100% { opacity: 0; } }
+@keyframes cd-show-3 { 0% { opacity: 0; } 50% { opacity: 1; } 75%, 100% { opacity: 0; } }
+@keyframes cd-trace-1 { 0% { stroke-dashoffset: 1; } 24%, 100% { stroke-dashoffset: 0; } }
+@keyframes cd-trace-2 { 0%, 25% { stroke-dashoffset: 1; } 49%, 100% { stroke-dashoffset: 0; } }
+@keyframes cd-trace-3 { 0%, 50% { stroke-dashoffset: 1; } 74%, 100% { stroke-dashoffset: 0; } }
+@keyframes cd-trace-everyday { 0%, 75% { stroke-dashoffset: 1; } 99%, 100% { stroke-dashoffset: 0; } }
+@keyframes cd-dot-1 {
+  0% { offset-distance: 0%; opacity: 1; }
+  24% { offset-distance: 100%; opacity: 1; animation-timing-function: step-end; }
+  25%, 100% { offset-distance: 100%; opacity: 0; }
+}
+@keyframes cd-dot-2 {
+  0%, 25% { offset-distance: 0%; opacity: 1; }
+  49% { offset-distance: 100%; opacity: 1; animation-timing-function: step-end; }
+  50%, 100% { offset-distance: 100%; opacity: 0; }
+}
+@keyframes cd-dot-3 { 0%, 50% { offset-distance: 0%; } 74%, 100% { offset-distance: 100%; } }
+@keyframes cd-dot-everyday { 0%, 75% { offset-distance: 0%; } 99%, 100% { offset-distance: 100%; } }
+
+@media (prefers-reduced-motion: reduce) {
+  /* The air dashes and rings stand still (shared.css); the traces still draw because they carry the pitch. */
+  .anim-cool-down .cd-air .air { animation: none; }
+}

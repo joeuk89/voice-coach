@@ -35,3 +35,19 @@ export const paragraphs: Passage[] = [
     text: 'My *grandfather* had a *rule* about tools. You could borrow *anything*, as long as you brought it back *cleaner* than you found it. For *years* I thought this was about the *tools*. It *wasn’t*. It was about *you*, and whether he could *trust* you with the *bigger* things later.',
   },
 ];
+
+/** Whole local days since 1 January 1970, so the passage changes at local midnight. */
+function dayNumber(d: Date): number {
+  return Math.floor((d.getTime() - d.getTimezoneOffset() * 60_000) / 86_400_000);
+}
+
+/** Where today's passage sits in `paragraphs`: one step on each local day, round and round. */
+export function todaysPassageIndex(date = new Date()): number {
+  return dayNumber(date) % paragraphs.length;
+}
+
+/** The passage the read-aloud opens on today. */
+export function todaysPassage(date = new Date()): Passage {
+  // The index is always inside the list, which is never empty.
+  return paragraphs[todaysPassageIndex(date)]!;
+}
