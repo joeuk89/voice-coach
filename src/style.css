@@ -135,7 +135,7 @@ header > .back-link { align-self: flex-start; }
 .btn-start { min-height: 72px; font-size: var(--fs-lg); }
 .btn-square { width: var(--control); padding: 0; }
 
-.btn, .row-btn, .seg, .win-chip, .ex-picker, .back-link, .icon-link {
+.btn, .row-btn, .seg, .win-chip, .day-chip, .ex-picker, .back-link, .icon-link {
   transition:
     transform var(--t-fast) var(--ease),
     filter var(--t-fast) var(--ease),
@@ -144,7 +144,7 @@ header > .back-link { align-self: flex-start; }
     color var(--t) var(--ease),
     box-shadow var(--t) var(--ease);
 }
-:is(.btn, .row-btn, .seg, .win-chip, .ex-picker, .back-link, .icon-link):active:not(:disabled) {
+:is(.btn, .row-btn, .seg, .win-chip, .day-chip, .ex-picker, .back-link, .icon-link):active:not(:disabled) {
   transform: scale(var(--press-scale));
   filter: var(--press-light);
 }
@@ -387,7 +387,7 @@ header > .back-link { align-self: flex-start; }
 
 @media (prefers-reduced-motion: reduce) {
   #app.entering { animation-name: fade-in; }
-  :is(.btn, .row-btn, .seg, .win-chip, .ex-picker, .back-link, .icon-link):active:not(:disabled) {
+  :is(.btn, .row-btn, .seg, .win-chip, .day-chip, .ex-picker, .back-link, .icon-link):active:not(:disabled) {
     transform: none;
     filter: none;
     opacity: var(--press-fade);
@@ -450,6 +450,14 @@ header > .back-link { align-self: flex-start; }
 .ex-row.off .ex-name { color: var(--muted); font-weight: 400; }
 .ex-detail { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: var(--tap); font-size: var(--fs-sm); }
 .ex-time .mono { font-size: var(--fs-md); }
+/* Seven fit at 360 px: 360 − 2 × 16 gutter − 2 × 18 card padding = 292, so about 38 px each with 4 px gaps, 44 px at most. */
+.day-chips { display: grid; grid-template-columns: repeat(7, minmax(0, var(--tap))); gap: 4px; margin-bottom: 2px; }
+.day-chip {
+  appearance: none; border: 0; border-radius: 999px; padding: 0; min-width: 0; min-height: var(--tap);
+  background: var(--surface-2); color: var(--muted); font: inherit; font-size: var(--fs-sm); cursor: pointer;
+}
+.day-chip[aria-pressed='true'] { background: var(--surface-3); color: var(--fg); font-weight: 600; box-shadow: var(--selected-ring); }
+.day-chip:disabled { cursor: default; }
 .switch {
   appearance: none; border: 0; background: transparent; padding: 0; cursor: pointer;
   width: 56px; height: var(--tap); flex-shrink: 0; border-radius: 999px;
