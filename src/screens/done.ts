@@ -1,6 +1,8 @@
 import { esc, formatPractice, on } from '../lib/dom';
 import { dayStrip } from '../lib/day-strip';
-import { appendLog, loadLog, localDay, setFeeling, streakWithToday } from '../state/log';
+import { renderPassage } from '../lib/passage';
+import { todaysPassage } from '../paragraphs';
+import { appendLog, isWeeklyCheck, loadLog, localDay, setFeeling, streakWithToday } from '../state/log';
 import { endSession, getSession } from '../state/session';
 import type { Feeling } from '../types';
 
@@ -31,6 +33,8 @@ export function renderDone(root: HTMLElement): () => void {
     session.logged = { completedAt, saved };
   }
   const { completedAt, saved } = session.logged;
+  // Counted after today's entry went in, so the 7th, 14th, ... saved completion asks for a recording.
+  const weeklyCheck = saved && isWeeklyCheck(loadLog());
 
   root.innerHTML = `
     <header class="done-head">
@@ -40,6 +44,16 @@ export function renderDone(root: HTMLElement): () => void {
     </header>
 
     <section class="card done-week">${dayStrip(loadLog())}</section>
+
+    ${
+      weeklyCheck
+        ? `<section class="card weekly-check" aria-labelledby="weekly-title">
+            <h2 id="weekly-title">Weekly check</h2>
+            <p class="muted">Record today’s passage in your phone’s voice memo app, then play last week’s. Slow change is easy to doubt without a recording.</p>
+            <p class="passage">${renderPassage(todaysPassage().text)}</p>
+          </section>`
+        : ''
+    }
 
     <section class="card">
       ${

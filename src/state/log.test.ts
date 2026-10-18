@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { stubLocalStorage } from '../test/local-storage';
 import type { LogEntry } from '../types';
-import { appendLog, currentStreak, loadLog, localDay, parseDay, setFeeling, streakWithToday, todayEntry } from './log';
+import { appendLog, currentStreak, isWeeklyCheck, loadLog, localDay, parseDay, setFeeling, streakWithToday, todayEntry } from './log';
 
 let storage: Storage;
 
@@ -179,5 +179,13 @@ describe('setFeeling', () => {
     saveLog([entry('2026-10-17')]);
     expect(setFeeling('2026-10-16T08:00:00.000Z', 'ok')).toBe(false);
     expect(loadLog()[0]!.feeling).toBeUndefined();
+  });
+});
+
+describe('isWeeklyCheck', () => {
+  const entries = (count: number) => Array.from({ length: count }, (_, i) => entry(localDay(new Date(2026, 9, 1 + i))));
+
+  it('is true on every 7th saved completion', () => {
+    expect([0, 6, 7, 13, 14].map((n) => isWeeklyCheck(entries(n)))).toEqual([false, false, true, false, true]);
   });
 });

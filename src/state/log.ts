@@ -60,6 +60,14 @@ export function setFeeling(completedAt: string, feeling: Feeling): boolean {
   return write(KEY, entries);
 }
 
+/** Saved completions between weekly recording checks. */
+const WEEKLY_CHECK_EVERY = 7;
+
+/** True on every 7th saved completion: the Done screen then asks for a recording of today's passage. */
+export function isWeeklyCheck(entries: readonly LogEntry[]): boolean {
+  return entries.length > 0 && entries.length % WEEKLY_CHECK_EVERY === 0;
+}
+
 export function lastEntry(): LogEntry | undefined {
   const entries = loadLog();
   return entries[entries.length - 1];

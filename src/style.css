@@ -428,6 +428,8 @@ header > .back-link { align-self: flex-start; }
 .done-head { align-items: center; text-align: center; gap: 8px; padding-top: 12px; }
 .done-week .day-strip { margin: 0; }
 #app[data-route='done'] #home { margin-top: auto; }
+.weekly-check .muted { font-size: var(--fs-sm); }
+.weekly-check .passage { font-size: var(--fs-md); margin: 10px 0 0; }
 .check-ring { display: block; margin-bottom: 8px; }
 .check-ring circle, .check-ring path { stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
 .check-ring-track { stroke: color-mix(in srgb, var(--good) 16%, transparent); }

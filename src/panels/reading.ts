@@ -1,18 +1,10 @@
-import { $, esc } from '../lib/dom';
-import { paragraphs, type Passage } from '../paragraphs';
-
-function dayNumber(d = new Date()): number {
-  return Math.floor((d.getTime() - d.getTimezoneOffset() * 60_000) / 86_400_000);
-}
-
-/** *marked* words become bold so the eye lands on the pitch moves. */
-function renderPassage(text: string): string {
-  return esc(text).replace(/\*([^*]+)\*/g, '<strong>$1</strong>');
-}
+import { $ } from '../lib/dom';
+import { renderPassage } from '../lib/passage';
+import { paragraphs, todaysPassageIndex, type Passage } from '../paragraphs';
 
 /** Today's passage, with a button to step to the next one. `onPassage` hears the first one and every change. */
 export function mountReadingPanel(container: HTMLElement, onPassage?: (passage: Passage) => void): () => void {
-  let index = dayNumber() % paragraphs.length;
+  let index = todaysPassageIndex();
 
   function draw() {
     const passage = paragraphs[index];
