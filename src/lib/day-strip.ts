@@ -1,6 +1,7 @@
 import { localDay, parseDay } from '../state/log';
 import type { Feeling, LogEntry } from '../types';
 import { esc } from './dom';
+import { WEEKDAY_INITIALS } from './weekdays';
 
 /** A feeling, `done` for an entry without one, or `empty` for no entry. */
 export type DayState = Feeling | 'done' | 'empty';
@@ -12,7 +13,6 @@ export interface DayCell {
   state: DayState;
 }
 
-const INITIALS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const STATE_NAMES: Record<DayState, string> = {
   strong: 'strong',
   ok: 'OK',
@@ -34,7 +34,7 @@ export function dayCells(entries: readonly LogEntry[], now = new Date()): DayCel
   return Array.from({ length: 7 }, (_, i) => {
     const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6 + i);
     const date = localDay(day);
-    return { date, initial: INITIALS[day.getDay()]!, today: i === 6, state: dayState(entries, date) };
+    return { date, initial: WEEKDAY_INITIALS[day.getDay()]!, today: i === 6, state: dayState(entries, date) };
   });
 }
 
