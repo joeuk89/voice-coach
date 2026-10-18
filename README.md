@@ -29,7 +29,7 @@ npm run preview
 
 ## Library
 
-Home links to the Library (`#/library`): every exercise with its animation, steps, tips and sources, without starting a routine. Tap a numbered chip to loop that step.
+Home links to the Library (`#/library`): every exercise with its animation, steps, tips and sources, without starting a routine. An exercise that does not run every day in a routine shows its days there. Tap a numbered chip to loop that step.
 
 ## Animation gallery
 
@@ -47,7 +47,7 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
   - Timed: `duration` is seconds per routine (`short` and `full`), 30 or more. Settings sets the time.
   - `'reps'`: `reps` is the rep count per routine, `repSec` the seconds one rep takes, and `repNoun` what one rep is called ("breath"). It has no `duration`; its time is `reps × repSec`. Settings sets the count. Counted sub-steps without a fixed `reps` use it.
   - `'untimed'`: `duration` is only the time it usually takes, shown as "about N min". Settings can only switch it on or off.
-- `defaultOff` lists the routines the exercise starts switched off in (`['short']` for the vocal function exercises and the read-aloud). Give it a real time or count for those routines too, for when Settings switches it on.
+- `days` sets the days of the week the exercise runs on in a routine, numbered as `Date.getDay()` does: 0 is Sunday, 6 is Saturday. `{ short: [1, 3, 5] }` runs it on Monday, Wednesday and Friday in Short. A routine left out runs it every day. Settings can change the days later.
 - `subSteps` are the ordered instructions shown on screen, each with a `text`. `tips` and `links` sit behind "Tips and sources".
   - `weight` sets the sub-step's share of the duration relative to the others. It defaults to `1`; `0` means no timer.
   - `reps` fixes a rep count, for protocols that set one. A sub-step with a fixed `reps` and no `weight` takes no time share, so the timed sub-steps split the whole duration. Set a `weight` too if it should take a share. `repSec` is the length of one rep instead, and the count comes from the sub-step's time share. `reps` wins if both are set.
@@ -61,9 +61,9 @@ Read-aloud passages live in `src/paragraphs.ts`, each a `text` and a `demo` line
 
 ## Settings
 
-Settings shows one row per exercise for the routine picked at the top. Each row's switch turns the exercise on or off in that routine only, so an exercise can run in Short, Full, both or neither. No switch is ever disabled, and the switch is the only way to leave an exercise out. A timed row steps its time by 30 s, never below 0:30. A counted row steps its rep count by 1, never below 1, and shows about how long that takes. An untimed row shows only about how long it takes. A row that is off shows only its name and switch. By default Short leaves out the vocal function exercises and the read-aloud, and Full runs everything. Reset to defaults restores those routines and clears every time and count override.
+Settings shows one row per exercise for the routine picked at the top. Each row's switch turns the exercise on or off in that routine only, so an exercise can run in Short, Full, both or neither. No switch is ever disabled, and the switch is the only way to leave an exercise out. A timed row steps its time by 30 s, never below 0:30. A counted row steps its rep count by 1, never below 1, and shows about how long that takes. An untimed row shows only about how long it takes. Under the time or count, seven day toggles, Monday first, set the days the exercise runs on in that routine. The last day left on cannot be turned off: use the switch to leave the exercise out. A row that is off shows only its name and switch. Nothing starts switched off. By default Short runs the vocal function exercises and the cool-down on Monday, Wednesday and Friday, and the read-aloud on Tuesday, Thursday and Saturday; Full runs everything every day. Home plans today's routine from these days and names the exercises that are on but not scheduled today. Reset to defaults switches every exercise back on, restores the default days and clears every time and count override.
 
-Settings (routine, the exercises switched off in each routine, time and rep count overrides), the completion log, the sustain log and whether the first-run note was seen are stored in `localStorage` under `vt.*` keys.
+Settings (routine, the exercises switched off in each routine, time and rep count overrides, and the days of each exercise that does not run every day), the completion log, the sustain log and whether the first-run note was seen are stored in `localStorage` under `vt.*` keys.
 
 ## Add an animation
 

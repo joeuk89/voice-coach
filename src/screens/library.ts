@@ -4,14 +4,19 @@ import { esc, formatClock, on } from '../lib/dom';
 import { exampleChips } from '../lib/example-chips';
 import { icons } from '../lib/icons';
 import { planSubSteps } from '../state/plan';
-import { durationFor, isOn, loadSettings, repsFor } from '../state/settings';
+import { daysFor, durationFor, isOn, loadSettings, repsFor } from '../state/settings';
 import type { Exercise, RoutineId, Settings } from '../types';
-import { libraryIdFromHash, routineDurations, shareLabel } from './library/helpers';
+import { libraryIdFromHash, routineDurations, scheduleSentence, shareLabel, type RoutineSlot, type RoutineSlots } from './library/helpers';
 
 const chevronRight = `<span class="lib-chevron">${icons.chevronLeft}</span>`;
 
-function secondsIfOn(exercise: Exercise, settings: Settings, routine: RoutineId): number | undefined {
-  return isOn(exercise, settings, routine) ? durationFor(exercise, settings, routine) : undefined;
+function slotIfOn(exercise: Exercise, settings: Settings, routine: RoutineId): RoutineSlot | undefined {
+  if (!isOn(exercise, settings, routine)) return undefined;
+  return { seconds: durationFor(exercise, settings, routine), days: daysFor(exercise, settings, routine) };
+}
+
+function slots(exercise: Exercise, settings: Settings): RoutineSlots {
+  return { short: slotIfOn(exercise, settings, 'short'), full: slotIfOn(exercise, settings, 'full') };
 }
 
 function listView(settings: Settings): string {
@@ -25,7 +30,7 @@ function listView(settings: Settings): string {
     <ol class="card lib-list">
       ${exercises
         .map((e) => {
-          const durations = routineDurations(secondsIfOn(e, settings, 'short'), secondsIfOn(e, settings, 'full'));
+          const durations = routineDurations(slots(e, settings));
           return `<li><a class="lib-row" href="#/library/${esc(e.id)}">
             <span class="lib-row-text">
               <span class="lib-row-name">${esc(e.name)}</span>
@@ -43,11 +48,13 @@ function detailView(exercise: Exercise, settings: Settings, hasAnimation: boolea
   const full = durationFor(exercise, settings, 'full');
   const plan = planSubSteps(exercise, full, repsFor(exercise, settings, 'full'));
   const showChips = hasAnimation && plan.length > 0;
+  const schedule = scheduleSentence(slots(exercise, settings));
   return `
     <header>
       <a class="back-link" href="#/library">${icons.chevronLeft}Library</a>
       <h1 tabindex="-1">${esc(exercise.name)}</h1>
       <p class="muted">${esc(exercise.purpose)}</p>
+      ${schedule ? `<p class="muted lib-days">${esc(schedule)}</p>` : ''}
     </header>
 
     ${hasAnimation ? '<section class="card demo" id="demo"></section>' : ''}

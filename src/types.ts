@@ -53,8 +53,6 @@ interface ExerciseBase {
   /** Extra interactive panel under the sub-steps. */
   panel?: 'sustain' | 'reading';
   links: Link[];
-  /** Routines the exercise starts switched off in, until Settings turns it on. */
-  defaultOff?: RoutineId[];
   /** Days of the week the exercise runs on in a routine, until Settings changes them. A routine left out runs it every day. */
   days?: Partial<Record<RoutineId, Weekday[]>>;
 }
@@ -103,6 +101,8 @@ export interface Settings {
   disabled: Record<RoutineId, string[]>;
   durations: Record<RoutineId, Record<string, number>>;
   reps: Record<RoutineId, Record<string, number>>;
+  /** Days an exercise runs on in each routine, sorted from Sunday. An exercise with no entry runs every day. */
+  days: Record<RoutineId, Record<string, Weekday[]>>;
 }
 
 export interface Phase {

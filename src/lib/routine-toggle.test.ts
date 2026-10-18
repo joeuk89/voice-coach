@@ -31,14 +31,19 @@ describe('routineToggle', () => {
     expect(html).not.toContain('role="radio"');
   });
 
-  it('shows each routine\'s minutes from its own switches', () => {
+  it('shows each routine\'s minutes from its own switches and the day\'s schedule', () => {
     const settings = defaultSettings();
     const minutes = (html: string, r: string) => html.match(new RegExp(`data-routine="${r}"[^>]*>\\s*\\w+ <small>([^<]*)`))![1];
-    const before = routineToggle(settings, 'Routine');
-    settings.disabled.short = settings.disabled.short.filter((id) => id !== 'vfe');
-    const after = routineToggle(settings, 'Routine');
-    expect(minutes(before, 'short')).toBe('8 min');
-    expect(minutes(after, 'short')).toBe('12 min');
+    const sunday = new Date(2026, 9, 18);
+    const monday = new Date(2026, 9, 19);
+    const tuesday = new Date(2026, 9, 20);
+    expect(minutes(routineToggle(settings, 'Routine', sunday), 'short')).toBe('8 min');
+    expect(minutes(routineToggle(settings, 'Routine', monday), 'short')).toBe('13 min');
+    expect(minutes(routineToggle(settings, 'Routine', tuesday), 'short')).toBe('11 min');
+    const before = routineToggle(settings, 'Routine', monday);
+    settings.disabled.short = ['vfe'];
+    const after = routineToggle(settings, 'Routine', monday);
+    expect(minutes(after, 'short')).toBe('9 min');
     expect(minutes(after, 'full')).toBe(minutes(before, 'full'));
   });
 });

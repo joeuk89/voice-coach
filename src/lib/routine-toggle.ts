@@ -4,12 +4,12 @@ import type { RoutineId, Settings } from '../types';
 
 const ROUTINES: RoutineId[] = ['short', 'full'];
 
-/** Short / Full toggle buttons; the pressed one is the current routine. */
-export function routineToggle(settings: Settings, label: string): string {
+/** Short / Full toggle buttons; the pressed one is the current routine. Minutes are for the date's plan, today by default. */
+export function routineToggle(settings: Settings, label: string, date = new Date()): string {
   const options = ROUTINES.map((r) => {
     const pressed = settings.routine === r;
     return `<button type="button" class="seg" data-routine="${r}" data-focus="routine-${r}" aria-pressed="${pressed}">
-      ${r === 'short' ? 'Short' : 'Full'} <small>${formatMinutes(totalSeconds(settings, r))}</small></button>`;
+      ${r === 'short' ? 'Short' : 'Full'} <small>${formatMinutes(totalSeconds(settings, r, date))}</small></button>`;
   });
   return `<div class="segmented" role="group" aria-label="${label}">${options.join('')}</div>`;
 }
