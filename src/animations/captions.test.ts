@@ -31,7 +31,7 @@ describe('gallery captions', () => {
   }
 
   it('covers every phase', () => {
-    expect(windowed).toHaveLength(22);
-    expect(unwindowed).toHaveLength(2);
+    expect(windowed).toHaveLength(29);
+    expect(unwindowed).toHaveLength(4);
   });
 });

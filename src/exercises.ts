@@ -23,6 +23,36 @@ export const exercises: Exercise[] = [
     links: [],
   },
   {
+    id: 'articulation',
+    name: 'Jaw, tongue and articulation',
+    purpose: 'Frees the jaw and tongue so the consonants come out crisp instead of mumbled.',
+    subSteps: [
+      {
+        text: 'Massage the jaw muscles with your fingertips and let the jaw hang loose. Teeth apart, lips soft.',
+        window: [0, 0.25],
+      },
+      {
+        text: 'Yawn-sigh: yawn with the mouth wide, then sigh out on a gentle “hah” from high to low.',
+        reps: 3,
+        window: [0.25, 0.5],
+      },
+      {
+        text: 'Tongue trill: a rolled “rrr” on one easy pitch. If it won’t go, fast “la-la-la” or “ttt-ddd” instead.',
+        window: [0.5, 0.75],
+      },
+      {
+        text: 'Tongue twisters, each twice: slow and over-articulated first, then at speaking pace.',
+        weight: 0,
+        window: [0.75, 1],
+        examples: ['Red leather, yellow leather', 'Unique New York', 'Toy boat, toy boat', 'Big black bugs bleed blue-black blood'],
+      },
+    ],
+    tips: ['Crisp consonants come from a loose jaw and a quick tongue, not from effort.'],
+    duration: { short: 60, full: 90 },
+    animation: 'articulation',
+    links: [{ label: 'Vinh Giang: how to become more articulate', url: 'https://vinhgiang.com/blog/how-to-become-more-articulate' }],
+  },
+  {
     id: 'straw',
     name: 'Straw phonation',
     purpose: 'Back-pressure from the straw lets the vocal folds vibrate with the least effort.',
@@ -94,12 +124,10 @@ export const exercises: Exercise[] = [
       },
       { text: 'Nudge gently past the comfortable edges on each pass.', window: [0.5, 1] },
     ],
+    tips: ['Spend the time in the upper-middle of your range. Pushing for the bottom adds pressure, which undoes the straw and trill work.'],
     duration: { short: 60, full: 120 },
     animation: 'sirens',
-    links: [
-      { label: 'Vinh Giang: siren at 0:54', url: 'https://www.youtube.com/watch?v=HT9_VxN8iSE&t=54s' },
-      { label: 'Vinh Giang: how to make your voice sound deeper', url: 'https://vinhgiang.com/blog/how-to-make-your-voice-sound-deeper' },
-    ],
+    links: [{ label: 'Vinh Giang: siren at 0:54', url: 'https://www.youtube.com/watch?v=HT9_VxN8iSE&t=54s' }],
   },
   {
     id: 'hum',
@@ -126,6 +154,39 @@ export const exercises: Exercise[] = [
     ],
   },
   {
+    id: 'dynamics',
+    name: 'Volume and dynamics',
+    purpose: 'Trains loud and soft on breath alone, so the voice can carry without squeezing.',
+    subSteps: [
+      {
+        text: 'Hum or “ah” on an easy mid pitch. Swell from quiet to speaking-loud and back to quiet over about 8 seconds. Breathe, then again.',
+        weight: 2,
+        repSec: 12,
+        window: [0, 0.5],
+      },
+      {
+        text: 'Count 1 to 10 getting steadily louder on breath alone, then 10 to 1 getting quieter. Twice.',
+        weight: 1,
+        reps: 2,
+        window: [0.5, 0.75],
+      },
+      {
+        text: 'Call a short phrase across the room on a fresh low breath, then say it at normal volume with the same open throat.',
+        weight: 1,
+        reps: 3,
+        window: [0.75, 1],
+        examples: ['Over here!', 'Morning!', 'Hello there'],
+      },
+    ],
+    tips: [
+      'Louder comes from more air and more space, never from squeezing the throat.',
+      'If the throat tightens on a swell, the swell was too big. Make the next one smaller.',
+    ],
+    duration: { short: 60, full: 120 },
+    animation: 'dynamics',
+    links: [],
+  },
+  {
     id: 'vfe',
     name: 'Vocal function exercises',
     purpose: 'Four steps from voice therapy. Your longest hold shows progress.',
@@ -147,6 +208,7 @@ export const exercises: Exercise[] = [
     tips: ['Time the sustains. Longer over weeks means a stronger, more efficient voice.'],
     duration: { short: 240, full: 240 },
     defaultOff: ['short'],
+    days: { short: [1, 3, 5] },
     animation: 'vfe',
     panel: 'sustain',
     links: [
@@ -159,17 +221,46 @@ export const exercises: Exercise[] = [
   },
   {
     id: 'read-aloud',
-    name: 'Pitch-variety read-aloud',
-    purpose: 'Breaks the monotone habit by over-practising movement, then dialling it back.',
+    name: 'Pitch, pause and pace read-aloud',
+    purpose: 'Breaks the monotone habit by over-practising movement in pitch, pause and pace, then dialling it back.',
     subSteps: [
-      { text: 'Read it once completely over the top. Exaggerate every rise and fall.', weight: 0, window: [0, 0.5] },
-      { text: 'Read it again at 70 percent. Keep the movement, lose the parody.', weight: 0, window: [0.5, 1] },
+      { text: 'Read it once completely over the top. Exaggerate every rise and fall.', weight: 0, window: [0, 0.25] },
+      { text: 'Read it again at 70 percent. Keep the movement, lose the parody.', weight: 0, window: [0.25, 0.5] },
+      {
+        text: 'Pause pass: a deliberate beat of silence before every bold word. The silence is the emphasis.',
+        weight: 0,
+        window: [0.5, 0.75],
+      },
+      {
+        text: 'Pace pass: one clause slow and weighty, the next quick and light. Exaggerate first, then dial back.',
+        weight: 0,
+        window: [0.75, 1],
+      },
     ],
     control: 'untimed',
-    duration: { short: 120, full: 120 },
+    duration: { short: 180, full: 180 },
     defaultOff: ['short'],
+    days: { short: [2, 4, 6] },
     animation: 'read-aloud',
     panel: 'reading',
-    links: [{ label: 'Vinh Giang: how to become more articulate', url: 'https://vinhgiang.com/blog/how-to-become-more-articulate' }],
+    links: [],
+  },
+  {
+    id: 'cool-down',
+    name: 'Cool-down',
+    purpose: 'Lets the voice settle after the heavy work, so it is not tired later in the day.',
+    subSteps: [
+      {
+        text: 'Straw or loose lips: gentle hums sliding down from the middle of your range, each one softer than the last. Nothing above a sigh.',
+        window: [0, 0.75],
+      },
+      { text: 'Swallow, let the shoulders drop, and say one easy sentence in your everyday voice.', weight: 0, window: [0.75, 1] },
+    ],
+    tips: ['If the voice feels tired, this is the step to stretch, not skip.'],
+    duration: { short: 30, full: 30 },
+    defaultOff: ['short'],
+    days: { short: [1, 3, 5] },
+    animation: 'cool-down',
+    links: [],
   },
 ];

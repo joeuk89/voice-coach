@@ -167,10 +167,10 @@ describe('loadSettings migration from older saves', () => {
 });
 
 describe('defaultSettings', () => {
-  it('turns the track, the vocal function exercises and the read-aloud off in Short only', () => {
+  it('turns the vocal function exercises, the read-aloud and the cool-down off in Short only', () => {
     const settings = defaultSettings();
     const on = (routine: 'short' | 'full') => exercises.filter((e) => isOn(e, settings, routine)).map((e) => e.id);
-    expect(on('short')).toEqual(['low-breathing', 'straw', 'lip-trills', 'sirens', 'hum']);
+    expect(on('short')).toEqual(['low-breathing', 'articulation', 'straw', 'lip-trills', 'sirens', 'hum', 'dynamics']);
     expect(on('full')).toEqual(exercises.map((e) => e.id));
   });
 });
@@ -220,7 +220,7 @@ describe('durationFor', () => {
     settings.durations.full['low-breathing'] = 300;
     settings.durations.full['read-aloud'] = 300;
     expect(durationFor(byId('low-breathing'), settings, 'full')).toBe(96);
-    expect(durationFor(byId('read-aloud'), settings, 'full')).toBe(120);
+    expect(durationFor(byId('read-aloud'), settings, 'full')).toBe(180);
   });
 });
 
@@ -275,7 +275,7 @@ describe('totalSeconds', () => {
   it('adds the nominal time of rep and untimed exercises', () => {
     const settings = defaultSettings();
     settings.disabled.full = exercises.map((e) => e.id).filter((id) => id !== 'low-breathing' && id !== 'read-aloud');
-    expect(totalSeconds(settings, 'full')).toBe(96 + 120);
+    expect(totalSeconds(settings, 'full')).toBe(96 + 180);
   });
 });
 

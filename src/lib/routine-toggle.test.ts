@@ -37,8 +37,8 @@ describe('routineToggle', () => {
     const before = routineToggle(settings, 'Routine');
     settings.disabled.short = settings.disabled.short.filter((id) => id !== 'vfe');
     const after = routineToggle(settings, 'Routine');
-    expect(minutes(before, 'short')).toBe('6 min');
-    expect(minutes(after, 'short')).toBe('10 min');
+    expect(minutes(before, 'short')).toBe('8 min');
+    expect(minutes(after, 'short')).toBe('12 min');
     expect(minutes(after, 'full')).toBe(minutes(before, 'full'));
   });
 });

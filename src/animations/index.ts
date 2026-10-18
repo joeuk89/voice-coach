@@ -1,4 +1,7 @@
 import type { AnimationDef, AnimationId } from '../types';
+import { articulation } from './articulation';
+import { coolDown } from './cool-down';
+import { dynamics } from './dynamics';
 import { hum } from './hum';
 import { lipTrills } from './lip-trills';
 import { lowBreathing } from './low-breathing';
@@ -17,6 +20,9 @@ const registry: Record<AnimationId, AnimationDef> = {
   hum,
   vfe,
   'read-aloud': readAloud,
+  articulation,
+  dynamics,
+  'cool-down': coolDown,
 };
 
 export function animationFor(id: AnimationId | null): AnimationDef | undefined {

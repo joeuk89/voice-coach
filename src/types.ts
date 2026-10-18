@@ -7,7 +7,13 @@ export type AnimationId =
   | 'sirens'
   | 'hum'
   | 'vfe'
-  | 'read-aloud';
+  | 'read-aloud'
+  | 'articulation'
+  | 'dynamics'
+  | 'cool-down';
+
+/** A day of the week as `Date.getDay()` numbers it: 0 is Sunday, 6 is Saturday. */
+export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export interface Link {
   label: string;
@@ -49,6 +55,8 @@ interface ExerciseBase {
   links: Link[];
   /** Routines the exercise starts switched off in, until Settings turns it on. */
   defaultOff?: RoutineId[];
+  /** Days of the week the exercise runs on in a routine, until Settings changes them. A routine left out runs it every day. */
+  days?: Partial<Record<RoutineId, Weekday[]>>;
 }
 
 /** Runs for a set time that Settings can change. */
