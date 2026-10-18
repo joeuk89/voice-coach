@@ -184,7 +184,12 @@ export const exercises: Exercise[] = [
     ],
     duration: { short: 60, full: 120 },
     animation: 'dynamics',
-    links: [],
+    links: [
+      {
+        label: 'Dorset County Hospital NHS: breathing for speech, soft to loud in exercise four',
+        url: 'https://dchft.nhs.uk/leaflets/breathing-for-speech-exercises/',
+      },
+    ],
   },
   {
     id: 'vfe',

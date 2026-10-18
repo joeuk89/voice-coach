@@ -1,0 +1,106 @@
+.anim-dynamics .dy-mouth { fill: var(--body); stroke: var(--lip); stroke-width: 2; }
+.anim-dynamics .dy-band {
+  fill: none; stroke: color-mix(in srgb, var(--air) 30%, transparent); stroke-linecap: round;
+  animation: dy-band var(--cycle) infinite;
+}
+.anim-dynamics .dy-swell { transform-box: view-box; animation: dy-swell var(--cycle) infinite; }
+.anim-dynamics .dy-lane-fill {
+  fill: var(--voice); transform-box: view-box; transform-origin: 60px 0;
+  animation: dy-volume var(--cycle) infinite;
+}
+.anim-dynamics .dy-bar { fill: var(--surface-2); }
+.anim-dynamics .dy-bar-lit { fill: var(--voice); animation: var(--cycle) step-end infinite; }
+.anim-dynamics .dy-loud-say { font-size: 22px; }
+
+.anim-dynamics .dy-more { animation: dy-more var(--cycle) step-end infinite; }
+.anim-dynamics .dy-less { animation: dy-less var(--cycle) step-end infinite; }
+.anim-dynamics .dy-lane { animation: dy-show-lane var(--cycle) step-end infinite; }
+.anim-dynamics .dy-p1 { animation: dy-show-p1 var(--cycle) step-end infinite; }
+.anim-dynamics .dy-p2 { animation: dy-show-p2 var(--cycle) step-end infinite; }
+.anim-dynamics .dy-up { animation: dy-show-up var(--cycle) step-end infinite; }
+.anim-dynamics .dy-down { animation: dy-show-down var(--cycle) step-end infinite; }
+.anim-dynamics .dy-p3 { animation: dy-show-p3 var(--cycle) step-end infinite; }
+.anim-dynamics .dy-call { animation: dy-show-call var(--cycle) step-end infinite; }
+.anim-dynamics .dy-normal { animation: dy-show-normal var(--cycle) step-end infinite; }
+
+.anim-dynamics .dy-t-swell .pitch-line { animation: dy-trace-swell var(--cycle) linear infinite; }
+.anim-dynamics .dy-t-count .pitch-line { animation: dy-trace-count var(--cycle) linear infinite; }
+.anim-dynamics .dy-t-phrase .pitch-line { animation: dy-trace-phrase var(--cycle) linear infinite; }
+.anim-dynamics .dy-t-swell .pitch-dot { animation: dy-dot-swell var(--cycle) linear infinite; }
+.anim-dynamics .dy-t-count .pitch-dot { animation: dy-dot-count var(--cycle) linear infinite; }
+.anim-dynamics .dy-t-phrase .pitch-dot { animation: dy-dot-phrase var(--cycle) linear infinite; }
+
+/* Phase boundaries match the sub-step windows in exercises.ts: one 8 s swell to 50%, the count to 75%
+   (up to 62.5%, then down), then the call to 87.5% and the same phrase at normal volume. Loudness is drawn
+   three ways in step: the amber band behind the air stream, the scale of the sound rings, and the volume
+   lane. The mouth, the SPACE label and the pitch trace on the EASY line never change. */
+@keyframes dy-band {
+  0% { stroke-width: 4; animation-timing-function: ease-in-out; }
+  25% { stroke-width: 30; animation-timing-function: ease-in-out; }
+  50% { stroke-width: 4; animation-timing-function: linear; }
+  62.5% { stroke-width: 30; animation-timing-function: linear; }
+  74.9% { stroke-width: 4; animation-timing-function: step-end; }
+  75% { stroke-width: 30; animation-timing-function: step-end; }
+  87.5%, 100% { stroke-width: 10; }
+}
+@keyframes dy-swell {
+  0% { transform: scale(0.4); animation-timing-function: ease-in-out; }
+  25% { transform: scale(1.2); animation-timing-function: ease-in-out; }
+  50% { transform: scale(0.4); animation-timing-function: linear; }
+  62.5% { transform: scale(1.2); animation-timing-function: linear; }
+  74.9% { transform: scale(0.4); animation-timing-function: step-end; }
+  75% { transform: scale(1.25); animation-timing-function: step-end; }
+  87.5%, 100% { transform: scale(0.7); }
+}
+@keyframes dy-volume {
+  0% { transform: scaleX(0.06); animation-timing-function: ease-in-out; }
+  25% { transform: scaleX(1); animation-timing-function: ease-in-out; }
+  50% { transform: scaleX(0.06); animation-timing-function: step-end; }
+  75% { transform: scaleX(1); animation-timing-function: step-end; }
+  87.5%, 100% { transform: scaleX(0.45); }
+}
+
+@keyframes dy-more { 0% { opacity: 1; } 25% { opacity: 0; } 50% { opacity: 1; } 62.5% { opacity: 0; } 75% { opacity: 1; } 87.5%, 100% { opacity: 0; } }
+@keyframes dy-less { 0% { opacity: 0; } 25% { opacity: 1; } 50% { opacity: 0; } 62.5% { opacity: 1; } 75% { opacity: 0; } 87.5%, 100% { opacity: 1; } }
+@keyframes dy-show-lane { 0% { opacity: 1; } 50% { opacity: 0; } 75%, 100% { opacity: 1; } }
+@keyframes dy-show-p1 { 0% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes dy-show-p2 { 0% { opacity: 0; } 50% { opacity: 1; } 75%, 100% { opacity: 0; } }
+@keyframes dy-show-up { 0% { opacity: 0; } 50% { opacity: 1; } 62.5%, 100% { opacity: 0; } }
+@keyframes dy-show-down { 0% { opacity: 0; } 62.5% { opacity: 1; } 75%, 100% { opacity: 0; } }
+@keyframes dy-show-p3 { 0% { opacity: 0; } 75%, 100% { opacity: 1; } }
+@keyframes dy-show-call { 0% { opacity: 0; } 75% { opacity: 1; } 87.5%, 100% { opacity: 0; } }
+@keyframes dy-show-normal { 0% { opacity: 0; } 87.5%, 100% { opacity: 1; } }
+
+@keyframes dy-trace-swell { 0% { stroke-dashoffset: 1; } 48%, 100% { stroke-dashoffset: 0; } }
+@keyframes dy-trace-count { 0%, 50% { stroke-dashoffset: 1; } 74%, 100% { stroke-dashoffset: 0; } }
+@keyframes dy-trace-phrase { 0%, 75% { stroke-dashoffset: 1; } 99%, 100% { stroke-dashoffset: 0; } }
+@keyframes dy-dot-swell { 0% { offset-distance: 0%; } 48%, 100% { offset-distance: 100%; } }
+@keyframes dy-dot-count { 0%, 50% { offset-distance: 0%; } 74%, 100% { offset-distance: 100%; } }
+@keyframes dy-dot-phrase { 0%, 75% { offset-distance: 0%; } 99%, 100% { offset-distance: 100%; } }
+
+/* The count staircase: bar n lights as “n” is said on the way up and goes out once the count drops below n on
+   the way down, so each bar's span is barSpan(n) in dynamics.ts. */
+.anim-dynamics .dy-bar-1 { animation-name: dy-bar-1; }
+.anim-dynamics .dy-bar-2 { animation-name: dy-bar-2; }
+.anim-dynamics .dy-bar-3 { animation-name: dy-bar-3; }
+.anim-dynamics .dy-bar-4 { animation-name: dy-bar-4; }
+.anim-dynamics .dy-bar-5 { animation-name: dy-bar-5; }
+.anim-dynamics .dy-bar-6 { animation-name: dy-bar-6; }
+.anim-dynamics .dy-bar-7 { animation-name: dy-bar-7; }
+.anim-dynamics .dy-bar-8 { animation-name: dy-bar-8; }
+.anim-dynamics .dy-bar-9 { animation-name: dy-bar-9; }
+.anim-dynamics .dy-bar-10 { animation-name: dy-bar-10; }
+@keyframes dy-bar-1 { 0% { opacity: 0; } 50% { opacity: 1; } 75%, 100% { opacity: 0; } }
+@keyframes dy-bar-2 { 0% { opacity: 0; } 51.25% { opacity: 1; } 73.75%, 100% { opacity: 0; } }
+@keyframes dy-bar-3 { 0% { opacity: 0; } 52.5% { opacity: 1; } 72.5%, 100% { opacity: 0; } }
+@keyframes dy-bar-4 { 0% { opacity: 0; } 53.75% { opacity: 1; } 71.25%, 100% { opacity: 0; } }
+@keyframes dy-bar-5 { 0% { opacity: 0; } 55% { opacity: 1; } 70%, 100% { opacity: 0; } }
+@keyframes dy-bar-6 { 0% { opacity: 0; } 56.25% { opacity: 1; } 68.75%, 100% { opacity: 0; } }
+@keyframes dy-bar-7 { 0% { opacity: 0; } 57.5% { opacity: 1; } 67.5%, 100% { opacity: 0; } }
+@keyframes dy-bar-8 { 0% { opacity: 0; } 58.75% { opacity: 1; } 66.25%, 100% { opacity: 0; } }
+@keyframes dy-bar-9 { 0% { opacity: 0; } 60% { opacity: 1; } 65%, 100% { opacity: 0; } }
+@keyframes dy-bar-10 { 0% { opacity: 0; } 61.25% { opacity: 1; } 63.75%, 100% { opacity: 0; } }
+
+/* The rings and the air stream are the only inner loops; shared.css freezes them (rings at three sizes inside
+   the swelling group, the stream with its chevron). The swell itself is cycle-long and slow, so it keeps
+   playing like the sirens mouth. */
