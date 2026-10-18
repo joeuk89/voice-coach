@@ -10,7 +10,9 @@ Open the live URL in Chrome on Android, then choose "Add to Home screen" (or "In
 
 ## How a routine works
 
-Pick Short or Full on Home and press Start. Each exercise walks through its steps one at a time: read the step, press Start when you are ready, and press Next when you are done. Nothing moves on by itself. Timed steps count down and stop at zero; counted steps show "Rep 3 of 8" or, on the vocal function exercises, count your holds from the stopwatch. Low breathing's second step is paced: Start runs a 3-second "Ready" count, then the picture and the row lead each breath, in for 4 and out for 8, with a short buzz at each switch, until the routine's breath count is done. Pause freezes the picture, and Resume replays the interrupted breath after a new lead-in. The step list and the "n of 8" picker let you jump anywhere. Finish opens the Done screen, which logs the day and asks how your voice felt.
+Pick Short or Full on Home and press Start. Each exercise walks through its steps one at a time: read the step, press Start when you are ready, and press Next when you are done. Nothing moves on by itself. Timed steps count down and stop at zero; counted steps show "Rep 3 of 8" or, on the vocal function exercises, count your holds from the stopwatch. Low breathing's second step is paced: Start runs a 3-second "Ready" count, then the picture and the row lead each breath, in for 4 and out for 8, with a short buzz at each switch, until the routine's breath count is done. Pause freezes the picture, and Resume replays the interrupted breath after a new lead-in. The step list and the "n of 8" picker let you jump anywhere. Finish opens the Done screen, which logs the day and asks how your voice felt. Every seventh saved routine, Done also shows a Weekly check: record today's read-aloud passage in your phone's voice memo app and play last week's next to it.
+
+The routine runs low breathing, jaw and tongue articulation, straw phonation, lip trills, sirens, hum into words, volume and dynamics, the vocal function exercises, the pitch, pause and pace read-aloud, and a cool-down. Which of them run on a given day depends on the schedule in Settings.
 
 ## Run locally
 
@@ -57,7 +59,7 @@ Everything about the routine lives in `src/exercises.ts`, one object per exercis
   - `examples` lists words or sounds to try during the sub-step. They show as chips under its text on the guided screen and in the Library.
 - `animation` names an entry in `src/animations/index.ts`, or `null` for no animation.
 
-Read-aloud passages live in `src/paragraphs.ts`, each a `text` and a `demo` line. Wrap a word in `*asterisks*` to show it bold where the pitch should rise, about one per clause and 8 to 12 per passage. The `demo` is the passage's opening clause, 4 to 8 words with 2 or 3 of them bold and marked as in the passage; the read-aloud card draws it with a pitch peak over each bold word. A test checks these counts and that the demo line fits the card.
+Read-aloud passages live in `src/paragraphs.ts`, each a `text` and a `demo` line. Wrap a word in `*asterisks*` to show it bold where the pitch should rise, about one per clause and 8 to 12 per passage. The `demo` is the passage's opening clause, 4 to 8 words with 2 or 3 of them bold and marked as in the passage; the read-aloud card draws it with a pitch peak over each bold word. A test checks these counts and that the demo line fits the card. The card loops four 4 s passes on that line: over the top, at 70 percent, a pause pass whose flat line breaks with a pause mark before each bold word while the dot waits half a second, and a pace pass that draws a small contour slowly up to a turn between two peaks and three times faster after it. The pause and pace keyframes depend on where the bold words fall, so the card builds them with its SVG.
 
 ## Settings
 
