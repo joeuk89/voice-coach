@@ -50,7 +50,13 @@ export const exercises: Exercise[] = [
     tips: ['Crisp consonants come from a loose jaw and a quick tongue, not from effort.'],
     duration: { short: 60, full: 90 },
     animation: 'articulation',
-    links: [{ label: 'Vinh Giang: how to become more articulate', url: 'https://vinhgiang.com/blog/how-to-become-more-articulate' }],
+    links: [
+      { label: 'Vinh Giang: how to become more articulate', url: 'https://vinhgiang.com/blog/how-to-become-more-articulate' },
+      {
+        label: 'Royal Berkshire NHS: voice warm-up and warm-down (PDF)',
+        url: 'https://royalberkshire.nhs.uk/media/5ehceiw2/voice-warm-up-and-warm-down_apr24.pdf',
+      },
+    ],
   },
   {
     id: 'straw',
