@@ -3,7 +3,7 @@ import { initAudio } from '../lib/audio';
 import { currentStreak, lastEntry, loadLog, localDay, parseDay, todayEntry } from '../state/log';
 import { markOnboarded, needsOnboarding } from '../state/onboarding';
 import { startSession } from '../state/session';
-import { loadSettings, planRoutine, saveSettings, totalSeconds } from '../state/settings';
+import { loadSettings, planRoutine, restingOn, saveSettings, totalSeconds } from '../state/settings';
 import { bindRoutineToggle, routineToggle } from '../lib/routine-toggle';
 import { dayStrip } from '../lib/day-strip';
 import { icons } from '../lib/icons';
@@ -65,11 +65,13 @@ export function renderHome(root: HTMLElement): () => void {
 
   function draw() {
     const routine = settings.routine;
-    const steps = planRoutine(settings);
+    const today = new Date();
+    const steps = planRoutine(settings, routine, today);
+    const resting = restingOn(settings, routine, today);
     root.innerHTML = `
       <header class="home-head">
         <div>
-          <div class="eyebrow">${esc(new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' }))}</div>
+          <div class="eyebrow">${esc(today.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' }))}</div>
           <h1 tabindex="-1">Voice Trainer</h1>
         </div>
         <a class="icon-link" href="#/settings" aria-label="Settings">${icons.gear}</a>
@@ -77,16 +79,21 @@ export function renderHome(root: HTMLElement): () => void {
 
       ${doneToday ? doneTodayCard(doneToday, log) : ''}
 
-      ${routineToggle(settings, 'Routine')}
+      ${routineToggle(settings, 'Routine', today)}
 
       <section class="card routine">
-        <h2 class="routine-title">${doneToday ? 'Next time' : 'Today'} · ${exerciseCount(steps.length)} · ${formatMinutes(totalSeconds(settings))}</h2>
+        <h2 class="routine-title">${doneToday ? 'Next time' : 'Today'} · ${exerciseCount(steps.length)} · ${formatMinutes(totalSeconds(settings, routine, today))}</h2>
+        ${resting.length ? `<p class="muted routine-resting">Not today: ${esc(resting.map((e) => e.name).join(', '))}</p>` : ''}
         ${
           steps.length
             ? `<ol class="routine-list">
                 ${steps.map((s) => `<li><span>${esc(s.exercise.name)}</span><span class="muted mono">${formatClock(s.seconds)}</span></li>`).join('')}
               </ol>`
-            : `<p class="muted routine-empty">Every exercise is off in this routine. Turn some on in Settings.</p>`
+            : `<p class="muted routine-empty">${
+                resting.length
+                  ? 'Nothing in this routine runs today. Change its days in Settings.'
+                  : 'Every exercise is off in this routine. Turn some on in Settings.'
+              }</p>`
         }
       </section>
 
