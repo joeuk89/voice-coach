@@ -10,7 +10,7 @@ export function mountReadingPanel(container: HTMLElement, onPassage?: (passage: 
     const passage = paragraphs[index];
     container.innerHTML = `
       <p class="passage">${renderPassage(passage?.text ?? '')}</p>
-      <p class="muted reading-hint">Once over the top, then again at 70 percent.</p>
+      <p class="muted reading-hint">Over the top, then at 70 percent, then a pause before each bold word, then slow and quick clauses.</p>
       <div class="reading-foot">
         <button class="btn btn-ghost" id="next-passage">New passage</button>
         <span class="muted">${index + 1} of ${paragraphs.length}</span>
