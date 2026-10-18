@@ -1,0 +1,157 @@
+/* The jaw hinges at the back, so the front of the mouth opens most. The tongue and lower lip ride on it. */
+.anim-articulation .ar-jaw {
+  transform-box: view-box; transform-origin: 72px 82px;
+  animation: ar-jaw var(--cycle) ease-in-out infinite;
+}
+.anim-articulation .ar-tongue { fill: color-mix(in srgb, var(--muted) 45%, var(--surface)); }
+.anim-articulation .ar-tip-tap,
+.anim-articulation .ar-tip-flutter { transform-box: view-box; transform-origin: 127px 77px; }
+.anim-articulation .ar-tip-tap { animation: ar-tip-tap var(--cycle) linear infinite; }
+.anim-articulation .ar-tip-flutter { animation: ar-flutter 0.12s linear infinite; }
+.anim-articulation .ar-finger {
+  fill: var(--surface-3); stroke: var(--line); stroke-width: 2;
+  animation: ar-rub 1.2s ease-in-out infinite;
+}
+.anim-articulation .ar-finger-2 { animation-delay: 0.3s; }
+
+.anim-articulation .ar-massage, .anim-articulation .ar-t-off, .anim-articulation .ar-p1 { animation: ar-phase-1 var(--cycle) step-end infinite; }
+.anim-articulation .ar-sigh, .anim-articulation .ar-t-sigh, .anim-articulation .ar-p2 { animation: ar-phase-2 var(--cycle) step-end infinite; }
+.anim-articulation .ar-trill, .anim-articulation .ar-tip-trill, .anim-articulation .ar-t-trill, .anim-articulation .ar-p3 {
+  animation: ar-phase-3 var(--cycle) step-end infinite;
+}
+.anim-articulation .ar-tip-still { animation: ar-not-3 var(--cycle) step-end infinite; }
+.anim-articulation .ar-twister, .anim-articulation .ar-t-speak, .anim-articulation .ar-p4 { animation: ar-phase-4 var(--cycle) step-end infinite; }
+.anim-articulation .ar-syl { animation: var(--cycle) step-end infinite; }
+.anim-articulation .ar-syl-1 { animation-name: ar-lit-1; }
+.anim-articulation .ar-syl-2 { animation-name: ar-lit-2; }
+.anim-articulation .ar-syl-3 { animation-name: ar-lit-3; }
+.anim-articulation .ar-syl-4 { animation-name: ar-lit-4; }
+.anim-articulation .ar-syl-5 { animation-name: ar-lit-5; }
+.anim-articulation .ar-syl-6 { animation-name: ar-lit-6; }
+.anim-articulation .ar-syl-7 { animation-name: ar-lit-7; }
+
+.anim-articulation .ar-t-sigh .pitch-line { animation: ar-trace-sigh var(--cycle) linear infinite; }
+.anim-articulation .ar-t-trill .pitch-line { animation: ar-trace-trill var(--cycle) linear infinite; }
+.anim-articulation .ar-t-speak .pitch-line { animation: ar-trace-speak var(--cycle) linear infinite; }
+.anim-articulation .ar-t-sigh .pitch-dot { animation: ar-dot-sigh var(--cycle) linear infinite; }
+.anim-articulation .ar-t-trill .pitch-dot { animation: ar-dot-trill var(--cycle) linear infinite; }
+.anim-articulation .ar-t-speak .pitch-dot { animation: ar-dot-speak var(--cycle) linear infinite; }
+
+@keyframes ar-rub {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(2.5px, 1.5px); }
+  50% { transform: translate(0, 3px); }
+  75% { transform: translate(-2.5px, 1.5px); }
+}
+@keyframes ar-flutter { 0%, 100% { transform: rotate(-16deg); } 50% { transform: rotate(4deg); } }
+
+/* Phase boundaries match the sub-step windows in exercises.ts: jaw massage to 25%, yawn-sigh to 50%, tongue trill
+   to 75%, then the twister. 1 s of the 16 s cycle is 6.25%. Each trace finishes 96% of the way through its window. */
+@keyframes ar-phase-1 { 0% { opacity: 1; } 25%, 100% { opacity: 0; } }
+@keyframes ar-phase-2 { 0% { opacity: 0; } 25% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes ar-phase-3 { 0% { opacity: 0; } 50% { opacity: 1; } 75%, 100% { opacity: 0; } }
+@keyframes ar-not-3 { 0% { opacity: 1; } 50% { opacity: 0; } 75%, 100% { opacity: 1; } }
+@keyframes ar-phase-4 { 0% { opacity: 0; } 75%, 100% { opacity: 1; } }
+@keyframes ar-trace-sigh { 0%, 25% { stroke-dashoffset: 1; } 49%, 100% { stroke-dashoffset: 0; } }
+@keyframes ar-trace-trill { 0%, 50% { stroke-dashoffset: 1; } 74%, 100% { stroke-dashoffset: 0; } }
+@keyframes ar-trace-speak { 0%, 75% { stroke-dashoffset: 1; } 99%, 100% { stroke-dashoffset: 0; } }
+@keyframes ar-dot-sigh { 0%, 25% { offset-distance: 0%; } 49%, 100% { offset-distance: 100%; } }
+@keyframes ar-dot-trill { 0%, 50% { offset-distance: 0%; } 74%, 100% { offset-distance: 100%; } }
+@keyframes ar-dot-speak { 0%, 75% { offset-distance: 0%; } 99%, 100% { offset-distance: 100%; } }
+
+/* Step 1 lets the jaw drop and hang. Step 2 yawns wide, then the jaw settles a little as the sigh falls.
+   Step 3 holds it slightly open for the trill. Step 4 says the twister twice, 0.3 s a syllable from 0.2 s
+   into the window, then 0.15 s a syllable from 2.6 s: the jaw opens a little on each vowel. */
+@keyframes ar-jaw {
+  0% { transform: rotate(0deg); }
+  4%, 25% { transform: rotate(8deg); }
+  27%, 40% { transform: rotate(18deg); }
+  48% { transform: rotate(12deg); animation-timing-function: step-end; }
+  50% { transform: rotate(6deg); animation-timing-function: step-end; }
+  75%, 76.25% { transform: rotate(2deg); }
+  77.094% { transform: rotate(6deg); }
+  78.125% { transform: rotate(2deg); }
+  78.969% { transform: rotate(6deg); }
+  80% { transform: rotate(2deg); }
+  80.844% { transform: rotate(6deg); }
+  81.875% { transform: rotate(2deg); }
+  82.719% { transform: rotate(6deg); }
+  83.75% { transform: rotate(2deg); }
+  84.594% { transform: rotate(6deg); }
+  85.625% { transform: rotate(2deg); }
+  86.469% { transform: rotate(6deg); }
+  87.5% { transform: rotate(2deg); }
+  88.344% { transform: rotate(6deg); }
+  89.375%, 91.25% { transform: rotate(2deg); }
+  91.672% { transform: rotate(6deg); }
+  92.188% { transform: rotate(2deg); }
+  92.609% { transform: rotate(6deg); }
+  93.125% { transform: rotate(2deg); }
+  93.547% { transform: rotate(6deg); }
+  94.063% { transform: rotate(2deg); }
+  94.484% { transform: rotate(6deg); }
+  95% { transform: rotate(2deg); }
+  95.422% { transform: rotate(6deg); }
+  95.938% { transform: rotate(2deg); }
+  96.359% { transform: rotate(6deg); }
+  96.875% { transform: rotate(2deg); }
+  97.297% { transform: rotate(6deg); }
+  97.813%, 100% { transform: rotate(2deg); }
+}
+/* Step 4 only: the tongue tip flicks up on each syllable's consonant, on the same beats as the jaw. */
+@keyframes ar-tip-tap {
+  0%, 75.969% { transform: rotate(0deg); }
+  76.25% { transform: rotate(-18deg); }
+  77%, 77.844% { transform: rotate(0deg); }
+  78.125% { transform: rotate(-18deg); }
+  78.875%, 79.719% { transform: rotate(0deg); }
+  80% { transform: rotate(-18deg); }
+  80.75%, 81.594% { transform: rotate(0deg); }
+  81.875% { transform: rotate(-18deg); }
+  82.625%, 83.469% { transform: rotate(0deg); }
+  83.75% { transform: rotate(-18deg); }
+  84.5%, 85.344% { transform: rotate(0deg); }
+  85.625% { transform: rotate(-18deg); }
+  86.375%, 87.219% { transform: rotate(0deg); }
+  87.5% { transform: rotate(-18deg); }
+  88.25%, 91.109% { transform: rotate(0deg); }
+  91.25% { transform: rotate(-18deg); }
+  91.625%, 92.047% { transform: rotate(0deg); }
+  92.188% { transform: rotate(-18deg); }
+  92.563%, 92.984% { transform: rotate(0deg); }
+  93.125% { transform: rotate(-18deg); }
+  93.5%, 93.922% { transform: rotate(0deg); }
+  94.063% { transform: rotate(-18deg); }
+  94.438%, 94.859% { transform: rotate(0deg); }
+  95% { transform: rotate(-18deg); }
+  95.375%, 95.797% { transform: rotate(0deg); }
+  95.938% { transform: rotate(-18deg); }
+  96.313%, 96.734% { transform: rotate(0deg); }
+  96.875% { transform: rotate(-18deg); }
+  97.25%, 100% { transform: rotate(0deg); }
+}
+/* Each syllable lights on its beat in the slow pass, the line dims at 2.5 s, and lights again in the quick pass. */
+@keyframes ar-lit-1 { 0% { fill-opacity: 0.3; } 76.25% { fill-opacity: 1; } 90.625% { fill-opacity: 0.3; } 91.25%, 100% { fill-opacity: 1; } }
+@keyframes ar-lit-2 { 0% { fill-opacity: 0.3; } 78.125% { fill-opacity: 1; } 90.625% { fill-opacity: 0.3; } 92.188%, 100% { fill-opacity: 1; } }
+@keyframes ar-lit-3 { 0% { fill-opacity: 0.3; } 80% { fill-opacity: 1; } 90.625% { fill-opacity: 0.3; } 93.125%, 100% { fill-opacity: 1; } }
+@keyframes ar-lit-4 { 0% { fill-opacity: 0.3; } 81.875% { fill-opacity: 1; } 90.625% { fill-opacity: 0.3; } 94.063%, 100% { fill-opacity: 1; } }
+@keyframes ar-lit-5 { 0% { fill-opacity: 0.3; } 83.75% { fill-opacity: 1; } 90.625% { fill-opacity: 0.3; } 95%, 100% { fill-opacity: 1; } }
+@keyframes ar-lit-6 { 0% { fill-opacity: 0.3; } 85.625% { fill-opacity: 1; } 90.625% { fill-opacity: 0.3; } 95.938%, 100% { fill-opacity: 1; } }
+@keyframes ar-lit-7 { 0% { fill-opacity: 0.3; } 87.5% { fill-opacity: 1; } 90.625% { fill-opacity: 0.3; } 96.875%, 100% { fill-opacity: 1; } }
+
+/* Reduced motion: the jaw only drops, yawns and holds, with no chatter; the tip, the fingertips and the trill hold
+   still. The twister still lights syllable by syllable, which carries the slow-then-quick idea on its own. */
+@keyframes ar-jaw-calm {
+  0% { transform: rotate(0deg); }
+  4%, 25% { transform: rotate(8deg); }
+  27%, 40% { transform: rotate(18deg); }
+  48% { transform: rotate(12deg); animation-timing-function: step-end; }
+  50% { transform: rotate(6deg); animation-timing-function: step-end; }
+  75%, 100% { transform: rotate(4deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .anim-articulation .ar-jaw { animation-name: ar-jaw-calm; }
+  .anim-articulation .ar-tip-tap,
+  .anim-articulation .ar-finger { animation: none; }
+  .anim-articulation .ar-tip-flutter { animation: none; transform: rotate(-16deg); }
+}
